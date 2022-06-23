@@ -1,6 +1,6 @@
-package com.company.telegrambot.repository;
+package telegrambot.repository;
 
-import com.company.telegrambot.model.Operation;
+import telegrambot.model.Operation;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OperationRepository extends JpaRepository<Operation, Long> {

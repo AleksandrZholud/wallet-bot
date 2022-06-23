@@ -1,6 +1,6 @@
-package com.company.telegrambot.repository;
+package telegrambot.repository;
 
-import com.company.telegrambot.model.Category;
+import telegrambot.model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {

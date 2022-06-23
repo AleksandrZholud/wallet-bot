@@ -1,7 +1,7 @@
-package com.company.telegrambot.service;
+package telegrambot.service;
 
-import com.company.telegrambot.model.Card;
-import com.company.telegrambot.repository.CardRepository;
+import telegrambot.model.Card;
+import telegrambot.repository.CardRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;

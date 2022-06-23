@@ -1,4 +1,4 @@
-package com.company.telegrambot.model;
+package telegrambot.model;
 
 public enum OPERATION_TYPE {
     INCOME("INCOME"),

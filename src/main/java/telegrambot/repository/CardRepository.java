@@ -1,7 +1,6 @@
-package com.company.telegrambot.repository;
+package telegrambot.repository;
 
-import com.company.telegrambot.model.Card;
-import com.company.telegrambot.model.Operation;
+import telegrambot.model.Card;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

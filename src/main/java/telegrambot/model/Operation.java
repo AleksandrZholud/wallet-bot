@@ -1,4 +1,4 @@
-package com.company.telegrambot.model;
+package telegrambot.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;

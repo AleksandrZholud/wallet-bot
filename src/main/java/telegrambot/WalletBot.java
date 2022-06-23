@@ -1,12 +1,12 @@
-package com.company.telegrambot;
+package telegrambot;
 
-import com.company.telegrambot.model.Card;
-import com.company.telegrambot.model.Category;
-import com.company.telegrambot.model.OPERATION_TYPE;
-import com.company.telegrambot.model.Operation;
-import com.company.telegrambot.repository.CategoryRepository;
-import com.company.telegrambot.service.CardService;
-import com.company.telegrambot.service.OperationServiceImpl;
+import telegrambot.model.Card;
+import telegrambot.model.Category;
+import telegrambot.model.OPERATION_TYPE;
+import telegrambot.model.Operation;
+import telegrambot.repository.CategoryRepository;
+import telegrambot.service.CardService;
+import telegrambot.service.OperationServiceImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;

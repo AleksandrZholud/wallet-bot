@@ -1,10 +1,10 @@
-package com.company.telegrambot.service;
+package telegrambot.service;
 
-import com.company.telegrambot.model.Card;
-import com.company.telegrambot.model.OPERATION_TYPE;
-import com.company.telegrambot.model.Operation;
-import com.company.telegrambot.repository.CardRepository;
-import com.company.telegrambot.repository.OperationRepository;
+import telegrambot.model.Card;
+import telegrambot.model.OPERATION_TYPE;
+import telegrambot.model.Operation;
+import telegrambot.repository.CardRepository;
+import telegrambot.repository.OperationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
