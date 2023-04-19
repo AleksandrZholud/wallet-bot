@@ -22,7 +22,6 @@ import java.util.Random;
 
 @Component
 public class WalletBot extends TelegramLongPollingBot {
-
     @Value("${telegram.bot.username}")
     private String username;
     @Value("${telegram.bot.token}")
