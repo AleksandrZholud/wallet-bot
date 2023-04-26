@@ -1,6 +1,5 @@
 package telegrambot.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,13 +9,12 @@ import java.math.BigDecimal;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "cards")
 public class Card {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     private String name;
@@ -27,5 +25,4 @@ public class Card {
 
     @Setter
     private BigDecimal balance;
-
 }

@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.5.5'
+    id 'io.spring.dependency-management' version '1.1.0'
+}
+
+group = 'git'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot:${starterVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.hibernate:hibernate-core")
+    implementation("org.hibernate.validator:hibernate-validator:${hibernateValidatorVersion}")
+
+    implementation("org.telegram:telegrambots:${telegramBotVersion}")
+
+    compileOnly("org.projectlombok:lombok")
+    runtimeOnly("org.postgresql:postgresql")
+
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    annotationProcessor("org.projectlombok:lombok")
+
+    testImplementation("org.testcontainers:junit-jupiter:${testcontainersVersion}")
+    testImplementation("org.testcontainers:mssqlserver:${testcontainersVersion}")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+    testCompileOnly("org.projectlombok:lombok:${lombokVersion}")
+    testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
