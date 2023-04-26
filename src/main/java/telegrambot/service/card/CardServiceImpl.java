@@ -1,9 +1,9 @@
 package telegrambot.service.card;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import telegrambot.model.Card;
 import telegrambot.repository.CardRepository;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
@@ -15,7 +15,7 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public Card getByName(String name) {
-        return cardRepository.getByName(name);
+        return cardRepository.getByName(name).orElseThrow(() -> new IllegalStateException("Card is not exist."));
     }
 
     @Override
