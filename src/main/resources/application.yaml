@@ -1,0 +1,21 @@
+port: 5432
+
+spring:
+  datasource:
+    url: jdbc:postgresql://walletdb-postgresql-instance.cjlbkgvenvzw.eu-north-1.rds.amazonaws.com:5432/${main-db-name}
+    username: ololoev1
+    password: ololoev2
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+main-db-name: sanio
+
+telegram-bot:
+  name: WalletBot
+  token: 5600281255:AAEbHt3A10TfhlWo-cxKgGJqWobjI_R4q7E
+
+logging:
+  level:
+    org.hibernate: info
