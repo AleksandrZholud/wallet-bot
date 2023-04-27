@@ -3,19 +3,30 @@ port: 5432
 spring:
   datasource:
     url: jdbc:postgresql://walletdb-postgresql-instance.cjlbkgvenvzw.eu-north-1.rds.amazonaws.com:5432/${main-db-name}
-    username: ololoev1
-    password: ololoev2
+    username: inputUsernameToRunConfig
+    password: inputPasswordToRunConfig
   jpa:
     hibernate:
       ddl-auto: update
-    open-in-view: false
+    open-in-view: off
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL10Dialect
+        temp:
+          use_jdbc_metadata_defaults: false
+  sql:
+    init:
+      mode: always
+      platform: postgres
+      schema-locations: classpath:sql/init_util_tables_schema_source.sql
+      data-locations: classpath:sql/init_util_tables_data_source.sql
 
-main-db-name: sanio
+main-db-name: user_AM_walletDB
 
 telegram-bot:
   name: WalletBot
-  token: 5600281255:AAEbHt3A10TfhlWo-cxKgGJqWobjI_R4q7E
+  token: inputTokenToRunConfig
 
 logging:
   level:
-    org.hibernate: info
+    org.hibernate: debug
