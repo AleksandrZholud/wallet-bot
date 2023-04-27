@@ -2,15 +2,11 @@ package telegrambot.handlers;
 
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import telegrambot.WalletBot;
-import telegrambot.model.util.CardDraft;
-import telegrambot.model.util.Command;
+import telegrambot.config.interceptor.AdditionalUserPropertiesContextHolder;
 import telegrambot.model.util.DRAFT_STATUS;
-import telegrambot.model.util.State;
 import telegrambot.repository.util.CardDraftRepository;
 import telegrambot.repository.util.CommandRepository;
 import telegrambot.repository.util.CurrentConditionRepository;
@@ -22,9 +18,6 @@ import java.util.Optional;
 @AllArgsConstructor
 @Component
 public class CreateCardCmdHandler extends AbstractCmdHandler {
-    @Autowired
-    private final WalletBot walletBot;
-
     private static final String THIS_CMD = "/createCard";
     private final CardDraftRepository cardDraftRepository;
     private final CurrentConditionRepository currentConditionRepository;
@@ -32,25 +25,25 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
     private final StateRepository stateRepository;
 
     @Override
-    public SendMessage processMessage(Update update) throws IllegalAccessException {
+    public SendMessage processMessage() {
         var draft = Optional.ofNullable(cardDraftRepository.getFirstDraft());
-        var sendMessage = SendMessage.builder()
-                .chatId(update.getMessage().getChatId())
-                .text("Common sendMessage from CreateCardCmdHandler")
-                .build();
+        SendMessage sendMessage;
 
         if (draft.isEmpty()) {
-            sendMessage = doCreateCard(update);
+            sendMessage = doCreateCard();
         } else {
             if (Strings.isBlank(draft.get().getName())) {
-                sendMessage = doSetName(update);
-            } else sendMessage = doSetBalance(update);
+                sendMessage = doSetName();
+            } else {
+                sendMessage = doSetBalance();
+            }
         }
 
         return sendMessage;
     }
 
-    private SendMessage doCreateCard(Update update) {
+    private SendMessage doCreateCard() {
+        Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
         var command = commandRepository.findByName(THIS_CMD);
         var state = stateRepository.findByName("setName");
 
@@ -67,7 +60,8 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
                 .build();
     }
 
-    private SendMessage doSetName(Update update) {
+    private SendMessage doSetName() {
+        Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
         var command = commandRepository.findByName(THIS_CMD);
         var state = stateRepository.findByName("setBalance");
         var draftName = update.getMessage().getText();
@@ -86,7 +80,8 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
                 .build();
     }
 
-    private SendMessage doSetBalance(Update update) {
+    private SendMessage doSetBalance() {
+        Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
         var command = commandRepository.findByName(THIS_CMD);
         var state = stateRepository.findByName("confirmation");
         var draftBalance = BigDecimal.valueOf(Long.parseLong(update.getMessage().getText()));
@@ -110,8 +105,8 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
     }
 
     @Override
-    public boolean canProcessMessage(Update update) {
+    public boolean canProcessMessage() {
+        Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
         return update.getMessage().getText().equals(THIS_CMD);
     }
-
 }
