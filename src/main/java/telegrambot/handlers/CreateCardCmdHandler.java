@@ -55,9 +55,7 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
 
         return SendMessage.builder()
                 .chatId(update.getMessage().getChatId())
-                .text("Current Condition: " + cc.getId() + "*" + cc.getCommand().getName() + "*" + cc.getState().getName()
-                        + "\nCurrent Draft: " + cd.getId() + "*" + cd.getName() + "*" + cd.getBalance() + "*" + cd.getStatus().name()
-                        + "\nEnter Card name:")
+                .text("Enter Card name:")
                 .build();
     }
 
@@ -74,9 +72,7 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
 
         return SendMessage.builder()
                 .chatId(update.getMessage().getChatId())
-                .text("Current Condition: " + cc.getId() + "*" + cc.getCommand().getName() + "*" + cc.getState().getName()
-                        + "\nCurrent Draft: " + cd.getId() + "*" + cd.getName() + "*" + cd.getBalance() + "*" + cd.getStatus().name()
-                        + "\nEnter start balance for Card "
+                .text("Enter start balance for Card "
                         + draftName + ":")
                 .build();
     }
@@ -95,9 +91,7 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
 
         return SendMessage.builder()
                 .chatId(update.getMessage().getChatId())
-                .text("Current Condition: " + cc.getId() + "*" + cc.getCommand().getName() + "*" + cc.getState().getName()
-                        + "\nCurrent Draft: " + cd.getId() + "*" + cd.getName() + "*" + cd.getBalance() + "*" + cd.getStatus().name()
-                        + "\nConfirm your Card:"
+                .text("Confirm your Card:"
                         + "\nName: " + cd.getName()
                         + "\nBalance: " + cd.getBalance()
                         + "\n/back"

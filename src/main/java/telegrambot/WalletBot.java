@@ -14,6 +14,7 @@ import telegrambot.repository.util.CurrentConditionRepository;
 @Slf4j
 @Component
 public class WalletBot extends TelegramLongPollingBot {
+    public static final String SERVER_ERROR_MSG = "Server error.";
     private final BotConfig botConfig;
     private final CurrentConditionRepository currentConditionRepository;
 
@@ -67,7 +68,11 @@ public class WalletBot extends TelegramLongPollingBot {
                     .build();
             try {
                 sendMessage = main(sendMessage);
-                sendOutput(update, sendMessage, false);
+                if (sendMessage != null) {
+                    sendOutput(update, sendMessage, false);
+                } else {
+                    sendOutput(update, SERVER_ERROR_MSG, true);
+                }
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 sendMessage.setText(e.getMessage());

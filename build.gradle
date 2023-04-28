@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version "${starterVersion}"
+    id "org.springframework.boot" version "${springBootVersion}"
     id 'io.spring.dependency-management' version '1.1.0'
 }
 
@@ -9,7 +9,6 @@ apply from: "dependencies.gradle"
 group = 'git'
 version = System.getenv('VERSION') ?: "${version}"
 sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
 
 configurations {
     compileOnly {
@@ -31,13 +30,11 @@ bootJar {
     def userName = System.getenv("Telegram-bot-USERNAME") ?: "MaZHo"
     def gradleVersion = gradle.gradleVersion
     def compileJavaVersion = System.getProperty("java.version")
-    def targetJavaVersion = java.targetCompatibility
 
     manifest {
         attributes(
                 "Gradle-Version": gradleVersion,
                 "Compile-Java-Version": compileJavaVersion,
-                "Target-Build-Java-Version": targetJavaVersion,
                 "Built-By": userName,
                 "Product-Version": buildVersion,
                 "Product-Name": "MaZHo Telegram bot"
