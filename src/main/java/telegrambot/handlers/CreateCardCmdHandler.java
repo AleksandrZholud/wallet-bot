@@ -29,6 +29,7 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
         var draft = Optional.ofNullable(cardDraftRepository.getFirstDraft());
         SendMessage sendMessage;
 
+//        if (draft.isEmpty() && update.getMessage().getText().equals(THIS_CMD))
         if (draft.isEmpty()) {
             sendMessage = doCreateCard();
         } else {
@@ -107,6 +108,9 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
     @Override
     public boolean canProcessMessage() {
         Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
-        return update.getMessage().getText().equals(THIS_CMD);
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            return update.getMessage().getText().equals(THIS_CMD);
+        }
+        return false;
     }
 }

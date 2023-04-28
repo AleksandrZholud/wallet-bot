@@ -6,11 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractCmdHandler {
+
+    /**
+     * private static final String THIS_CMD - must be defined in every child. THIS_CMD means command related to this exact child.
+     */
+
     private static final List<AbstractCmdHandler> allChildEntities = new ArrayList<>();
-
-    //must implement in every child!
-    private static final String THIS_CMD = "/chindCommand"; //TODO: ← is it really norm name?
-
     AbstractCmdHandler() {
         allChildEntities.add(this);
     }

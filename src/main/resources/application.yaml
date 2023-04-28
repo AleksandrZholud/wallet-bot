@@ -7,7 +7,7 @@ spring:
     password: inputPasswordToRunConfig
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     open-in-view: off
     properties:
       hibernate:
@@ -15,8 +15,8 @@ spring:
         temp:
           use_jdbc_metadata_defaults: false
   liquibase:
-   enabled: true
-   change-log: classpath:/db/changelog/changelog-master.yaml
+    enabled: true
+    change-log: db/changelog/db.changelog-master.yaml
 
 main-db-name: user_AM_walletDB
 
