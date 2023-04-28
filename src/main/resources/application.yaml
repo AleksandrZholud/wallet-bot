@@ -27,3 +27,4 @@ telegram-bot:
 logging:
   level:
     org.hibernate: info
+    liquibase: warn

@@ -4,16 +4,15 @@
 //} else {
 //    println("Use local artifactory to get libs !!!")
 //}
+println("Welcome to MaZHo !!!")
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter")
-    implementation("org.springframework.boot:spring-boot:${starterVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.hibernate:hibernate-core")
+    implementation("org.springframework.boot:spring-boot:${springBootVersion}")
     implementation("org.hibernate.validator:hibernate-validator:${hibernateValidatorVersion}")
     implementation("org.liquibase:liquibase-core:4.21.0")
-
 
     implementation("org.telegram:telegrambots:${telegramBotVersion}")
 
