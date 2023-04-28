@@ -6,36 +6,34 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import telegrambot.config.interceptor.AdditionalUserPropertiesContextHolder;
 import telegrambot.config.telegram.BotConfig;
 import telegrambot.handlers.AbstractCmdHandler;
 import telegrambot.repository.util.CurrentConditionRepository;
-import telegrambot.service.card.CardServiceImpl;
 
 @Slf4j
 @Component
 public class WalletBot extends TelegramLongPollingBot {
-
-    public static final String ERROR_EMPTY_MESSAGE_FOUND = "Error: Cannot understand an empty command!";
     private final BotConfig botConfig;
-    private final CardServiceImpl cardService;
     private final CurrentConditionRepository currentConditionRepository;
 
-    public WalletBot(BotConfig botConfig, CardServiceImpl cardService,
-                     CurrentConditionRepository currentConditionRepository) {
+    public static final String ERROR_EMPTY_MESSAGE_FOUND = "Error: Cannot understand an empty command!";
+
+    public WalletBot(BotConfig botConfig, CurrentConditionRepository currentConditionRepository) {
         super(botConfig.getToken());
         this.botConfig = botConfig;
-        this.cardService = cardService;
         this.currentConditionRepository = currentConditionRepository;
     }
 
-    private SendMessage main(Update update, SendMessage sendMessage) throws IllegalAccessException {
+    private SendMessage main(SendMessage sendMessage) throws IllegalAccessException {
         //All logic of TelegramBot is here ↓
         //////////////////////////////////////////////////////////////////////////
+        var update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
 
         if (update.getMessage().getText().startsWith("/")) {
             for (AbstractCmdHandler handler : AbstractCmdHandler.getAllChildEntities()) {
-                if (handler.canProcessMessage(update)) {
-                    sendMessage = handler.processMessage(update);
+                if (handler.canProcessMessage()) {
+                    sendMessage = handler.processMessage();
                     return sendMessage;
                 }
             }
@@ -45,9 +43,9 @@ public class WalletBot extends TelegramLongPollingBot {
             update.getMessage().setText(currentCommand.getName());
 
             for (AbstractCmdHandler handler : AbstractCmdHandler.getAllChildEntities()) {
-                if (handler.canProcessMessage(update)) {
+                if (handler.canProcessMessage()) {
                     update.getMessage().setText(temp);
-                    sendMessage = handler.processMessage(update);
+                    sendMessage = handler.processMessage();
                     return sendMessage;
                 }
             }
@@ -61,13 +59,14 @@ public class WalletBot extends TelegramLongPollingBot {
     @Override
     //doNotModify this Method
     public void onUpdateReceived(Update update) {
+        setContext(update);
         if (update.hasMessage() && update.getMessage().hasText()) {
             SendMessage sendMessage = SendMessage.builder()
                     .chatId(update.getMessage().getChatId())
                     .text("Uaschpie unrecognized command!")
                     .build();
             try {
-                sendMessage = main(update, sendMessage);
+                sendMessage = main(sendMessage);
                 sendOutput(update, sendMessage, false);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
@@ -97,11 +96,9 @@ public class WalletBot extends TelegramLongPollingBot {
     }
 
     private SendMessage prepareMessage(Update update, SendMessage message, boolean isErrorMessage) {
-
         message.setText(validateOutputMessage(message.getText()));
         message.setChatId(update.getMessage().getChatId());
         message.setReplyToMessageId(isErrorMessage ? null : update.getMessage().getMessageId());
-
         return message;
     }
 
@@ -112,5 +109,10 @@ public class WalletBot extends TelegramLongPollingBot {
     @Override
     public String getBotUsername() {
         return botConfig.getName();
+    }
+
+    private void setContext(Update update) {
+        AdditionalUserPropertiesContextHolder.initContext();
+        AdditionalUserPropertiesContextHolder.getContext().setUpdate(update);
     }
 }

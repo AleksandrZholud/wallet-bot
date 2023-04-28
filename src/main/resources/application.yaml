@@ -14,19 +14,16 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQL10Dialect
         temp:
           use_jdbc_metadata_defaults: false
-  sql:
-    init:
-      mode: always
-      platform: postgres
-      schema-locations: classpath:sql/init_util_tables_schema_source.sql
-      data-locations: classpath:sql/init_util_tables_data_source.sql
+  liquibase:
+   enabled: true
+   change-log: classpath:/db/changelog/changelog-master.yaml
 
 main-db-name: user_AM_walletDB
 
 telegram-bot:
   name: WalletBot
-  token: inputTokenToRunConfig
+  token: 5600281255:AAEbHt3A10TfhlWo-cxKgGJqWobjI_R4q7E
 
 logging:
   level:
-    org.hibernate: debug
+    org.hibernate: info

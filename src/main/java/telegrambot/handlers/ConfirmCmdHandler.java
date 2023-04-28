@@ -1,14 +1,11 @@
 package telegrambot.handlers;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import telegrambot.WalletBot;
+import telegrambot.config.interceptor.AdditionalUserPropertiesContextHolder;
 import telegrambot.model.Card;
-import telegrambot.model.util.CardDraft;
-import telegrambot.model.util.CurrentCondition;
 import telegrambot.model.util.DRAFT_STATUS;
 import telegrambot.repository.CardRepository;
 import telegrambot.repository.util.CardDraftRepository;
@@ -21,9 +18,6 @@ import java.util.Optional;
 @AllArgsConstructor
 @Component
 public class ConfirmCmdHandler extends AbstractCmdHandler {
-    @Autowired
-    WalletBot walletBot;
-
     private static final String THIS_CMD = "/confirm";
     private final CardDraftRepository cardDraftRepository;
     private final CardRepository cardRepository;
@@ -32,17 +26,21 @@ public class ConfirmCmdHandler extends AbstractCmdHandler {
     private final StateRepository stateRepository;
 
     @Override
-    public SendMessage processMessage(Update update) {
+    public SendMessage processMessage() {
+        Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
         var cc = currentConditionRepository.getFirst();
+        SendMessage sendMessage;
 
         if (cc.getCommand().getName().equals("/createCard")) {
-            return confirmCard(update);
+            sendMessage = confirmCard(update);
+        } else {
+            sendMessage = SendMessage.builder()
+                    .chatId(update.getMessage().getChatId())
+                    .text("You can not confirm something from command '" + cc.getCommand().getName() + "'")
+                    .build();
         }
 
-        return SendMessage.builder()
-                .chatId(update.getMessage().getChatId())
-                .text("You can not confirm something from command " + cc.getCommand().getName())
-                .build();
+        return sendMessage;
     }
 
     private SendMessage confirmCard(Update update) {
@@ -90,7 +88,8 @@ public class ConfirmCmdHandler extends AbstractCmdHandler {
     }
 
     @Override
-    public boolean canProcessMessage(Update update) {
+    public boolean canProcessMessage() {
+        Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
         return update.getMessage().getText().equals(THIS_CMD);
     }
 }

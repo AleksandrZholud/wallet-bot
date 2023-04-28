@@ -1,0 +1,31 @@
+//if ("${useExperimentalFunctional}" == "true") {
+//    println("Use Experimental Functional -> include odd libs !!!")
+//    apply from: "exp_dependencies.gradle"
+//} else {
+//    println("Use local artifactory to get libs !!!")
+//}
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot:${starterVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.hibernate:hibernate-core")
+    implementation("org.hibernate.validator:hibernate-validator:${hibernateValidatorVersion}")
+    implementation("org.liquibase:liquibase-core")
+
+    implementation("org.telegram:telegrambots:${telegramBotVersion}")
+
+    compileOnly("org.projectlombok:lombok")
+    runtimeOnly("org.postgresql:postgresql")
+
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    annotationProcessor("org.projectlombok:lombok")
+
+    testImplementation("org.testcontainers:junit-jupiter:${testcontainersVersion}")
+    testImplementation("org.testcontainers:mssqlserver:${testcontainersVersion}")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+    testCompileOnly("org.projectlombok:lombok:${lombokVersion}")
+    testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+}

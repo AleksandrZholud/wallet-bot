@@ -1,23 +1,19 @@
 package telegrambot.handlers;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import telegrambot.WalletBot;
+import telegrambot.config.interceptor.AdditionalUserPropertiesContextHolder;
 
 @AllArgsConstructor
 @Component
 public class StartCmdHandler extends AbstractCmdHandler {
-    @Autowired
-    private final WalletBot walletBot;
-
     private static final String THIS_CMD = "/start";
 
-
     @Override
-    public SendMessage processMessage(Update update) {
+    public SendMessage processMessage() {
+        Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
         return SendMessage.builder()
                 .chatId(update.getMessage().getChatId())
                 .text("Greetings, " + update.getMessage().getFrom().getFirstName() + "!"
@@ -29,8 +25,8 @@ public class StartCmdHandler extends AbstractCmdHandler {
     }
 
     @Override
-    public boolean canProcessMessage(Update update) {
+    public boolean canProcessMessage() {
+        Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
         return update.getMessage().getText().equals(THIS_CMD);
     }
-
 }
