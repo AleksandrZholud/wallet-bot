@@ -25,7 +25,6 @@ public class BotInitializer {
         }
         catch (TelegramApiException e){
             log.error(e.getMessage(), e);
-            //throw new IllegalStateException(e.getMessage());
         }
     }
 }
