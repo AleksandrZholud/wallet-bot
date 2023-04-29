@@ -1,16 +1,16 @@
 package telegrambot.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 
+@Builder
 @Getter
 @NoArgsConstructor
 @Entity
 @Table(name = "cards")
+@AllArgsConstructor
 public class Card {
 
     @Id
