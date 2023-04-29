@@ -14,15 +14,10 @@ import java.math.BigDecimal;
 public class Card {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
-    private boolean isGroupBalance;
-
-    private boolean visibility;
-
-    @Setter
     private BigDecimal balance;
 }

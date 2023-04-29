@@ -10,6 +10,7 @@ import telegrambot.config.interceptor.AdditionalUserPropertiesContextHolder;
 import telegrambot.config.telegram.BotConfig;
 import telegrambot.handlers.AbstractCmdHandler;
 import telegrambot.repository.util.CurrentConditionRepository;
+import telegrambot.util.SendMessageUtils;
 
 @Slf4j
 @Component
@@ -60,39 +61,43 @@ public class WalletBot extends TelegramLongPollingBot {
     @Override
     //doNotModify this Method
     public void onUpdateReceived(Update update) {
-        setContext(update);
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            SendMessage sendMessage = SendMessage.builder()
-                    .chatId(update.getMessage().getChatId())
-                    .text("Uaschpie unrecognized command!")
-                    .build();
-            try {
+        try {
+            setContext(update);
+            SendMessage sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(update, "");
+            if (update.hasMessage() && update.getMessage().hasText()) {
                 sendMessage = main(sendMessage);
-                if (sendMessage != null) {
-                    sendOutput(update, sendMessage, false);
-                } else {
-                    sendOutput(update, SERVER_ERROR_MSG, true);
-                }
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-                sendMessage.setText(e.getMessage());
-                sendOutput(update, sendMessage, true);
+                trySendMessage(update, sendMessage);
+            } else {
+                sendOutput(update, ERROR_EMPTY_MESSAGE_FOUND);
             }
-        } else {
-            sendOutput(update, ERROR_EMPTY_MESSAGE_FOUND, true);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            SendMessage sendMessage = SendMessage.builder()
+                    .chatId(getContextChatId())
+                    .text(validateOutputMessage(e.getMessage()))
+                    .build();
+            sendOutput(update, sendMessage);
         }
     }
 
-    private void sendOutput(Update update, String errorMsg, boolean isErrorMessage) {
+    private void trySendMessage(Update update, SendMessage sendMessage) {
+        if (sendMessage != null) {
+            sendOutput(update, sendMessage);
+        } else {
+            sendOutput(update, SERVER_ERROR_MSG);
+        }
+    }
+
+    private void sendOutput(Update update, String errorMsg) {
         SendMessage sendMessage = SendMessage.builder()
                 .chatId(update.getMessage().getChatId())
                 .text(errorMsg)
                 .build();
-        sendOutput(update, sendMessage, isErrorMessage);
+        sendOutput(update, sendMessage);
     }
 
-    public void sendOutput(Update update, SendMessage sendMessage, boolean isErrorMessage) {
-        SendMessage message = prepareMessage(update, sendMessage, isErrorMessage);
+    public void sendOutput(Update update, SendMessage sendMessage) {
+        SendMessage message = prepareMessage(update, sendMessage);
         try {
             execute(message);
         } catch (TelegramApiException e) {
@@ -100,10 +105,9 @@ public class WalletBot extends TelegramLongPollingBot {
         }
     }
 
-    private SendMessage prepareMessage(Update update, SendMessage message, boolean isErrorMessage) {
+    private SendMessage prepareMessage(Update update, SendMessage message) {
         message.setText(validateOutputMessage(message.getText()));
         message.setChatId(update.getMessage().getChatId());
-        message.setReplyToMessageId(isErrorMessage ? null : update.getMessage().getMessageId());
         return message;
     }
 
@@ -117,7 +121,9 @@ public class WalletBot extends TelegramLongPollingBot {
     }
 
     private void setContext(Update update) {
-        AdditionalUserPropertiesContextHolder.initContext();
-        AdditionalUserPropertiesContextHolder.getContext().setUpdate(update);
+        AdditionalUserPropertiesContextHolder.initContext(update);
+    }
+    private Long getContextChatId(){
+        return AdditionalUserPropertiesContextHolder.getContext().getUpdate().getMessage().getChatId();
     }
 }
