@@ -11,9 +11,12 @@ import telegrambot.repository.util.CardDraftRepository;
 import telegrambot.repository.util.CommandRepository;
 import telegrambot.repository.util.CurrentConditionRepository;
 import telegrambot.repository.util.StateRepository;
+import telegrambot.util.SendMessageUtils;
 
 import java.math.BigDecimal;
 import java.util.Optional;
+
+import static telegrambot.model.enums.CommandEnum.CREATE_CARD_CONFIRM_COMMAND;
 
 @AllArgsConstructor
 @Component
@@ -29,7 +32,6 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
         var draft = Optional.ofNullable(cardDraftRepository.getFirstDraft());
         SendMessage sendMessage;
 
-//        if (draft.isEmpty() && update.getMessage().getText().equals(THIS_CMD))
         if (draft.isEmpty()) {
             sendMessage = doCreateCard();
         } else {
@@ -49,14 +51,11 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
         var state = stateRepository.findByName("setName");
 
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
-        var cc = currentConditionRepository.getFirst();
-        cardDraftRepository.createFirstDraft();
-        var cd = cardDraftRepository.getFirstDraft();
 
-        return SendMessage.builder()
-                .chatId(update.getMessage().getChatId())
-                .text("Enter Card name:")
-                .build();
+        cardDraftRepository.createFirstDraft();
+
+        return SendMessageUtils.getSendMessageWithChatIdAndText(update,
+                "Enter Card name:");
     }
 
     private SendMessage doSetName() {
@@ -66,15 +65,11 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
         var draftName = update.getMessage().getText();
 
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
-        var cc = currentConditionRepository.getFirst();
-        cardDraftRepository.updateName(draftName);
-        var cd = cardDraftRepository.getFirstDraft();
 
-        return SendMessage.builder()
-                .chatId(update.getMessage().getChatId())
-                .text("Enter start balance for Card "
-                        + draftName + ":")
-                .build();
+        cardDraftRepository.updateName(draftName);
+
+        return SendMessageUtils.getSendMessageWithChatIdAndText(update,
+                "Enter start balance for Card " + draftName + ":");
     }
 
     private SendMessage doSetBalance() {
@@ -84,19 +79,17 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
         var draftBalance = BigDecimal.valueOf(Long.parseLong(update.getMessage().getText()));
 
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
-        var cc = currentConditionRepository.getFirst();
+
         cardDraftRepository.updateBalance(draftBalance);
         cardDraftRepository.updateStatus(DRAFT_STATUS.BUILT.name());
         var cd = cardDraftRepository.getFirstDraft();
 
-        return SendMessage.builder()
-                .chatId(update.getMessage().getChatId())
-                .text("Confirm your Card:"
+        SendMessage sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(update,
+                "Confirm your Card:"
                         + "\nName: " + cd.getName()
-                        + "\nBalance: " + cd.getBalance()
-                        + "\n/back"
-                        + "\n/confirm")
-                .build();
+                        + "\nBalance: " + cd.getBalance());
+        SendMessageUtils.addButtons(sendMessage, CREATE_CARD_CONFIRM_COMMAND);
+        return sendMessage;
     }
 
     @Override
