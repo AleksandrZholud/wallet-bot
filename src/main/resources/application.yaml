@@ -3,28 +3,28 @@ port: 5432
 spring:
   datasource:
     url: jdbc:postgresql://walletdb-postgresql-instance.cjlbkgvenvzw.eu-north-1.rds.amazonaws.com:5432/${main-db-name}
-    username: ololoev1
-    password: ololoev2
-    driver-class-name: org.postgresql.Driver
+    username: inputUsernameToRunConfig
+    password: inputPasswordToRunConfig
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     open-in-view: off
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQL10Dialect
         temp:
           use_jdbc_metadata_defaults: false
+  liquibase:
+    enabled: true
+    change-log: db/changelog/db.changelog-master.yaml
 
-main-db-name: sanio
+main-db-name: user_AM_walletDB
 
-#telegram-bot:
-#  name: WalletBot
-#  token: 5600281255:AAEbHt3A10TfhlWo-cxKgGJqWobjI_R4q7E
 telegram-bot:
-  name: wallet-demo-bot
-  token: 5592588678:AAG37hWFUB_KTfqavmxIa_1zoKBJT9bX6tE
+  name: WalletBot
+  token: 5600281255:AAEbHt3A10TfhlWo-cxKgGJqWobjI_R4q7E
 
 logging:
   level:
-    org.hibernate: warn
+    org.hibernate: info
+    liquibase: warn
