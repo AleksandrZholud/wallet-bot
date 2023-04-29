@@ -5,6 +5,9 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import telegrambot.config.interceptor.AdditionalUserPropertiesContextHolder;
+import telegrambot.util.SendMessageUtils;
+
+import static telegrambot.model.enums.CommandEnum.CREATE_CARD_COMMAND;
 
 @AllArgsConstructor
 @Component
@@ -14,14 +17,11 @@ public class StartCmdHandler extends AbstractCmdHandler {
     @Override
     public SendMessage processMessage() {
         Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
-        return SendMessage.builder()
-                .chatId(update.getMessage().getChatId())
-                .text("Greetings, " + update.getMessage().getFrom().getFirstName() + "!"
-                        + "\nChoose your destiny...:"
-                        + "\n/start"
-                        + "\n/createCard"
-                        + "\n/back")
-                .build();
+        SendMessage sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(update,
+                "Greetings, " + update.getMessage().getChat().getFirstName() + "!"
+                        + "\nChoose your destiny...:");
+        SendMessageUtils.addButtons(sendMessage, CREATE_CARD_COMMAND);
+        return sendMessage;
     }
 
     @Override

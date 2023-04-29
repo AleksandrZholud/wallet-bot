@@ -21,8 +21,8 @@ spring:
 main-db-name: user_AM_walletDB
 
 telegram-bot:
-  name: WalletBot
-  token: 5600281255:AAEbHt3A10TfhlWo-cxKgGJqWobjI_R4q7E
+  name: Толька
+  token: Булька
 
 logging:
   level:
