@@ -15,11 +15,11 @@ import telegrambot.util.SendMessageUtils;
 @Slf4j
 @Component
 public class WalletBot extends TelegramLongPollingBot {
-    public static final String SERVER_ERROR_MSG = "Server error.";
     private final BotConfig botConfig;
     private final CurrentConditionRepository currentConditionRepository;
 
     public static final String ERROR_EMPTY_MESSAGE_FOUND = "Error: Cannot understand an empty command!";
+    public static final String SERVER_ERROR_MSG = "Server error.";
 
     public WalletBot(BotConfig botConfig, CurrentConditionRepository currentConditionRepository) {
         super(botConfig.getToken());
@@ -27,35 +27,9 @@ public class WalletBot extends TelegramLongPollingBot {
         this.currentConditionRepository = currentConditionRepository;
     }
 
-    private SendMessage main(SendMessage sendMessage) throws IllegalAccessException {
-        //All logic of TelegramBot is here ↓
-        //////////////////////////////////////////////////////////////////////////
-        var update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
-
-        if (update.getMessage().getText().startsWith("/")) {
-            for (AbstractCmdHandler handler : AbstractCmdHandler.getAllChildEntities()) {
-                if (handler.canProcessMessage()) {
-                    sendMessage = handler.processMessage();
-                    return sendMessage;
-                }
-            }
-        } else {
-            var currentCommand = currentConditionRepository.getFirst().getCommand();
-            var temp = update.getMessage().getText();
-            update.getMessage().setText(currentCommand.getName());
-
-            for (AbstractCmdHandler handler : AbstractCmdHandler.getAllChildEntities()) {
-                if (handler.canProcessMessage()) {
-                    update.getMessage().setText(temp);
-                    sendMessage = handler.processMessage();
-                    return sendMessage;
-                }
-            }
-        }
-        return sendMessage;
-
-        //////////////////////////////////////////////////////////////////////////
-        //All logic of TelegramBot is here ↑
+    @Override
+    public String getBotUsername() {
+        return botConfig.getName();
     }
 
     @Override
@@ -78,6 +52,35 @@ public class WalletBot extends TelegramLongPollingBot {
                     .build();
             sendOutput(update, sendMessage);
         }
+    }
+
+    private SendMessage main(SendMessage sendMessage) throws IllegalAccessException {
+        //All logic of TelegramBot is here ↓
+        //////////////////////////////////////////////////////////////////////////
+        var update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
+
+        if (update.getMessage().getText().startsWith("/")) {
+            for (AbstractCmdHandler handler : AbstractCmdHandler.getAllChildEntities()) {
+                if (handler.canProcessMessage()) {
+                    sendMessage = handler.processMessage();
+                    return sendMessage;
+                }
+            }
+        } else {
+            var currentCommand = currentConditionRepository.getFirst().getCommand();
+            update.getMessage().setText(currentCommand.getName());
+
+            for (AbstractCmdHandler handler : AbstractCmdHandler.getAllChildEntities()) {
+                if (handler.canProcessMessage()) {
+                    sendMessage = handler.processMessage();
+                    return sendMessage;
+                }
+            }
+        }
+        return sendMessage;
+
+        //////////////////////////////////////////////////////////////////////////
+        //All logic of TelegramBot is here ↑
     }
 
     private void trySendMessage(Update update, SendMessage sendMessage) {
@@ -115,15 +118,11 @@ public class WalletBot extends TelegramLongPollingBot {
         return output == null || output.isEmpty() ? "Something went wrong." : output;
     }
 
-    @Override
-    public String getBotUsername() {
-        return botConfig.getName();
-    }
-
     private void setContext(Update update) {
         AdditionalUserPropertiesContextHolder.initContext(update);
     }
-    private Long getContextChatId(){
+
+    private Long getContextChatId() {
         return AdditionalUserPropertiesContextHolder.getContext().getUpdate().getMessage().getChatId();
     }
 }

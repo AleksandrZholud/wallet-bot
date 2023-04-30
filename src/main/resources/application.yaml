@@ -1,4 +1,5 @@
-port: 5432
+server:
+  port: 5432
 
 spring:
   datasource:
@@ -15,7 +16,7 @@ spring:
         temp:
           use_jdbc_metadata_defaults: false
   liquibase:
-    enabled: true
+    enabled: false
     change-log: db/changelog/db.changelog-master.yaml
 
 main-db-name: user_AM_walletDB
@@ -27,4 +28,4 @@ telegram-bot:
 logging:
   level:
     org.hibernate: info
-    liquibase: warn
+    liquibase: info

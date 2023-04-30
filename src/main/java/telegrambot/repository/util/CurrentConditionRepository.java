@@ -6,9 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import telegrambot.model.util.Command;
 import telegrambot.model.util.CurrentCondition;
-import telegrambot.model.util.State;
 
 @Repository
 public interface CurrentConditionRepository extends JpaRepository<CurrentCondition, Long> {
@@ -29,8 +27,10 @@ public interface CurrentConditionRepository extends JpaRepository<CurrentConditi
     @Query(value = "UPDATE current_condition SET stateid = :stateId", nativeQuery = true)
     int updateState(@Param("stateId") Long stateId);
 
-    @Transactional
     @Query(value = "SELECT c.id,c.commandid,c.stateid FROM current_condition AS c LIMIT 1", nativeQuery = true)
     CurrentCondition getFirst();
 
+    @Transactional
+    @Query(value = "UPDATE current_condition SET stateid = 1, commandid = 1", nativeQuery = true)
+    void reset();
 }
