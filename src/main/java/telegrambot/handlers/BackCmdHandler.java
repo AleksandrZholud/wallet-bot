@@ -14,6 +14,7 @@ import telegrambot.model.util.MsgFromStateHistory;
 import telegrambot.repository.util.CommandStateDependencyRepository;
 import telegrambot.repository.util.CurrentConditionRepository;
 import telegrambot.repository.util.MsgFromStateHistoryRepository;
+import telegrambot.util.SendMessageUtils;
 
 @AllArgsConstructor
 @Component
@@ -33,26 +34,30 @@ public class BackCmdHandler extends AbstractCmdHandler {
     @Override
     public SendMessage processMessage() {
         var update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
-        var lastMessage = msgFromStateHistoryRepository.findLast();
-        var isLastMsgRemoved = msgFromStateHistoryRepository.removeById(lastMessage.getId()) == 1;
+        // TODO: 30.04.2023 possible NPE in removeById
+        var isLastMsgRemoved = msgFromStateHistoryRepository.removeLast() == 1;
+        var previousMessage = msgFromStateHistoryRepository.findLast();
 
-        if (isLastMsgRemoved && setPreviousState()) {
+        if (setPreviousState()) {
+            if (previousMessage == null) {
+                return SendMessageUtils.getSendMessageWithChatIdAndText(update,// TODO: 30.04.2023 add this to all SENDMESSAGE
+                        "You are already in the root command."
+                                + "\nPress /start to see all commands or type any text to continue.");
+            }
             return SendMessage.builder()
                     .chatId(update.getMessage().getChatId())
-                    .text(lastMessage.getMessage())
+                    .text(previousMessage.getMessage())
                     .build();
         }
         return SendMessage.builder()
                 .chatId(update.getMessage().getChatId())
-                .text("Something went wrong while executing '/back' command."
-                        + "\nMethod end with last message:\n"
-                        + lastMessage.getMessage())
+                .text("Something went wrong while executing '/back' command.")
                 .build();
     }
 
 
     /**
-     * @return true, якщо стан вдалося змінити на попередній
+     * @return true, якщо стан вдалося змінити на попередній, також якщо
      * false, якщо поточнийСтан=попередньому (тобто далі вже нікуди),
      * або запит повернув 0 rows affected
      */
@@ -60,8 +65,8 @@ public class BackCmdHandler extends AbstractCmdHandler {
         var currentCondition = currentConditionRepository.getFirst();
         var dependencyRow = commandStateDependencyRepository
                 .findByCurCommandAndCurSate(currentCondition.getCommand(), currentCondition.getState());
-        if (dependencyRow.getCurrentState().getId().equals(dependencyRow.getPreviousState().getId())) {
-            return false;
+        if (dependencyRow.getCurrentState().getId().equals(dependencyRow.getPreviousState().getId())) { // TODO: 30.04.2023 NPE
+            return currentConditionRepository.updateState(dependencyRow.getNextState().getId()) == 1;
         }
         return currentConditionRepository.updateState(dependencyRow.getPreviousState().getId()) == 1;
     }

@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Builder
 @Getter
@@ -26,4 +28,9 @@ public class MsgFromStateHistory {
 
     @Column(name = "timestamp", nullable = false, unique = true)
     private Timestamp timestamp;
+
+    @PrePersist
+    protected void setTimestamp(){
+        timestamp = Timestamp.valueOf(LocalDateTime.now());
+    }
 }

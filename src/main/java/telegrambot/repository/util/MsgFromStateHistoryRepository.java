@@ -23,4 +23,13 @@ public interface MsgFromStateHistoryRepository extends JpaRepository<MsgFromStat
     @Query(value = " DELETE FROM command_state_message_history WHERE id=:id ",
             nativeQuery = true)
     int removeById(@Param("id") Long id);
+
+
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM command_state_message_history                 "
+            + "     WHERE timestamp =                                         "
+            + "   ( SELECT max(timestamp) FROM command_state_message_history )",
+            nativeQuery = true)
+    int removeLast();
 }

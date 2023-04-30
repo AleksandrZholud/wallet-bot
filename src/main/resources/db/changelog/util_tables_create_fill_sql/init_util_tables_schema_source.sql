@@ -4,6 +4,7 @@ drop table if exists card_draft cascade;
 drop table if exists current_condition cascade;
 drop table if exists states cascade;
 drop table if exists commands cascade;
+drop table if exists command_state_message_history cascade;
 
 create table commands
 (

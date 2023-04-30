@@ -7,13 +7,12 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import telegrambot.config.interceptor.AdditionalUserPropertiesContextHolder;
 import telegrambot.model.util.DRAFT_STATUS;
-import telegrambot.repository.util.CardDraftRepository;
-import telegrambot.repository.util.CommandRepository;
-import telegrambot.repository.util.CurrentConditionRepository;
-import telegrambot.repository.util.StateRepository;
+import telegrambot.model.util.MsgFromStateHistory;
+import telegrambot.repository.util.*;
 import telegrambot.util.SendMessageUtils;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Optional;
 
 import static telegrambot.model.enums.CommandEnum.CREATE_CARD_CONFIRM_COMMAND;
@@ -26,16 +25,26 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
     private final CurrentConditionRepository currentConditionRepository;
     private final CommandRepository commandRepository;
     private final StateRepository stateRepository;
+    private final MsgFromStateHistoryRepository msgFromStateHistoryRepository;
 
     @Override
     public SendMessage processMessage() {
-        var draft = Optional.ofNullable(cardDraftRepository.getFirstDraft());
         SendMessage sendMessage;
+        var update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
 
-        if (draft.isEmpty()) {
+        if (update.getMessage().getText().equals("/createCard")) {
+            cardDraftRepository.deleteAll();
+            currentConditionRepository.updateCommandAndState(3L,1L);// TODO: 30.04.2023 1l1l
+            msgFromStateHistoryRepository.deleteAll();
+        }
+
+        var currentCondition = currentConditionRepository.getFirst();
+//        var draft = Optional.ofNullable(cardDraftRepository.getFirstDraft());
+
+        if (currentCondition.getState().getName().equals("noState")) {
             sendMessage = doCreateCard();
         } else {
-            if (Strings.isBlank(draft.get().getName())) {
+            if (currentCondition.getState().getName().equals("setName")) {
                 sendMessage = doSetName();
             } else {
                 sendMessage = doSetBalance();
@@ -52,7 +61,12 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
 
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
 
+        cardDraftRepository.deleteAll();
         cardDraftRepository.createFirstDraft();
+
+        msgFromStateHistoryRepository.save(MsgFromStateHistory.builder()
+                .message("Enter Card name:")
+                .build());
 
         return SendMessageUtils.getSendMessageWithChatIdAndText(update,
                 "Enter Card name:");
@@ -67,6 +81,10 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
 
         cardDraftRepository.updateName(draftName);
+
+        msgFromStateHistoryRepository.save(MsgFromStateHistory.builder()
+                .message("Enter start balance for Card " + draftName + ":")
+                .build());
 
         return SendMessageUtils.getSendMessageWithChatIdAndText(update,
                 "Enter start balance for Card " + draftName + ":");
@@ -89,6 +107,11 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
                         + "\nName: " + cd.getName()
                         + "\nBalance: " + cd.getBalance());
         SendMessageUtils.addButtons(sendMessage, CREATE_CARD_CONFIRM_COMMAND);
+
+        msgFromStateHistoryRepository.save(MsgFromStateHistory.builder()
+                .message(sendMessage.getText())
+                .build());
+
         return sendMessage;
     }
 
