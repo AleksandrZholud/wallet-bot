@@ -86,14 +86,14 @@ public class ConfirmCmdHandler extends AbstractCmdHandler {
     private SendMessage processFinish(Update update, Card cardRes) {
         var sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(update,
                 "Card " + cardRes.getName() + "successfully saved.\n Good luck!");
-        SendMessageUtils.addButtons(sendMessage);
+        SendMessageUtils.addButtons(sendMessage, false);
         return sendMessage;
     }
 
     private SendMessage processErrorCreation(Update update) {
         var sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(update,
                 "Something got wrong....\nTap 'Confirm' and try to save again.");
-        SendMessageUtils.addButtons(sendMessage, CREATE_CARD_CONFIRM_COMMAND);
+        SendMessageUtils.addButtons(sendMessage, false, CREATE_CARD_CONFIRM_COMMAND);
         return sendMessage;
     }
 
@@ -101,7 +101,7 @@ public class ConfirmCmdHandler extends AbstractCmdHandler {
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
         var sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(update,
                 "Seems you have not started creating card.\nCreate your Card tapping 'Create card'");
-        SendMessageUtils.addButtons(sendMessage, CREATE_CARD_COMMAND);
+        SendMessageUtils.addButtons(sendMessage, false, CREATE_CARD_COMMAND);
         return sendMessage;
     }
 }

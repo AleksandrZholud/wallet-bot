@@ -2,8 +2,9 @@ package telegrambot.util;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import telegrambot.model.enums.CommandEnum;
 
 import java.util.ArrayList;
@@ -17,40 +18,53 @@ public class SendMessageUtils {
     private SendMessageUtils() {
     }
 
+    public static void addButtons(SendMessage message, boolean showBack, boolean showStart, CommandEnum... commandEnums) {
+        List<CommandEnum> enums = new ArrayList<>(Arrays.asList(commandEnums));
+        if (showBack) {
+            enums.add(GO_BACK_COMMAND);
+        }
+        if (showStart) {
+            enums.add(START_COMMAND);
+        }
+        CommandEnum[] enumArray = enums.toArray(new CommandEnum[0]);
+        addDefaultButtons(message, enumArray);
+    }
+
     public static void addButtons(SendMessage message, CommandEnum... commandEnums) {
-        CommandEnum[] enums = Arrays.copyOf(commandEnums, commandEnums.length + 2);
-        enums[commandEnums.length] = GO_BACK_COMMAND;
-        enums[commandEnums.length + 1] = START_COMMAND;
-        addDefaultButtons(message, enums);
+        addButtons(message, true, false, commandEnums);
+    }
+
+    public static void addButtons(SendMessage message, boolean showBack, CommandEnum... commandEnums) {
+        addButtons(message, showBack, false, commandEnums);
     }
 
     private static void addDefaultButtons(SendMessage message, CommandEnum... commandEnums) {
-        InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        keyboardMarkup.setOneTimeKeyboard(true);
+        keyboardMarkup.setResizeKeyboard(true);
+
+        List<KeyboardRow> keyboard = new ArrayList<>();
         int buttonsPerRow = (commandEnums.length >= 3) ? 3 : 2;
         int rows = (int) Math.ceil((double) commandEnums.length / buttonsPerRow);
 
         for (int i = 0; i < rows; i++) {
-            List<InlineKeyboardButton> rowInline = new ArrayList<>();
+            KeyboardRow row = new KeyboardRow();
             for (int j = 0; j < buttonsPerRow; j++) {
                 int index = i * buttonsPerRow + j;
                 if (index >= commandEnums.length) {
                     break;
                 }
                 CommandEnum commandEnum = commandEnums[index];
-                InlineKeyboardButton button = InlineKeyboardButton.builder()
-                        .text(commandEnum.getButtonText())
-                        .callbackData(commandEnum.getCommand())
-                        .build();
-                rowInline.add(button);
+                KeyboardButton button = new KeyboardButton();
+                button.setText(commandEnum.getCommand());
+                row.add(button);
             }
-            rowsInline.add(rowInline);
+            keyboard.add(row);
         }
 
-        markupInline.setKeyboard(rowsInline);
-        message.setReplyMarkup(markupInline);
+        keyboardMarkup.setKeyboard(keyboard);
+        message.setReplyMarkup(keyboardMarkup);
     }
-
 
     public static SendMessage getSendMessageWithChatIdAndText(Update update, String text) {
         return SendMessage.builder()
