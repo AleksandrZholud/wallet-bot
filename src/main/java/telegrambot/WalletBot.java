@@ -37,7 +37,7 @@ public class WalletBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         try {
             setContext(update);
-            SendMessage sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(update, "");
+            SendMessage sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(update, "SM created in onUpdate()");
             if (update.hasMessage() && update.getMessage().hasText()) {
                 sendMessage = main(sendMessage);
                 trySendMessage(update, sendMessage);
@@ -58,18 +58,16 @@ public class WalletBot extends TelegramLongPollingBot {
         //All logic of TelegramBot is here ↓
         //////////////////////////////////////////////////////////////////////////
         var update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
+        var handlers = AbstractCmdHandler.getAllChildEntities();
 
         if (update.getMessage().getText().startsWith("/")) {
-            for (AbstractCmdHandler handler : AbstractCmdHandler.getAllChildEntities()) {
+            for (AbstractCmdHandler handler : handlers) {
                 if (handler.canProcessMessage()) {
                     sendMessage = handler.processMessage();
                     return sendMessage;
                 }
             }
         } else {
-            var currentCommand = currentConditionRepository.getFirst().getCommand();
-            update.getMessage().setText(currentCommand.getName());
-
             for (AbstractCmdHandler handler : AbstractCmdHandler.getAllChildEntities()) {
                 if (handler.canProcessMessage()) {
                     sendMessage = handler.processMessage();

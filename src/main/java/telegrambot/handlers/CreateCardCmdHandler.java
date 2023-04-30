@@ -1,7 +1,6 @@
 package telegrambot.handlers;
 
 import lombok.AllArgsConstructor;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -12,8 +11,6 @@ import telegrambot.repository.util.*;
 import telegrambot.util.SendMessageUtils;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.Optional;
 
 import static telegrambot.model.enums.CommandEnum.CREATE_CARD_CONFIRM_COMMAND;
 
@@ -34,12 +31,11 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
 
         if (update.getMessage().getText().equals("/createCard")) {
             cardDraftRepository.deleteAll();
-            currentConditionRepository.updateCommandAndState(3L,1L);// TODO: 30.04.2023 1l1l
+            currentConditionRepository.updateCommandAndState(3L, 1L);// TODO: 30.04.2023 1l1l
             msgFromStateHistoryRepository.deleteAll();
         }
 
         var currentCondition = currentConditionRepository.getFirst();
-//        var draft = Optional.ofNullable(cardDraftRepository.getFirstDraft());
 
         if (currentCondition.getState().getName().equals("noState")) {
             sendMessage = doCreateCard();
@@ -115,12 +111,21 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
         return sendMessage;
     }
 
+    // TODO: 30.04.2023 make method as default in AbstractHandler? Override it only in /back,/start,confirm commands
     @Override
     public boolean canProcessMessage() {
         Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            return update.getMessage().getText().equals(THIS_CMD);
-        }
-        return false;
+        var currentCommandName = currentConditionRepository.getFirst().getCommand().getName();
+        var message = update.getMessage().getText();
+
+        return message.startsWith("/") ?
+                message.equals(THIS_CMD) : currentCommandName.equals(THIS_CMD);
+    }
+
+
+    @Override
+    public boolean cleanAllData() {
+        cardDraftRepository.deleteAll();
+        return cardDraftRepository.getFirstDraft() == null;
     }
 }
