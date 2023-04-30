@@ -8,7 +8,7 @@ spring:
     password: inputPasswordToRunConfig
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
     open-in-view: off
     properties:
       hibernate:

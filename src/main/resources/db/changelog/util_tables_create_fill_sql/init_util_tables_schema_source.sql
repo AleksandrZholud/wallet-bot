@@ -4,6 +4,7 @@ drop table if exists card_draft cascade;
 drop table if exists current_condition cascade;
 drop table if exists states cascade;
 drop table if exists commands cascade;
+drop table if exists command_state_message_history cascade;
 
 create table commands
 (
@@ -65,5 +66,13 @@ create table card_draft
     balance numeric(38, 2),
     name    varchar(255),
     status  varchar(30)
+);
+
+create table command_state_message_history
+(
+    id        bigint not null
+        primary key,
+    message   varchar(255),
+    timestamp timestamp
 );
 END;
