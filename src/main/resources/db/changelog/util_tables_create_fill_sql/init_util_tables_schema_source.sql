@@ -66,4 +66,12 @@ create table card_draft
     name    varchar(255),
     status  varchar(30)
 );
+
+create table command_state_message_history
+(
+    id        bigint not null
+        primary key,
+    message   varchar(255),
+    timestamp timestamp
+);
 END;
