@@ -19,7 +19,7 @@ create table states
 (
     id    bigint       not null
         primary key,
-    state varchar(255) not null
+    name varchar(255) not null
         constraint uk_rdb7pnbo5e3l4vc5bkpk5q6t1
             unique
 );

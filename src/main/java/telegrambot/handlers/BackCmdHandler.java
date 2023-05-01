@@ -3,14 +3,7 @@ package telegrambot.handlers;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Chat;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.MessageId;
-import org.telegram.telegrambots.meta.api.objects.Update;
-import telegrambot.TelegramBotApplication;
-import telegrambot.WalletBot;
 import telegrambot.config.interceptor.AdditionalUserPropertiesContextHolder;
-import telegrambot.model.util.MsgFromStateHistory;
 import telegrambot.repository.util.CommandStateDependencyRepository;
 import telegrambot.repository.util.CurrentConditionRepository;
 import telegrambot.repository.util.MsgFromStateHistoryRepository;
@@ -40,7 +33,7 @@ public class BackCmdHandler extends AbstractCmdHandler {
 
         if (setPreviousState()) {
             if (previousMessage == null) {
-                return SendMessageUtils.getSendMessageWithChatIdAndText(update,// TODO: 30.04.2023 add this to all SENDMESSAGE
+                return SendMessageUtils.getSendMessageWithChatIdAndText(// TODO: 30.04.2023 add this to all SENDMESSAGE
                         "You are already in the root command."
                                 + "\nPress /start to see all commands or type any text to continue.");
             }
@@ -49,10 +42,9 @@ public class BackCmdHandler extends AbstractCmdHandler {
                     .text(previousMessage.getMessage())
                     .build();
         }
-        return SendMessage.builder()
-                .chatId(update.getMessage().getChatId())
-                .text("Something went wrong while executing '/back' command.")
-                .build();
+        var a = SendMessageUtils.getSendMessageWithChatIdAndText("Something went wrong while executing 'back' command.");
+        SendMessageUtils.addButtons(a, false);
+        return a;
     }
 
 
@@ -75,5 +67,10 @@ public class BackCmdHandler extends AbstractCmdHandler {
     public boolean canProcessMessage() {
         var update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
         return update.getMessage().getText().equals(THIS_CMD);
+    }
+
+    @Override
+    public boolean cleanAllData() {
+        return true;
     }
 }

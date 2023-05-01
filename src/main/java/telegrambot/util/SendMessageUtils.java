@@ -67,9 +67,11 @@ public class SendMessageUtils {
     }
 
     public static SendMessage getSendMessageWithChatIdAndText(Update update, String text) {
+        var msgText = update.getMessage().hasText() || update.getMessage().getText().isBlank() ?
+                text : update.getMessage().getText();
         return SendMessage.builder()
                 .chatId(update.getMessage().getChatId())
-                .text(text)
+                .text(msgText)
                 .build();
     }
 }
