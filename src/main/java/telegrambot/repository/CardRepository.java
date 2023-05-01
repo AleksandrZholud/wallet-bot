@@ -1,5 +1,6 @@
 package telegrambot.repository;
 
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import telegrambot.model.Card;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,8 +11,9 @@ import java.math.BigDecimal;
 @Repository
 public interface CardRepository extends JpaRepository<Card, Long> {
 
-    Card getByName(String name);
+    @Query(value = "SELECT c.id, c.name, c.balance  FROM cards c WHERE c.name = :name", nativeQuery = true)
+    Card getByName(@Param("name") String name);
 
-    @Query(value = "select c.balance from cards c where c.name = 'tmpCardForTest'", nativeQuery = true)
+    @Query(value = "SELECT c.balance FROM cards c WHERE c.name = 'tmpCardForTest'", nativeQuery = true)
     BigDecimal getBalance();
 }

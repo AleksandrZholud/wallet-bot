@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public enum CommandEnum {
     CREATE_CARD_COMMAND("/createCard", "Create card"),
-    CREATE_CARD_CONFIRM_COMMAND("/confirm", "Confirm"), //TODO: change /confirm → /createCardConfirm
+    CREATE_CARD_CONFIRM_COMMAND("/confirmCreateCard", "Confirm"),
     START_COMMAND("/start", "Start"),
     GO_BACK_COMMAND("/back", "Back");
 

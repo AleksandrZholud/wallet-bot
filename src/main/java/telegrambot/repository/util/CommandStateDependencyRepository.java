@@ -16,7 +16,7 @@ import java.util.Optional;
 @Repository
 public interface CommandStateDependencyRepository extends JpaRepository<CommandStateDependency, Long> {
 
-    @Query("select c from CommandStateDependency c where c.commandId = ?1 and c.currentState=?2")
+    @Query("SELECT c FROM CommandStateDependency c WHERE c.commandId = ?1 AND c.currentState=?2")
     Optional<CommandStateDependency> findByCurrentState(Command commandId, State currentState);
 
     @Query("SELECT csd FROM CommandStateDependency csd WHERE csd.commandId = :command ORDER BY csd.id ASC")

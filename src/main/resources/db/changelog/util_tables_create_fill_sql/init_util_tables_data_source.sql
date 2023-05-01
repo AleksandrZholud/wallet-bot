@@ -7,9 +7,10 @@ values (1, '/start'),
        (5, '/showHistory'),
        (6, '/back'),
        (7, '/reset'),
-       (8, '/confirm');
+       (8, '/confirmCreateCard');
+-- naming to createCardConfirm like
 
-insert into states (id, state)
+insert into states (id, name)
 values (1, 'noState'),
        (2, 'setName'),
        (3, 'setBalance'),

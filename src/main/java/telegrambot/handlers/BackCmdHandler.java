@@ -33,7 +33,7 @@ public class BackCmdHandler extends AbstractCmdHandler {
 
         if (setPreviousState()) {
             if (previousMessage == null) {
-                return SendMessageUtils.getSendMessageWithChatIdAndText(update,// TODO: 30.04.2023 add this to all SENDMESSAGE
+                return SendMessageUtils.getSendMessageWithChatIdAndText(// TODO: 30.04.2023 add this to all SENDMESSAGE
                         "You are already in the root command."
                                 + "\nPress /start to see all commands or type any text to continue.");
             }
@@ -42,7 +42,7 @@ public class BackCmdHandler extends AbstractCmdHandler {
                     .text(previousMessage.getMessage())
                     .build();
         }
-        var a = SendMessageUtils.getSendMessageWithChatIdAndText(update, "Something went wrong while executing 'back' command.");
+        var a = SendMessageUtils.getSendMessageWithChatIdAndText("Something went wrong while executing 'back' command.");
         SendMessageUtils.addButtons(a, false);
         return a;
     }

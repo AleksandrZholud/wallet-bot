@@ -31,6 +31,7 @@ public interface CurrentConditionRepository extends JpaRepository<CurrentConditi
     CurrentCondition getFirst();
 
     @Transactional
+    @Modifying
     @Query(value = "UPDATE current_condition SET stateid = 1, commandid = 1", nativeQuery = true)
     void reset();
 }
