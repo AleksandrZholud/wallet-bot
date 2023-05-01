@@ -23,7 +23,7 @@ import static telegrambot.model.enums.CommandEnum.*;
 @Component
 public class ConfirmCreateCardCmdHandler extends AbstractCmdHandler {
 
-    private static final String THIS_CMD = "/confirmCreateCard";
+    private static final String THIS_CMD = CREATE_CARD_CONFIRM_COMMAND.getCommand();
     private final CardDraftRepository cardDraftRepository;
     private final CardRepository cardRepository;
     private final CurrentConditionRepository currentConditionRepository;
@@ -87,23 +87,23 @@ public class ConfirmCreateCardCmdHandler extends AbstractCmdHandler {
 
     private SendMessage processFinish(Card cardRes) {
         var sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(
-                "Card " + cardRes.getName() + " successfully saved.\nGood luck!");
-        SendMessageUtils.addButtons(sendMessage, false);
+                "Card '" + cardRes.getName() + "' successfully saved.\nGood luck!");
+        SendMessageUtils.addButtonsWithStart(sendMessage, false);
         return sendMessage;
     }
 
     private SendMessage processErrorCreation() {
         var sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(
-                "Something got wrong....\nTap 'Confirm' and try to save again.");
-        SendMessageUtils.addButtons(sendMessage, false, CREATE_CARD_CONFIRM_COMMAND);
+                "Something got wrong....");
+        SendMessageUtils.addButtonsWithStart(sendMessage, false, CREATE_CARD_CONFIRM_COMMAND);
         return sendMessage;
     }
 
     private SendMessage processStartCreateCard(Command command, State state) {
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
         SendMessage sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(
-                "Seems you have not started creating card.\nCreate your Card tapping 'Create card'");
-        SendMessageUtils.addButtons(sendMessage, false, CREATE_CARD_COMMAND);
+                "Seems you have not started creating card.");
+        SendMessageUtils.addButtonsWithStart(sendMessage, false, CREATE_CARD_COMMAND);
         return sendMessage;
     }
 

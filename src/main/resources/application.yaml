@@ -4,8 +4,8 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://walletdb-postgresql-instance.cjlbkgvenvzw.eu-north-1.rds.amazonaws.com:5432/${main-db-name}
-    username: inputUsernameToRunConfig
-    password: inputPasswordToRunConfig
+    username: ば
+    password: 場
   jpa:
     hibernate:
       ddl-auto: validate
@@ -19,11 +19,11 @@ spring:
     enabled: false
     change-log: db/changelog/db.changelog-master.yaml
 
-main-db-name: user_AM_walletDB
+main-db-name: 所
 
 telegram-bot:
-  name: Толька
-  token: Булька
+  name: 野
+  token: 食
 
 logging:
   level:

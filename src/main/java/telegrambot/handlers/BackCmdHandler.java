@@ -9,10 +9,12 @@ import telegrambot.repository.util.CurrentConditionRepository;
 import telegrambot.repository.util.MsgFromStateHistoryRepository;
 import telegrambot.util.SendMessageUtils;
 
+import static telegrambot.model.enums.CommandEnum.GO_BACK_COMMAND;
+
 @AllArgsConstructor
 @Component
 public class BackCmdHandler extends AbstractCmdHandler {
-    private static final String THIS_CMD = "/back";
+    private static final String THIS_CMD = GO_BACK_COMMAND.getCommand();
     private final CurrentConditionRepository currentConditionRepository;
     private final CommandStateDependencyRepository commandStateDependencyRepository;
     private final MsgFromStateHistoryRepository msgFromStateHistoryRepository;
@@ -33,17 +35,21 @@ public class BackCmdHandler extends AbstractCmdHandler {
 
         if (setPreviousState()) {
             if (previousMessage == null) {
-                return SendMessageUtils.getSendMessageWithChatIdAndText(// TODO: 30.04.2023 add this to all SENDMESSAGE
+                SendMessage sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(
                         "You are already in the root command."
                                 + "\nPress /start to see all commands or type any text to continue.");
+                SendMessageUtils.addStartButton(sendMessage);
+                return sendMessage;
             }
-            return SendMessage.builder()
+            SendMessage sendMessage = SendMessage.builder()
                     .chatId(update.getMessage().getChatId())
                     .text(previousMessage.getMessage())
                     .build();
+            SendMessageUtils.addButtons(sendMessage, true, true);
+            return sendMessage;
         }
         var a = SendMessageUtils.getSendMessageWithChatIdAndText("Something went wrong while executing 'back' command.");
-        SendMessageUtils.addButtons(a, false);
+        SendMessageUtils.addButtonsWithStart(a, false);
         return a;
     }
 
