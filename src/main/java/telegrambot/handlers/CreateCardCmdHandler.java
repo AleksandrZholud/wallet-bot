@@ -64,7 +64,7 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
                 .message("Enter Card name:")
                 .build());
 
-        return SendMessageUtils.getSendMessageWithChatIdAndText(update,
+        return SendMessageUtils.getSendMessageWithChatIdAndText(
                 "Enter Card name:");
     }
 
@@ -82,7 +82,7 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
                 .message("Enter start balance for Card " + draftName + ":")
                 .build());
 
-        return SendMessageUtils.getSendMessageWithChatIdAndText(update,
+        return SendMessageUtils.getSendMessageWithChatIdAndText(
                 "Enter start balance for Card " + draftName + ":");
     }
 
@@ -98,7 +98,7 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
         cardDraftRepository.updateStatus(DRAFT_STATUS.BUILT.name());
         var cd = cardDraftRepository.getFirstDraft();
 
-        SendMessage sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(update,
+        SendMessage sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(
                 "Confirm your Card:"
                         + "\nName: " + cd.getName()
                         + "\nBalance: " + cd.getBalance());

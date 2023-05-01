@@ -21,8 +21,9 @@ import static telegrambot.model.enums.CommandEnum.*;
 
 @AllArgsConstructor
 @Component
-public class ConfirmCmdHandler extends AbstractCmdHandler {
-    private static final String THIS_CMD = "/confirm";
+public class ConfirmCreateCardCmdHandler extends AbstractCmdHandler {
+
+    private static final String THIS_CMD = "/confirmCreateCard";
     private final CardDraftRepository cardDraftRepository;
     private final CardRepository cardRepository;
     private final CurrentConditionRepository currentConditionRepository;
@@ -109,15 +110,7 @@ public class ConfirmCmdHandler extends AbstractCmdHandler {
     @Transactional
     @Override
     public boolean cleanAllData() {
-        var handlers = AbstractCmdHandler.getAllChildEntities();
-        handlers.remove(this);
-
-        for (AbstractCmdHandler handler : handlers) {
-            if (!handler.cleanAllData()) {
-                return false;
-            }
-        }
-
+        cardDraftRepository.deleteAll();      
         msgFromStateHistoryRepository.deleteAll();
 
         return msgFromStateHistoryRepository.findLast() == null && cardDraftRepository.getFirstDraft()==null;
