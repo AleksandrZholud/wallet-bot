@@ -31,12 +31,8 @@ public class SendMessageUtils {
         addDefaultButtons(message, enumArray);
     }
 
-    public static void addButtons(SendMessage message, CommandEnum... commandEnums) {
-        addButtons(message, true, false, commandEnums);
-    }
-
-    public static void addButtons(SendMessage message, boolean showBack, CommandEnum... commandEnums) {
-        addButtons(message, showBack, false, commandEnums);
+    public static void addButtonsWithStart(SendMessage message, boolean showBack, CommandEnum... commandEnums) {
+        addButtons(message, showBack, true, commandEnums);
     }
 
     private static void addDefaultButtons(SendMessage message, CommandEnum... commandEnums) {
@@ -75,14 +71,12 @@ public class SendMessageUtils {
                 .build();
     }
 
-    public static SendMessage getSendMessageWithChatIdAndUpdateText(String text) {
-        Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
-        var msgText = update.getMessage().hasText() && update.getMessage().getText().isBlank() ?
-                text : update.getMessage().getText();
-        return getSendMessageWithChatIdAndText(msgText);
-    }
-
     public static String validateOutputMessage(String output) {
         return output == null || output.isEmpty() ? "Something went wrong." : output;
+    }
+
+    public static void addStartButton(SendMessage message) {
+        CommandEnum[] enumArray = {START_COMMAND};
+        addDefaultButtons(message, enumArray);
     }
 }
