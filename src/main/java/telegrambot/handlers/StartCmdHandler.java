@@ -25,7 +25,7 @@ public class StartCmdHandler extends AbstractCmdHandler {
         SendMessage sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(
                 "Greetings, " + update.getMessage().getChat().getFirstName() + "!"
                         + "\nChoose your destiny...:");
-        SendMessageUtils.addButtons(sendMessage,false, false, false, CREATE_CARD_COMMAND);
+        SendMessageUtils.addButtons(sendMessage, false, false, CREATE_CARD_COMMAND);
 
         currentConditionRepository.updateCommandAndState(1L, 1L);// TODO: 30.04.2023  doResetCondition
         // TODO: 01.05.2023 deleteAll from all drafts and history
