@@ -3,24 +3,19 @@ package telegrambot.handlers;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import telegrambot.config.interceptor.AdditionalUserPropertiesContextHolder;
 import telegrambot.model.Card;
-import telegrambot.model.enums.StateEnum;
 import telegrambot.model.util.CardDraft;
 import telegrambot.model.util.Command;
 import telegrambot.model.util.DRAFT_STATUS;
 import telegrambot.model.util.State;
 import telegrambot.repository.CardRepository;
 import telegrambot.repository.util.*;
-import telegrambot.util.SendMessageUtils;
-import static telegrambot.model.enums.StateEnum.*;
-
 
 import java.util.Optional;
 
 import static telegrambot.model.enums.CommandEnum.*;
+import static telegrambot.model.enums.StateEnum.NO_STATE;
 
 @AllArgsConstructor
 @Component
@@ -36,35 +31,33 @@ public class ConfirmCreateCardCmdHandler extends AbstractCmdHandler {
 
     @Override
     public boolean canProcessMessage() {
-        Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
-        return update.getMessage().getText().equals(THIS_CMD);
+        return AdditionalUserPropertiesContextHolder.getUpdate().getMessage().getText().equals(THIS_CMD);
     }
 
     @Transactional
     @Override
-    public SendMessage processMessage() {
+    public void processMessage() {
         var currentCondition = currentConditionRepository.getFirst();
-        SendMessage sendMessage;
 
-        if (currentCondition.getCommand().getName().equals(CREATE_CARD_COMMAND.getCommand())) {
-            sendMessage = confirmCard();
+        String currentConditionName = currentCondition.getCommand().getName();
+        if (currentConditionName.equals(CREATE_CARD_COMMAND.getCommand())) {
+            confirmCard();
         } else {
-            sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(
-                    "You can not confirm something from command '" + currentCondition.getCommand().getName() + "'");
+            AdditionalUserPropertiesContextHolder.getFacade()
+                    .setText("You can not confirm something from command '" + currentConditionName + "'");
         }
-
-        return sendMessage;
     }
 
-    private SendMessage confirmCard() {
+    private void confirmCard() {
         var baseCommand = commandRepository.findByName(START_COMMAND.getCommand());
         var baseState = stateRepository.findByName(NO_STATE.getState());
         Optional<CardDraft> draft = Optional.ofNullable(cardDraftRepository.getFirstDraft());
+
         Card cardToSave = null;
 
-        // TODO: 30.04.2023 Check all draft fields after isEmpty
         if (draft.isEmpty()) {
-            return processStartCreateCard(baseCommand, baseState);
+            processStartCreateCard(baseCommand, baseState);
+            return;
         }
 
         if (draft.get().getStatus().equals(DRAFT_STATUS.BUILT) ||
@@ -74,46 +67,45 @@ public class ConfirmCreateCardCmdHandler extends AbstractCmdHandler {
                     .name(draft.get().getName())
                     .balance(draft.get().getBalance())
                     .build());
+
         }
 
         if (cardToSave == null) {
-            return processErrorCreation();
+            processErrorCreation();
+            return;
         }
 
         cleanAllData();
         currentConditionRepository.updateCommandAndState(baseCommand.getId(), baseState.getId());
 
-        return processFinish(cardToSave);
+        processFinish(cardToSave);
     }
 
-    private SendMessage processFinish(Card cardRes) {
-        var sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(
-                "Card '" + cardRes.getName() + "' successfully saved.\nGood luck!");
-        SendMessageUtils.addButtonsWithStart(sendMessage, false);
-        return sendMessage;
+    private void processFinish(Card cardRes) {
+        AdditionalUserPropertiesContextHolder.getFacade()
+                .setText("Card '" + cardRes.getName() + "' successfully saved.\nGood luck!")
+                .addStartButton();
     }
 
-    private SendMessage processErrorCreation() {
-        var sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(
-                "Something got wrong....");
-        SendMessageUtils.addButtonsWithStart(sendMessage, false, CREATE_CARD_CONFIRM_COMMAND);
-        return sendMessage;
+    private void processErrorCreation() {
+        AdditionalUserPropertiesContextHolder.getFacade()
+                .setText("Something got wrong....")
+                .addButtons(false, CREATE_CARD_CONFIRM_COMMAND);
     }
 
-    private SendMessage processStartCreateCard(Command command, State state) {
+    private void processStartCreateCard(Command command, State state) {
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
-        SendMessage sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(
-                "Seems you have not started creating card.");
-        SendMessageUtils.addButtonsWithStart(sendMessage, false, CREATE_CARD_COMMAND);
-        return sendMessage;
+        AdditionalUserPropertiesContextHolder.getFacade()
+                .setText("Seems you have not started creating card.")
+                .addButtons(false, CREATE_CARD_COMMAND);
     }
 
     @Transactional
     @Override
     public boolean cleanAllData() {
-        cardDraftRepository.deleteAll();      
+        cardDraftRepository.deleteAll();
         msgFromStateHistoryRepository.deleteAll();
 
-        return msgFromStateHistoryRepository.findLast() == null && cardDraftRepository.getFirstDraft()==null;
+        return msgFromStateHistoryRepository.findLast() == null && cardDraftRepository.getFirstDraft() == null;
     }
 }

@@ -1,8 +1,5 @@
 package telegrambot.handlers;
 
-import org.springframework.data.annotation.Immutable;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +19,7 @@ public abstract class AbstractCmdHandler {
         return new ArrayList<>(allChildEntities);
     }
 
-    public abstract SendMessage processMessage() throws IllegalAccessException;
+    public abstract void processMessage() throws IllegalAccessException;
 
     public abstract boolean canProcessMessage();
 

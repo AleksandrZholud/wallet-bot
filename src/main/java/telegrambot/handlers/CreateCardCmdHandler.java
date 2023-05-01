@@ -2,16 +2,11 @@ package telegrambot.handlers;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import telegrambot.config.interceptor.AdditionalUserPropertiesContextHolder;
-import telegrambot.model.enums.CommandEnum;
-import telegrambot.model.enums.StateEnum;
 import telegrambot.model.util.CurrentCondition;
 import telegrambot.model.util.DRAFT_STATUS;
 import telegrambot.model.util.MsgFromStateHistory;
 import telegrambot.repository.util.*;
-import telegrambot.util.SendMessageUtils;
 
 import java.math.BigDecimal;
 
@@ -30,11 +25,9 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
     private final MsgFromStateHistoryRepository msgFromStateHistoryRepository;
 
     @Override
-    public SendMessage processMessage() {
-        SendMessage sendMessage;
-        Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
+    public void processMessage() {
 
-        if (update.getMessage().getText().equals(THIS_CMD)) {
+        if (AdditionalUserPropertiesContextHolder.getUpdate().getMessage().getText().equals(THIS_CMD)) {
             cardDraftRepository.deleteAll();
             currentConditionRepository.updateCommandAndState(3L, 1L);
             msgFromStateHistoryRepository.deleteAll();
@@ -43,19 +36,17 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
         CurrentCondition currentCondition = currentConditionRepository.getFirst();
 
         if (currentCondition.getState().getName().equals(NO_STATE.getState())) {
-            sendMessage = doCreateCard();
+            doCreateCard();
         } else {
             if (currentCondition.getState().getName().equals(SET_NAME.getState())) {
-                sendMessage = doSetName();
+                doSetName();
             } else {
-                sendMessage = doSetBalance();
+                doSetBalance();
             }
         }
-
-        return sendMessage;
     }
 
-    private SendMessage doCreateCard() {
+    private void doCreateCard() {
         var command = commandRepository.findByName(THIS_CMD);
         var state = stateRepository.findByName(SET_NAME.getState());
 
@@ -65,19 +56,20 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
         cardDraftRepository.createFirstDraft();
 
         String enterCardNameMsg = "Enter Card name:";
+
         msgFromStateHistoryRepository.save(
                 MsgFromStateHistory.builder()
                 .message(enterCardNameMsg)
                 .build());
 
-        return SendMessageUtils.getSendMessageWithChatIdAndText(enterCardNameMsg);
+        AdditionalUserPropertiesContextHolder.getFacade()
+                .setText(enterCardNameMsg);
     }
 
-    private SendMessage doSetName() {
-        Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
+    private void doSetName() {
         var command = commandRepository.findByName(THIS_CMD);
         var state = stateRepository.findByName(SET_BALANCE.getState());
-        var draftName = update.getMessage().getText();
+        var draftName = AdditionalUserPropertiesContextHolder.getFacade().getText();
 
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
 
@@ -88,16 +80,16 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
                 .message(setBalanceMsg)
                 .build());
 
-        SendMessage sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(setBalanceMsg);
-        SendMessageUtils.addButtonsWithStart(sendMessage, true);
-        return sendMessage;
+        AdditionalUserPropertiesContextHolder.getFacade()
+                .setText(setBalanceMsg)
+                .addButtons(true, true);
     }
 
-    private SendMessage doSetBalance() {
-        Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
+    private void doSetBalance() {
         var command = commandRepository.findByName(THIS_CMD);
         var state = stateRepository.findByName(CONFIRMATION.getState());
-        var draftBalance = BigDecimal.valueOf(Long.parseLong(update.getMessage().getText()));
+        long longValueOfInput = tryGetLongValue();
+        var draftBalance = BigDecimal.valueOf(longValueOfInput);
 
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
 
@@ -105,30 +97,38 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
         cardDraftRepository.updateStatus(DRAFT_STATUS.BUILT.name());
         var cd = cardDraftRepository.getFirstDraft();
 
-        SendMessage sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(
-                "Confirm your Card:"
-                        + "\nName: '" + cd.getName() + "'"
-                        + "\nBalance: " + cd.getBalance());
-        SendMessageUtils.addButtonsWithStart(sendMessage, true, CREATE_CARD_CONFIRM_COMMAND);
+        String text = "Confirm your Card:"
+                + "\nName: '" + cd.getName() + "'"
+                + "\nBalance: " + cd.getBalance();
 
         msgFromStateHistoryRepository.save(MsgFromStateHistory.builder()
-                .message(sendMessage.getText())
+                .message(text)
                 .build());
 
-        return sendMessage;
+        AdditionalUserPropertiesContextHolder.getFacade()
+                .setText(text)
+                .addButtons(true, CREATE_CARD_CONFIRM_COMMAND);
     }
 
-    // TODO: 30.04.2023 make method as default in AbstractHandler? Override it only in /back,/start,confirm commands
+    private long tryGetLongValue() {
+        long longValueOfInput;
+        try {
+            longValueOfInput = Long.parseLong(AdditionalUserPropertiesContextHolder.getFacade().getText());
+        }
+        catch (Exception e){
+            throw new IllegalStateException("Error: You tried input a text value for a number.");
+        }
+        return longValueOfInput;
+    }
+
     @Override
     public boolean canProcessMessage() {
-        Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
         var currentCommandName = currentConditionRepository.getFirst().getCommand().getName();
-        var message = update.getMessage().getText();
+        var message = AdditionalUserPropertiesContextHolder.getUpdate().getMessage().getText();
 
         return message.startsWith("/") ?
                 message.equals(THIS_CMD) : currentCommandName.equals(THIS_CMD);
     }
-
 
     @Override
     public boolean cleanAllData() {

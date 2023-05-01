@@ -1,45 +1,44 @@
 package telegrambot.config.interceptor;
 
 
-import org.telegram.telegrambots.meta.api.objects.Chat;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import telegrambot.model.SendMessageFacade;
 
 public class AdditionalUserPropertiesContextHolder {
     private AdditionalUserPropertiesContextHolder(){}
 
     private static final ThreadLocal<AdditionalUserPropertiesContext> CONTEXT_HOLDER = new InheritableThreadLocal<>();
 
-    public static AdditionalUserPropertiesContext initContext(Update update) {
+    public static void initContext(Update update) throws IllegalAccessException {
         CONTEXT_HOLDER.remove();
 
-        var context = new AdditionalUserPropertiesContext();
         if (update.getMessage() == null) {
-            Message message = update.getCallbackQuery().getMessage();
-            String data = update.getCallbackQuery().getData();
-            Chat chat = update.getCallbackQuery().getMessage().getChat();
-            update.setMessage(message);
-            update.getMessage().setChat(chat);
-            update.getMessage().setText(data);
+            throw new IllegalAccessException("Cannot resolve message. Please, send message with text to prevent this error.");
         }
 
-        context.setUpdate(update);
+        var context = new AdditionalUserPropertiesContext(update);
         CONTEXT_HOLDER.set(context);
-        return context;
     }
 
-    public static AdditionalUserPropertiesContext getContext() {
-        AdditionalUserPropertiesContext context = CONTEXT_HOLDER.get();
-
-        if (context == null) {
-            context = new AdditionalUserPropertiesContext();
-            CONTEXT_HOLDER.set(context);
-        }
-
-        return context;
+    public static Update getUpdate() {
+        return CONTEXT_HOLDER.get().getUpdate();
     }
 
-    public static void clearContext() {
-        CONTEXT_HOLDER.remove();
+    public static SendMessageFacade getFacade(){
+        return CONTEXT_HOLDER.get().getSendMessageFacade();
     }
+
+    public static SendMessage performMessage() {
+        SendMessage sendMessage = CONTEXT_HOLDER.get().getSendMessageFacade().performSendMsg();
+        sendMessage.setText(validateOutputMessage(sendMessage.getText()));
+        return sendMessage;
+    }
+
+    public static String validateOutputMessage(String output) {
+        return output == null || output.isEmpty() ? "Something went wrong." : output;
+    }
+    public static AdditionalUserPropertiesContext getContext(){
+        return CONTEXT_HOLDER.get();
+    };
 }

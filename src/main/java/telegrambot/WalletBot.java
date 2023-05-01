@@ -10,7 +10,8 @@ import telegrambot.config.interceptor.AdditionalUserPropertiesContextHolder;
 import telegrambot.config.telegram.BotConfig;
 import telegrambot.handlers.AbstractCmdHandler;
 import telegrambot.repository.util.CurrentConditionRepository;
-import telegrambot.util.SendMessageUtils;
+
+import static telegrambot.config.interceptor.AdditionalUserPropertiesContextHolder.validateOutputMessage;
 
 @Slf4j
 @Component
@@ -37,12 +38,11 @@ public class WalletBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         try {
             setContext(update);
-            SendMessage sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText("SM created in onUpdate()");
             if (update.hasMessage() && update.getMessage().hasText()) {
-                sendMessage = main(sendMessage);
-                trySendMessage(update, sendMessage);
+                main(update.getMessage().getText());
+                sendOutput();
             } else {
-                sendOutput(update, ERROR_EMPTY_MESSAGE_FOUND);
+                sendEmptyMessageError();
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -50,77 +50,63 @@ public class WalletBot extends TelegramLongPollingBot {
                     .chatId(getContextChatId())
                     .text(validateOutputMessage(e.getMessage()))
                     .build();
-            sendOutput(update, sendMessage);
+            sendOutput(sendMessage);
         }
     }
 
-    private SendMessage main(SendMessage sendMessage) throws IllegalAccessException {
+    private void main(String text) throws IllegalAccessException {
         //All logic of TelegramBot is here ↓
         //////////////////////////////////////////////////////////////////////////
-        var update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
         var handlers = AbstractCmdHandler.getAllChildEntities();
 
-        if (update.getMessage().getText().startsWith("/")) {
+        if (text.startsWith("/")) {
             for (AbstractCmdHandler handler : handlers) {
                 if (handler.canProcessMessage()) {
-                    sendMessage = handler.processMessage();
-                    return sendMessage;
+                    handler.processMessage();
                 }
             }
         } else {
             for (AbstractCmdHandler handler : AbstractCmdHandler.getAllChildEntities()) {
                 if (handler.canProcessMessage()) {
-                    sendMessage = handler.processMessage();
-                    return sendMessage;
+                    handler.processMessage();
                 }
             }
         }
-        return sendMessage;
 
         //////////////////////////////////////////////////////////////////////////
         //All logic of TelegramBot is here ↑
     }
 
-    private void trySendMessage(Update update, SendMessage sendMessage) {
-        if (sendMessage != null) {
-            sendOutput(update, sendMessage);
-        } else {
-            sendOutput(update, SERVER_ERROR_MSG);
-        }
+    private void sendOutput() {
+        sendOutput(AdditionalUserPropertiesContextHolder.performMessage());
     }
 
-    private void sendOutput(Update update, String errorMsg) {
-        SendMessage sendMessage = SendMessage.builder()
-                .chatId(update.getMessage().getChatId())
-                .text(errorMsg)
-                .build();
-        sendOutput(update, sendMessage);
-    }
-
-    public void sendOutput(Update update, SendMessage sendMessage) {
-        SendMessage message = prepareMessage(update, sendMessage);
+    private void sendOutput(SendMessage sendMessage) {
         try {
-            execute(message);
+            execute(sendMessage);
         } catch (TelegramApiException e) {
             log.error(e.getMessage());
         }
     }
 
-    private SendMessage prepareMessage(Update update, SendMessage message) {
-        message.setText(validateOutputMessage(message.getText()));
-        message.setChatId(update.getMessage().getChatId());
-        return message;
+    private void sendEmptyMessageError() {
+        SendMessage sendMessage = AdditionalUserPropertiesContextHolder
+                .getFacade()
+                .addButtons(false, true)
+                .performSendMsg();
+        sendMessage.setText(ERROR_EMPTY_MESSAGE_FOUND);
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            log.error(e.getMessage());
+        }
     }
 
-    private String validateOutputMessage(String output) {
-        return output == null || output.isEmpty() ? "Something went wrong." : output;
-    }
-
-    private void setContext(Update update) {
+    private void setContext(Update update) throws IllegalAccessException {
         AdditionalUserPropertiesContextHolder.initContext(update);
     }
 
     private Long getContextChatId() {
-        return AdditionalUserPropertiesContextHolder.getContext().getUpdate().getMessage().getChatId();
+        return AdditionalUserPropertiesContextHolder.getUpdate().getMessage().getChatId();
     }
 }
