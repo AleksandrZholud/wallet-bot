@@ -22,7 +22,7 @@ public class StartCmdHandler extends AbstractCmdHandler {
     @Override
     public SendMessage processMessage() {
         Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
-        SendMessage sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(update,
+        SendMessage sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(
                 "Greetings, " + update.getMessage().getChat().getFirstName() + "!"
                         + "\nChoose your destiny...:");
         SendMessageUtils.addButtons(sendMessage,false, false, CREATE_CARD_COMMAND);

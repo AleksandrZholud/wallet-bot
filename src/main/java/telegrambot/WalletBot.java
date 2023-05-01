@@ -37,7 +37,7 @@ public class WalletBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         try {
             setContext(update);
-            SendMessage sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText(update, "SM created in onUpdate()");
+            SendMessage sendMessage = SendMessageUtils.getSendMessageWithChatIdAndText("SM created in onUpdate()");
             if (update.hasMessage() && update.getMessage().hasText()) {
                 sendMessage = main(sendMessage);
                 trySendMessage(update, sendMessage);

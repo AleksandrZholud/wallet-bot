@@ -5,6 +5,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import telegrambot.config.interceptor.AdditionalUserPropertiesContextHolder;
 import telegrambot.model.enums.CommandEnum;
 
 import java.util.ArrayList;
@@ -66,12 +67,22 @@ public class SendMessageUtils {
         message.setReplyMarkup(keyboardMarkup);
     }
 
-    public static SendMessage getSendMessageWithChatIdAndText(Update update, String text) {
-        var msgText = update.getMessage().hasText() || update.getMessage().getText().isBlank() ?
-                text : update.getMessage().getText();
+    public static SendMessage getSendMessageWithChatIdAndText(String text) {
+        Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
         return SendMessage.builder()
                 .chatId(update.getMessage().getChatId())
-                .text(msgText)
+                .text(validateOutputMessage(text))
                 .build();
+    }
+
+    public static SendMessage getSendMessageWithChatIdAndUpdateText(String text) {
+        Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
+        var msgText = update.getMessage().hasText() && update.getMessage().getText().isBlank() ?
+                text : update.getMessage().getText();
+        return getSendMessageWithChatIdAndText(msgText);
+    }
+
+    public static String validateOutputMessage(String output) {
+        return output == null || output.isEmpty() ? "Something went wrong." : output;
     }
 }
