@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import telegrambot.config.interceptor.AdditionalUserPropertiesContextHolder;
 import telegrambot.model.Card;
+import telegrambot.model.enums.StateEnum;
 import telegrambot.model.util.CardDraft;
 import telegrambot.model.util.Command;
 import telegrambot.model.util.DRAFT_STATUS;
@@ -14,6 +15,8 @@ import telegrambot.model.util.State;
 import telegrambot.repository.CardRepository;
 import telegrambot.repository.util.*;
 import telegrambot.util.SendMessageUtils;
+import static telegrambot.model.enums.StateEnum.*;
+
 
 import java.util.Optional;
 
@@ -55,7 +58,7 @@ public class ConfirmCreateCardCmdHandler extends AbstractCmdHandler {
 
     private SendMessage confirmCard() {
         var baseCommand = commandRepository.findByName(START_COMMAND.getCommand());
-        var baseState = stateRepository.findByName("noState");
+        var baseState = stateRepository.findByName(NO_STATE.getState());
         Optional<CardDraft> draft = Optional.ofNullable(cardDraftRepository.getFirstDraft());
         Card cardToSave = null;
 
@@ -77,9 +80,7 @@ public class ConfirmCreateCardCmdHandler extends AbstractCmdHandler {
             return processErrorCreation();
         }
 
-//        cleanAllData();
-        cardDraftRepository.deleteAll();
-        msgFromStateHistoryRepository.deleteAll();
+        cleanAllData();
         currentConditionRepository.updateCommandAndState(baseCommand.getId(), baseState.getId());
 
         return processFinish(cardToSave);

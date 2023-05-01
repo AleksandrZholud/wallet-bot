@@ -9,6 +9,6 @@ import telegrambot.model.util.State;
 @Repository
 public interface StateRepository extends JpaRepository<State, Long> {
 
-    @Query(value = " SELECT id, name FROM states WHERE name = :name ", nativeQuery = true)
+    @Query(value = " SELECT id, name FROM states WHERE name=:name ", nativeQuery = true)
     State findByName(@Param("name") String name);
 }

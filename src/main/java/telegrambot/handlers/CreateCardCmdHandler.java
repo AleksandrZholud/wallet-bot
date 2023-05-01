@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import telegrambot.config.interceptor.AdditionalUserPropertiesContextHolder;
+import telegrambot.model.enums.CommandEnum;
+import telegrambot.model.enums.StateEnum;
 import telegrambot.model.util.CurrentCondition;
 import telegrambot.model.util.DRAFT_STATUS;
 import telegrambot.model.util.MsgFromStateHistory;
@@ -15,12 +17,12 @@ import java.math.BigDecimal;
 
 import static telegrambot.model.enums.CommandEnum.CREATE_CARD_COMMAND;
 import static telegrambot.model.enums.CommandEnum.CREATE_CARD_CONFIRM_COMMAND;
+import static telegrambot.model.enums.StateEnum.*;
 
 @AllArgsConstructor
 @Component
 public class CreateCardCmdHandler extends AbstractCmdHandler {
     private static final String THIS_CMD = CREATE_CARD_COMMAND.getCommand();
-    public static final String SET_NAME = "setName";
     private final CardDraftRepository cardDraftRepository;
     private final CurrentConditionRepository currentConditionRepository;
     private final CommandRepository commandRepository;
@@ -40,10 +42,10 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
 
         CurrentCondition currentCondition = currentConditionRepository.getFirst();
 
-        if (currentCondition.getState().getName().equals("noState")) {
+        if (currentCondition.getState().getName().equals(NO_STATE.getState())) {
             sendMessage = doCreateCard();
         } else {
-            if (currentCondition.getState().getName().equals(SET_NAME)) {
+            if (currentCondition.getState().getName().equals(SET_NAME.getState())) {
                 sendMessage = doSetName();
             } else {
                 sendMessage = doSetBalance();
@@ -55,7 +57,7 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
 
     private SendMessage doCreateCard() {
         var command = commandRepository.findByName(THIS_CMD);
-        var state = stateRepository.findByName(SET_NAME);
+        var state = stateRepository.findByName(SET_NAME.getState());
 
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
 
@@ -74,7 +76,7 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
     private SendMessage doSetName() {
         Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
         var command = commandRepository.findByName(THIS_CMD);
-        var state = stateRepository.findByName("setBalance");
+        var state = stateRepository.findByName(SET_BALANCE.getState());
         var draftName = update.getMessage().getText();
 
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
@@ -94,7 +96,7 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
     private SendMessage doSetBalance() {
         Update update = AdditionalUserPropertiesContextHolder.getContext().getUpdate();
         var command = commandRepository.findByName(THIS_CMD);
-        var state = stateRepository.findByName("confirmation");
+        var state = stateRepository.findByName(CONFIRMATION.getState());
         var draftBalance = BigDecimal.valueOf(Long.parseLong(update.getMessage().getText()));
 
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());

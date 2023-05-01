@@ -21,23 +21,24 @@ public class CommandStateDependency {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "commandid", referencedColumnName = "id")
-    private Command commandId;
+    @JoinColumn(name = "command_id", referencedColumnName = "id")
+    private Command command;
 
     @ManyToOne
-    @JoinColumn(name = "baseid", referencedColumnName = "id")
-    private Command baseCommandId;
+    @JoinColumn(name = "base_id", referencedColumnName = "id")
+    private Command base;
+
 
     @ManyToOne
-    @JoinColumn(name = "currentstateid", referencedColumnName = "id")
+    @JoinColumn(name = "current_state_id", referencedColumnName = "id")
     private State currentState;
 
     @ManyToOne
-    @JoinColumn(name = "nextstateid", referencedColumnName = "id")
+    @JoinColumn(name = "next_state_id", referencedColumnName = "id")
     private State nextState;
 
     @ManyToOne
-    @JoinColumn(name = "previousstateid", referencedColumnName = "id")
+    @JoinColumn(name = "previous_state_id", referencedColumnName = "id")
     private State previousState;
 
 }

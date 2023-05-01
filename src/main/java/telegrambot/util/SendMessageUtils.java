@@ -19,7 +19,7 @@ public class SendMessageUtils {
     private SendMessageUtils() {
     }
 
-    public static void addButtons(SendMessage message, boolean showBack, boolean showStart, CommandEnum... commandEnums) {
+    public static void addButtons(SendMessage message, boolean showBack, boolean showStart, boolean confirm, CommandEnum... commandEnums) {
         List<CommandEnum> enums = new ArrayList<>(Arrays.asList(commandEnums));
         if (showBack) {
             enums.add(GO_BACK_COMMAND);
@@ -27,12 +27,15 @@ public class SendMessageUtils {
         if (showStart) {
             enums.add(START_COMMAND);
         }
+        if (confirm) {
+            enums.add(START_COMMAND);
+        }
         CommandEnum[] enumArray = enums.toArray(new CommandEnum[0]);
         addDefaultButtons(message, enumArray);
     }
 
     public static void addButtonsWithStart(SendMessage message, boolean showBack, CommandEnum... commandEnums) {
-        addButtons(message, showBack, true, commandEnums);
+        addButtons(message, showBack, true, false, commandEnums);
     }
 
     private static void addDefaultButtons(SendMessage message, CommandEnum... commandEnums) {

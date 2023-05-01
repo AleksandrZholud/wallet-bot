@@ -11,9 +11,7 @@ import java.math.BigDecimal;
 @Repository
 public interface CardRepository extends JpaRepository<Card, Long> {
 
-    @Query(value = "SELECT c.id, c.name, c.balance  FROM cards c WHERE c.name = :name", nativeQuery = true)
+    @Query(value = "SELECT c.id, c.name, c.balance  FROM cards c WHERE c.name=:name", nativeQuery = true)
     Card getByName(@Param("name") String name);
 
-    @Query(value = "SELECT c.balance FROM cards c WHERE c.name = 'tmpCardForTest'", nativeQuery = true)
-    BigDecimal getBalance();
 }

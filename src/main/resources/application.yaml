@@ -18,6 +18,11 @@ spring:
   liquibase:
     enabled: false
     change-log: db/changelog/db.changelog-master.yaml
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/changelog/util_tables_create_fill_sql/init_util_tables_schema_source.sql
+      data-locations: classpath:db/changelog/util_tables_create_fill_sql/init_util_tables_data_source.sql
 
 main-db-name: 所
 

@@ -1,36 +1,37 @@
 BEGIN;
-insert into commands (id, command)
-values (1, '/start'),
-       (2, '/showBalance'),
-       (3, '/createCard'),
-       (4, '/createOperation'),
-       (5, '/showHistory'),
-       (6, '/back'),
-       (7, '/reset'),
-       (8, '/confirmCreateCard');
--- naming to createCardConfirm like
+insert into Commands (id, name)
+values (1, '/Start'),
+       (2, '/ShowBalance'),
+       (3, '/CreateCard'),
+       (4, '/CreateOperation'),
+       (5, '/ShowHistory'),
+       (6, '/Back'),
+       (7, '/Reset'),
+       (8, '/CreateCardConfirm'),
+       (9, '/CreateOperationConfirm'),
+       (10, '/ShowHistoryConfirm');
 
-insert into states (id, name)
-values (1, 'noState'),
-       (2, 'setName'),
-       (3, 'setBalance'),
-       (4, 'setAmount'),
-       (5, 'setType'),
-       (6, 'chooseCard'),
-       (7, 'setDateFrom'),
-       (8, 'setDateTo'),
-       (9, 'confirmation');
+insert into States (id, name)
+values (1, 'NoState'),
+       (2, 'SetName'),
+       (3, 'SetBalance'),
+       (4, 'SetAmount'),
+       (5, 'SetType'),
+       (6, 'ChooseCard'),
+       (7, 'SetDateFrom'),
+       (8, 'SetDateTo'),
+       (9, 'Confirmation');
 
-insert into command_state_dependency (id, commandId, baseId, currentStateId, nextStateId, previousStateId)
-VALUES (1, 1, 1, 1, 1, 1),
-       (2, 2, 1, 1, 1, 1),
-       (3, 3, 1, 1, 2, 1),
-       (4, 3, 1, 2, 3, 1),
-       (5, 3, 1, 3, 1, 2),
-       (6, 3, 1, 9, 1, 3),
-       (7, 4, 1, 1, 6, 1),
-       (8, 4, 1, 6, 4, 1),
-       (9, 4, 1, 4, 5, 6),
+insert into command_state_dependency (id, command_id, base_id, current_state_id, next_state_id, previous_state_id)
+VALUES (1 , 1, 1, 1, 1, 1),
+       (2 , 2, 1, 1, 1, 1),
+       (3 , 3, 1, 1, 2, 1),
+       (4 , 3, 1, 2, 3, 1),
+       (5 , 3, 1, 3, 1, 2),
+       (6 , 3, 1, 9, 1, 3),
+       (7 , 4, 1, 1, 6, 1),
+       (8 , 4, 1, 6, 4, 1),
+       (9 , 4, 1, 4, 5, 6),
        (10, 4, 1, 5, 1, 4),
        (11, 5, 1, 1, 6, 1),
        (12, 5, 1, 6, 7, 1),
@@ -40,6 +41,6 @@ VALUES (1, 1, 1, 1, 1, 1),
        (16, 7, 1, 1, 1, 1),
        (17, 8, 1, 1, 1, 1);
 
-insert into current_condition (id, commandid, stateid)
+insert into current_condition (id, command_id, state_id)
 VALUES (1, 1, 1);
 END;

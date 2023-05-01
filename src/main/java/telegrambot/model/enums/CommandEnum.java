@@ -3,10 +3,10 @@ package telegrambot.model.enums;
 import java.util.Arrays;
 
 public enum CommandEnum {
-    CREATE_CARD_COMMAND("/createCard", "Create card"),
-    CREATE_CARD_CONFIRM_COMMAND("/confirmCreateCard", "Confirm"),
-    START_COMMAND("/start", "Start"),
-    GO_BACK_COMMAND("/back", "Back");
+    CREATE_CARD_COMMAND("/CreateCard", "Create card"),
+    CREATE_CARD_CONFIRM_COMMAND("/CreateCardConfirm", "Confirm"),
+    START_COMMAND("/Start", "Start"),
+    GO_BACK_COMMAND("/Back", "Back");
 
     private final String command;
     private final String buttonText;
@@ -28,6 +28,6 @@ public enum CommandEnum {
         return Arrays.stream(CommandEnum.values())
                 .filter(value -> value.command.equals(command))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Команда не найдена: " + command));
+                .orElseThrow(() -> new IllegalStateException("Command not found: " + command));
     }
 }

@@ -1,7 +1,5 @@
 package telegrambot.repository.util;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,29 +8,16 @@ import telegrambot.model.util.Command;
 import telegrambot.model.util.CommandStateDependency;
 import telegrambot.model.util.State;
 
-import java.util.List;
-import java.util.Optional;
-
 @Repository
 public interface CommandStateDependencyRepository extends JpaRepository<CommandStateDependency, Long> {
 
-    @Query("SELECT c FROM CommandStateDependency c WHERE c.commandId = ?1 AND c.currentState=?2")
-    Optional<CommandStateDependency> findByCurrentState(Command commandId, State currentState);
-
-    @Query("SELECT csd FROM CommandStateDependency csd WHERE csd.commandId = :command ORDER BY csd.id ASC")
-    List<CommandStateDependency> findByCommand(@Param("command") Command command, Pageable pageable);
-
-    @Query(value = " SELECT id, commandid, baseid, currentstateid, nextstateid, previousstateid "
-            + "      FROM command_state_dependency                                              "
-            + "      WHERE commandid = :currentCommand AND currentstateid = :currentState       "
+    @Query(value = " SELECT csd.id, csd.command_id, csd.base_id, csd.current_state_id, csd.next_state_id, csd.previous_state_id"
+            + "      FROM command_state_dependency csd                                                "
+            + "      WHERE csd.command_id =:currentCommand AND csd.current_state_id = :currentState       "
             + "      LIMIT 1                                                                    ",
             nativeQuery = true)
     CommandStateDependency findByCurCommandAndCurSate(@Param("currentCommand") Command currentCommand,
                                                       @Param("currentState") State currentState);
 
-    default CommandStateDependency findByCommandIdFirstPage(Command command) {
-        List<CommandStateDependency> dependencies = findByCommand(command, PageRequest.of(0, 1));
-        return dependencies.isEmpty() ? null : dependencies.get(0);
-    }
 
 }

@@ -12,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "commands")
+@Table(name = "Commands")
 public class Command {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hibernate_sequence")
@@ -20,7 +20,7 @@ public class Command {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "command", nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
 }

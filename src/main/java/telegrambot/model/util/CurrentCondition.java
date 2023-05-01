@@ -19,12 +19,12 @@ public class CurrentCondition {
 
     @Setter
     @ManyToOne
-    @JoinColumn(name = "commandid", referencedColumnName = "id")
+    @JoinColumn(name = "command_id", referencedColumnName = "id")
     private Command command;
 
     @Setter
     @ManyToOne
-    @JoinColumn(name = "stateid", referencedColumnName = "id")
+    @JoinColumn(name = "state_id", referencedColumnName = "id")
     private State state;
 
 }

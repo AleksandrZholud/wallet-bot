@@ -20,6 +20,6 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public BigDecimal getBalance() {
-        return cardRepository.getBalance();
+        return null;
     }
 }

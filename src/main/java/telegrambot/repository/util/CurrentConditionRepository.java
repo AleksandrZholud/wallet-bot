@@ -13,25 +13,26 @@ public interface CurrentConditionRepository extends JpaRepository<CurrentConditi
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE current_condition SET stateid = :stateId, commandid = :commandId", nativeQuery = true)
+    @Query(value = "UPDATE current_condition SET state_id =:stateId, command_id =:commandId", nativeQuery = true)
     int updateCommandAndState(@Param("commandId") Long commandId,
                               @Param("stateId") Long stateId);
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE current_condition SET commandid = :commandId", nativeQuery = true)
+    @Query(value = "UPDATE current_condition SET command_id =:commandId", nativeQuery = true)
     int updateCommand(@Param("commandId") Long commandId);
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE current_condition SET stateid = :stateId", nativeQuery = true)
+    @Query(value = "UPDATE current_condition SET state_id =:stateId", nativeQuery = true)
     int updateState(@Param("stateId") Long stateId);
 
-    @Query(value = "SELECT c.id,c.commandid,c.stateid FROM current_condition AS c LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT c.id,c.command_id,c.state_id FROM current_condition AS c LIMIT 1", nativeQuery = true)
     CurrentCondition getFirst();
 
+    // TODO: 01.05.2023 Zholud - Думаю не можна прив'язуватись до індексу. А якщо ід зміняться колись
     @Transactional
     @Modifying
-    @Query(value = "UPDATE current_condition SET stateid = 1, commandid = 1", nativeQuery = true)
+    @Query(value = "UPDATE current_condition SET state_id = 1, command_id = 1", nativeQuery = true)
     void reset();
 }

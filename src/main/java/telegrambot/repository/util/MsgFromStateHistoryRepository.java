@@ -11,10 +11,10 @@ import telegrambot.model.util.MsgFromStateHistory;
 @Repository
 public interface MsgFromStateHistoryRepository extends JpaRepository<MsgFromStateHistory, Long> {
 
-    @Query(value = "SELECT *                                                  "
-            + "     FROM command_state_message_history                        "
-            + "     WHERE timestamp =                                         "
-            + "   ( SELECT max(timestamp) FROM command_state_message_history )",
+    @Query(value = " SELECT id, message, timestamp                           "
+            + "      FROM command_state_message_history                         "
+            + "      WHERE timestamp =                                       "
+            + "    ( SELECT max(timestamp) FROM command_state_message_history ) ",
             nativeQuery = true)
     MsgFromStateHistory findLast();
 
@@ -27,9 +27,9 @@ public interface MsgFromStateHistoryRepository extends JpaRepository<MsgFromStat
 
     @Transactional
     @Modifying
-    @Query(value = "DELETE FROM command_state_message_history                 "
-            + "     WHERE timestamp =                                         "
-            + "   ( SELECT max(timestamp) FROM command_state_message_history )",
+    @Query(value = " DELETE FROM command_state_message_history                  "
+            + "      WHERE timestamp =                                       "
+            + "    ( SELECT max(timestamp) FROM command_state_message_history ) ",
             nativeQuery = true)
     int removeLast();
 }

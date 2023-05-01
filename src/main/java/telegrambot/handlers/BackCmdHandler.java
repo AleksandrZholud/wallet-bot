@@ -45,7 +45,7 @@ public class BackCmdHandler extends AbstractCmdHandler {
                     .chatId(update.getMessage().getChatId())
                     .text(previousMessage.getMessage())
                     .build();
-            SendMessageUtils.addButtons(sendMessage, true, true);
+            SendMessageUtils.addButtons(sendMessage, true, true, false);
             return sendMessage;
         }
         var a = SendMessageUtils.getSendMessageWithChatIdAndText("Something went wrong while executing 'back' command.");
