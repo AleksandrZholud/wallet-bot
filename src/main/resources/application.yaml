@@ -1,0 +1,36 @@
+server:
+  port: 0
+
+spring:
+  datasource:
+    url: jdbc:postgresql://walletdb-postgresql-instance.cjlbkgvenvzw.eu-north-1.rds.amazonaws.com:5432/${main-db-name}
+    username: ば
+    password: 場
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: off
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL10Dialect
+        temp:
+          use_jdbc_metadata_defaults: false
+  liquibase:
+    enabled: false
+    change-log: db/changelog/db.changelog-master.yaml
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/changelog/util_tables_create_fill_sql/init_util_tables_schema_source.sql
+      data-locations: classpath:db/changelog/util_tables_create_fill_sql/init_util_tables_data_source.sql
+
+main-db-name: 所
+
+telegram-bot:
+  name: 野
+  token: 食
+
+logging:
+  level:
+    org.hibernate: info
+    liquibase: info
