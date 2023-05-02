@@ -21,8 +21,8 @@ public class AdditionalUserPropertiesContextHolder {
         CONTEXT_HOLDER.set(context);
     }
 
-    public static Update getUpdate() {
-        return CONTEXT_HOLDER.get().getUpdate();
+    public static String getInputtedTextComand(){
+        return CONTEXT_HOLDER.get().getUpdate().getMessage().getText();
     }
 
     public static SendMessageFacade getFacade(){
@@ -38,7 +38,12 @@ public class AdditionalUserPropertiesContextHolder {
     public static String validateOutputMessage(String output) {
         return output == null || output.isEmpty() ? "Something went wrong." : output;
     }
+
     public static AdditionalUserPropertiesContext getContext(){
         return CONTEXT_HOLDER.get();
-    };
+    }
+
+    public static String getSenderName() {
+        return CONTEXT_HOLDER.get().getUpdate().getMessage().getChat().getFirstName();
+    }
 }

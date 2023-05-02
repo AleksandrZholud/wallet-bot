@@ -36,7 +36,8 @@ public class BackCmdHandler extends AbstractCmdHandler {
             }
             AdditionalUserPropertiesContextHolder.getFacade()
                     .setText(previousMessage.getMessage())
-                    .addButtons(true, true);
+                    .addBackButton()
+                    .addStartButton();
             return;
         }
         AdditionalUserPropertiesContextHolder.getFacade()
@@ -61,7 +62,7 @@ public class BackCmdHandler extends AbstractCmdHandler {
 
     @Override
     public boolean canProcessMessage() {
-        return AdditionalUserPropertiesContextHolder.getUpdate().getMessage().getText().equals(THIS_CMD);
+        return AdditionalUserPropertiesContextHolder.getInputtedTextComand().equals(THIS_CMD);
     }
 
     @Override

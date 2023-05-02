@@ -31,7 +31,7 @@ public class ConfirmCreateCardCmdHandler extends AbstractCmdHandler {
 
     @Override
     public boolean canProcessMessage() {
-        return AdditionalUserPropertiesContextHolder.getUpdate().getMessage().getText().equals(THIS_CMD);
+        return AdditionalUserPropertiesContextHolder.getInputtedTextComand().equals(THIS_CMD);
     }
 
     @Transactional
@@ -90,14 +90,16 @@ public class ConfirmCreateCardCmdHandler extends AbstractCmdHandler {
     private void processErrorCreation() {
         AdditionalUserPropertiesContextHolder.getFacade()
                 .setText("Something got wrong....")
-                .addButtons(false, CREATE_CARD_CONFIRM_COMMAND);
+                .addButtons(CREATE_CARD_CONFIRM_COMMAND)
+                .addStartButton();
     }
 
     private void processStartCreateCard(Command command, State state) {
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
         AdditionalUserPropertiesContextHolder.getFacade()
                 .setText("Seems you have not started creating card.")
-                .addButtons(false, CREATE_CARD_COMMAND);
+                .addButtons(CREATE_CARD_COMMAND)
+                .addStartButton();
     }
 
     @Transactional

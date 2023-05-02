@@ -27,7 +27,7 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
     @Override
     public void processMessage() {
 
-        if (AdditionalUserPropertiesContextHolder.getUpdate().getMessage().getText().equals(THIS_CMD)) {
+        if (AdditionalUserPropertiesContextHolder.getInputtedTextComand().equals(THIS_CMD)) {
             cardDraftRepository.deleteAll();
             currentConditionRepository.updateCommandAndState(3L, 1L);
             msgFromStateHistoryRepository.deleteAll();
@@ -59,8 +59,8 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
 
         msgFromStateHistoryRepository.save(
                 MsgFromStateHistory.builder()
-                .message(enterCardNameMsg)
-                .build());
+                        .message(enterCardNameMsg)
+                        .build());
 
         AdditionalUserPropertiesContextHolder.getFacade()
                 .setText(enterCardNameMsg);
@@ -69,20 +69,21 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
     private void doSetName() {
         var command = commandRepository.findByName(THIS_CMD);
         var state = stateRepository.findByName(SET_BALANCE.getState());
-        var draftName = AdditionalUserPropertiesContextHolder.getFacade().getText();
+        var draftName = AdditionalUserPropertiesContextHolder.getInputtedTextComand();
 
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
 
         cardDraftRepository.updateName(draftName);
 
-        String setBalanceMsg = "Enter start balance for Card '" + draftName + "':";
+        String setBalanceMsg = "Card name: '" + draftName + "'.\nEnter start balance:";
         msgFromStateHistoryRepository.save(MsgFromStateHistory.builder()
                 .message(setBalanceMsg)
                 .build());
 
         AdditionalUserPropertiesContextHolder.getFacade()
                 .setText(setBalanceMsg)
-                .addButtons(true, true);
+                .addBackButton()
+                .addStartButton();
     }
 
     private void doSetBalance() {
@@ -98,8 +99,8 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
         var cd = cardDraftRepository.getFirstDraft();
 
         String text = "Confirm your Card:"
-                + "\nName: '" + cd.getName() + "'"
-                + "\nBalance: " + cd.getBalance();
+                + "\nCard name   : '" + cd.getName() + "'"
+                + "\nCard balance: " + cd.getBalance();
 
         msgFromStateHistoryRepository.save(MsgFromStateHistory.builder()
                 .message(text)
@@ -107,15 +108,16 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
 
         AdditionalUserPropertiesContextHolder.getFacade()
                 .setText(text)
-                .addButtons(true, CREATE_CARD_CONFIRM_COMMAND);
+                .addButtons(CREATE_CARD_CONFIRM_COMMAND)
+                .addBackButton()
+                .addStartButton();
     }
 
     private long tryGetLongValue() {
         long longValueOfInput;
         try {
-            longValueOfInput = Long.parseLong(AdditionalUserPropertiesContextHolder.getFacade().getText());
-        }
-        catch (Exception e){
+            longValueOfInput = Long.parseLong(AdditionalUserPropertiesContextHolder.getInputtedTextComand());
+        } catch (Exception e) {
             throw new IllegalStateException("Error: You tried input a text value for a number.");
         }
         return longValueOfInput;
@@ -124,7 +126,7 @@ public class CreateCardCmdHandler extends AbstractCmdHandler {
     @Override
     public boolean canProcessMessage() {
         var currentCommandName = currentConditionRepository.getFirst().getCommand().getName();
-        var message = AdditionalUserPropertiesContextHolder.getUpdate().getMessage().getText();
+        var message = AdditionalUserPropertiesContextHolder.getInputtedTextComand();
 
         return message.startsWith("/") ?
                 message.equals(THIS_CMD) : currentCommandName.equals(THIS_CMD);

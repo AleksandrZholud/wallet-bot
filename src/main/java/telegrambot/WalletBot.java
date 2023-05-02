@@ -47,7 +47,7 @@ public class WalletBot extends TelegramLongPollingBot {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             SendMessage sendMessage = SendMessage.builder()
-                    .chatId(getContextChatId())
+                    .chatId(update.getMessage().getChatId())
                     .text(validateOutputMessage(e.getMessage()))
                     .build();
             sendOutput(sendMessage);
@@ -92,7 +92,7 @@ public class WalletBot extends TelegramLongPollingBot {
     private void sendEmptyMessageError() {
         SendMessage sendMessage = AdditionalUserPropertiesContextHolder
                 .getFacade()
-                .addButtons(false, true)
+                .addStartButton()
                 .performSendMsg();
         sendMessage.setText(ERROR_EMPTY_MESSAGE_FOUND);
         try {
@@ -104,9 +104,5 @@ public class WalletBot extends TelegramLongPollingBot {
 
     private void setContext(Update update) throws IllegalAccessException {
         AdditionalUserPropertiesContextHolder.initContext(update);
-    }
-
-    private Long getContextChatId() {
-        return AdditionalUserPropertiesContextHolder.getUpdate().getMessage().getChatId();
     }
 }

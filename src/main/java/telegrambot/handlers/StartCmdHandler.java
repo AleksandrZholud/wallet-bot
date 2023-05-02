@@ -7,11 +7,12 @@ import telegrambot.repository.util.CurrentConditionRepository;
 import telegrambot.repository.util.MsgFromStateHistoryRepository;
 
 import static telegrambot.model.enums.CommandEnum.CREATE_CARD_COMMAND;
+import static telegrambot.model.enums.CommandEnum.START_COMMAND;
 
 @AllArgsConstructor
 @Component
 public class StartCmdHandler extends AbstractCmdHandler {
-    private static final String THIS_CMD = "/start";
+    private static final String THIS_CMD = START_COMMAND.getCommand();
     private final CurrentConditionRepository currentConditionRepository;
     private final MsgFromStateHistoryRepository msgFromStateHistoryRepository;
 
@@ -19,9 +20,9 @@ public class StartCmdHandler extends AbstractCmdHandler {
     public void processMessage() {
         AdditionalUserPropertiesContextHolder.getFacade()
                 .setText("Greetings, "
-                        + AdditionalUserPropertiesContextHolder.getUpdate().getMessage().getChat().getFirstName()
+                        + AdditionalUserPropertiesContextHolder.getSenderName()
                         + "!\nChoose your destiny...:")
-                .addButtons(false, false, CREATE_CARD_COMMAND);
+                .addButtons(CREATE_CARD_COMMAND);
 
         currentConditionRepository.updateCommandAndState(1L, 1L);
         cleanAllData();
@@ -29,7 +30,7 @@ public class StartCmdHandler extends AbstractCmdHandler {
 
     @Override
     public boolean canProcessMessage() {
-        return AdditionalUserPropertiesContextHolder.getUpdate().getMessage().getText().equals(THIS_CMD);
+        return AdditionalUserPropertiesContextHolder.getInputtedTextComand().equals(THIS_CMD);
     }
 
     @Override
