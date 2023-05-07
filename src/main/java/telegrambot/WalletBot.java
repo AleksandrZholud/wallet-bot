@@ -93,8 +93,7 @@ public class WalletBot extends TelegramLongPollingBot {
                 .addStartButton()
                 .setText(ERROR_EMPTY_MESSAGE_FOUND);
         try {
-            execute(UserDataContextHolder
-                    .performMessage());
+            execute(UserDataContextHolder.performMessage());
         } catch (TelegramApiException e) {
             log.error(e.getMessage());
         }
