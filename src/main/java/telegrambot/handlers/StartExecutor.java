@@ -24,18 +24,18 @@ public class StartExecutor extends AbstractCommandExecutor {
 
     @Override
     public void processMessage() {
-        UserDataContextHolder.getFacade()
-                .setText("Greetings, "
-                        + UserDataContextHolder.getSenderName()
-                        + "!\nChoose your destiny...:")
-                .addButtons(getGlobalCommands());
-
-        currentConditionRepository.updateCommandAndState(1L, 1L);
+        currentConditionRepository.reset();
 
         boolean notCleaned = !cleanAllData();
         if (notCleaned) {
             throw new IllegalStateException("Eternal server error: cannot clear all old useless data.");
         }
+
+        UserDataContextHolder.getFacade()
+                .setText("Greetings, "
+                        + UserDataContextHolder.getSenderName()
+                        + "!\nChoose your destiny...:")
+                .addButtons(getGlobalCommands());
     }
 
     @Override

@@ -39,7 +39,6 @@ public class BackExecutor extends AbstractCommandExecutor {
         long previousStateId = currentConditionRepository.getPreviousStateId();
 
         if (previousMessage == null || previousStateId == 0) {
-            currentConditionRepository.reset();
             AbstractCommandExecutor.getSpecificChild(StartExecutor.class).processMessage();
         } else {
             msgFromStateHistoryRepository.removeLast();
