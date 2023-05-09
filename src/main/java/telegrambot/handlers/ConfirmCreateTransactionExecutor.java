@@ -85,7 +85,7 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
 
     private void processErrorCreation() {
         UserDataContextHolder.getFacade()
-                .setText("Something got wrong....")
+                .setText("Something gone wrong....")
                 .addButtons(CREATE_TRANSACTION_CONFIRM_COMMAND)
                 .addStartButton();
     }

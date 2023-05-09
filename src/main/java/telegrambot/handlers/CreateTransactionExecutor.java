@@ -71,12 +71,12 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
                 doIfSetAmount();
                 break;
             default:
-                //doSomethingElse
+                doIfNothingExecuted();
         }
     }
 
     private void doIfNoState() {
-        //перевірити чи не є команді право-ліво
+        //перевірити чи не є команди право-ліво
         String msg = UserDataContextHolder.getInputtedTextCommand();
         if (msg.equals("/right")) {
             doIfRight();
@@ -266,6 +266,17 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
         UserDataContextHolder.getFacade()
                 .setText("Seems you have no any card yet;(\nCreate your first card.")
                 .addButtons(CREATE_CARD_COMMAND)
+                .addStartButton();
+    }
+
+    private void doIfNothingExecuted() {
+        Command command = commandRepository.findByName(START_COMMAND.getCommand());
+        State state = stateRepository.findByName(NO_STATE.getState());
+        currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
+        cleanAllData();
+        UserDataContextHolder.getFacade()
+                .setText("Something gone wrong:(\nTry to create Transaction again.")
+                .addButtons(CREATE_TRANSACTION_COMMAND)
                 .addStartButton();
     }
 
