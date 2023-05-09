@@ -3,8 +3,8 @@ package telegrambot.handlers;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import telegrambot.config.interceptor.UserDataContextHolder;
+import telegrambot.model.enums.DRAFT_STATUS;
 import telegrambot.model.util.CurrentCondition;
-import telegrambot.model.util.DRAFT_STATUS;
 import telegrambot.model.util.MsgFromStateHistory;
 import telegrambot.repository.util.*;
 

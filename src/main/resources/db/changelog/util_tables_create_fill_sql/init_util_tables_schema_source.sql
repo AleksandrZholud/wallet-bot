@@ -68,6 +68,18 @@ create table card_draft
     status  varchar(30)
 );
 
+create table transaction_draft
+(
+    id      bigint         not null
+        primary key,
+    status  varchar(255),
+    type    varchar(255),
+    card_id bigint
+        constraint fk3ng826qb34g3pri1j4hfqh8b8
+            references cards,
+    amount  numeric(19, 2) not null
+);
+
 create table command_state_message_history
 (
     id        bigint not null
