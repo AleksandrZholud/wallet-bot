@@ -21,8 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static telegrambot.model.enums.CommandEnum.CREATE_TRANSACTION_COMMAND;
-import static telegrambot.model.enums.CommandEnum.CREATE_TRANSACTION_CONFIRM_COMMAND;
+import static telegrambot.model.enums.CommandEnum.*;
 import static telegrambot.model.enums.StateEnum.*;
 
 @AllArgsConstructor
@@ -105,6 +104,10 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
                 .map(Card::getName)
                 .sorted()
                 .collect(Collectors.toList());
+        if (cardNameList.isEmpty()) {
+            doIfNoCards();
+            return;
+        }
         if (cardNameList.size() > 4) {
             doNavigableList(cardNameList);
             UserDataContextHolder.getFacade()
@@ -254,6 +257,16 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
         }
         navigableListCurrentPosition = 0;
         navigableList = list;
+    }
+
+    private void doIfNoCards() {
+        Command command = commandRepository.findByName(START_COMMAND.getCommand());
+        State state = stateRepository.findByName(NO_STATE.getState());
+        currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
+        UserDataContextHolder.getFacade()
+                .setText("Seems you have no any card yet;(\nCreate your first card.")
+                .addButtons(CREATE_CARD_COMMAND)
+                .addStartButton();
     }
 
 
