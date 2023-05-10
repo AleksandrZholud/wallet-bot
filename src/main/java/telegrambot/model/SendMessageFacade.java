@@ -50,6 +50,17 @@ public class SendMessageFacade {
         return acceptStringButtons("→");
     }
 
+    public SendMessageFacade addButtons(@NotNull @NotEmpty List<String> stringButtons) {
+        List<String> removeNullButtons = new ArrayList<>(stringButtons.size());
+        for (String stringButton : stringButtons) {
+            if(stringButton != null && !stringButton.isBlank()) {
+                removeNullButtons.add(stringButton);
+            }
+        }
+        buttonsStringList.addAll(removeNullButtons);
+        return this;
+    }
+
     private SendMessageFacade acceptStringButtons(@NotNull String... stringButtons){
 
         List<String> removeNullButtons = new ArrayList<>(stringButtons.length);
