@@ -112,14 +112,14 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
             doNavigableList(cardNameList);
             UserDataContextHolder.getFacade()
                     .setText(answerMsg)
-//                    .addButtons(navigableList.get(0))
-//                    .addButtonRight()
+                    .addButtons(navigableList.get(0).toArray(new String[0]))
+                    .addButtonRight()
                     .addStartButton()
                     .addBackButton();
         } else {
             UserDataContextHolder.getFacade()
                     .setText(answerMsg)
-//                .addButtons(cardNameList)
+                    .addButtons(cardNameList.toArray(new String[0]))
                     .addStartButton()
                     .addBackButton();
         }
@@ -139,15 +139,10 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
                 .message(answerMsg)
                 .build());
 
-        //Дістаємо список кнопок
-        List<String> trTypeList = Arrays.stream(TransactionTypeEnum.values())
-                .map(TransactionTypeEnum::getName)
-                .collect(Collectors.toList());
-
-        //заповнити SendMessage кнопками
         UserDataContextHolder.getFacade()
                 .setText(answerMsg)
-//                .addButtons(trTypeList)
+                .addButtons(Arrays.stream(TransactionTypeEnum.values())
+                        .map(TransactionTypeEnum::getName).toArray(String[]::new))
                 .addStartButton();
     }
 
@@ -156,8 +151,8 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
         State state = stateRepository.findByName(SET_AMOUNT.getState());
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
 
-        TransactionTypeEnum chosenTrType = TransactionTypeEnum.valueOf(UserDataContextHolder.getInputtedTextCommand());
-        transactionDraftRepository.updateTransactionType(chosenTrType.getName());
+        TransactionTypeEnum chosenTrType = TransactionTypeEnum.getByName(UserDataContextHolder.getInputtedTextCommand());
+        transactionDraftRepository.updateTransactionType(chosenTrType.name());
 
         String answerMsg = "Input amount:";
         msgFromStateHistoryRepository.save(MsgFromStateHistory.builder()
@@ -177,7 +172,7 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
 
 
         BigDecimal amount = BigDecimal.valueOf(Double.parseDouble(UserDataContextHolder.getInputtedTextCommand()));
-        transactionDraftRepository.updateStatusAndStatus(amount, DRAFT_STATUS.BUILT.name());
+        transactionDraftRepository.updateAmountAndStatus(amount, DRAFT_STATUS.BUILT.name());
         TransactionDraft transactionDraft = transactionDraftRepository.getFirstDraft();
 
         String answerMsg = "Confirm transaction:"
@@ -202,17 +197,17 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
             navigableListCurrentPosition++;
             UserDataContextHolder.getFacade()
                     .setText(null) // TODO: 08.05.2023 Ask ZH what if null? Msg wont show? Can we add mock button to fill out naviList?
-//                    .addButtons(navigableList.get(navigableListCurrentPosition))
-//                    .addButtonLeft()
+                    .addButtons(navigableList.get(navigableListCurrentPosition).toArray(new String[0]))
+                    .addButtonLeft()
                     .addStartButton()
                     .addBackButton();
         } else {
             navigableListCurrentPosition++;
             UserDataContextHolder.getFacade()
                     .setText(null)
-//                    .addButtons(navigableList.get(navigableListCurrentPosition))
-//                    .addButtonLeft()
-//                    .addButtonRight()
+                    .addButtons(navigableList.get(navigableListCurrentPosition).toArray(new String[0]))
+                    .addButtonLeft()
+                    .addButtonRight()
                     .addStartButton()
                     .addBackButton();
         }
@@ -223,17 +218,17 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
             navigableListCurrentPosition--;
             UserDataContextHolder.getFacade()
                     .setText(null)
-//                    .addButtons(navigableList.get(navigableListCurrentPosition))
-//                    .addButtonRight()
+                    .addButtons(navigableList.get(navigableListCurrentPosition).toArray(new String[0]))
+                    .addButtonRight()
                     .addStartButton()
                     .addBackButton();
         } else {
             navigableListCurrentPosition--;
             UserDataContextHolder.getFacade()
                     .setText(null)
-//                    .addButtons(navigableList.get(navigableListCurrentPosition))
-//                    .addButtonRight()
-//                    .addButtonLeft()
+                    .addButtons(navigableList.get(navigableListCurrentPosition).toArray(new String[0]))
+                    .addButtonRight()
+                    .addButtonLeft()
                     .addStartButton()
                     .addBackButton();
         }

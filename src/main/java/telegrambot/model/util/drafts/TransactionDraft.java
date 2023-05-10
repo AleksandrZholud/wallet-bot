@@ -19,7 +19,7 @@ public class TransactionDraft {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hibernate_sequence")
     @SequenceGenerator(name = "hibernate_sequence", sequenceName = "hibernate_sequence", allocationSize = 1)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     private Long id;
 
     @Setter
@@ -33,7 +33,7 @@ public class TransactionDraft {
     private Card card;
 
     @Setter
-    @Column(name = "amount", nullable = false)
+    @Column(name = "amount")
     private BigDecimal amount;
 
     @Setter

@@ -1,14 +1,36 @@
 BEGIN;
 drop table if exists command_state_dependency cascade;
 drop table if exists card_draft cascade;
+drop table if exists transaction_draft cascade;
 drop table if exists current_condition cascade;
 drop table if exists States cascade;
 drop table if exists Commands cascade;
 drop table if exists command_state_message_history cascade;
 
+-- cards and transactions creates to avoid exception "relation does not exist"
+-- at first run. After we decide how our tables will be created, remove cards and transactions from here
+create table if not exists cards
+(
+    id      bigint not null
+        primary key,
+    balance numeric(19, 2),
+    name    varchar(255)
+);
+
+create table if not exists transactions
+(
+    id      bigint         not null
+        primary key,
+    amount  numeric(19, 2) not null,
+    type    varchar(255),
+    card_id bigint
+        constraint fkjxdscq0bxpy0pl465vvsqc89j
+            references cards
+);
+
 create table Commands
 (
-    id      bigint       not null
+    id   bigint       not null
         primary key,
     name varchar(255) not null
         constraint uk_sj9rerwuj7q00a7oy76efiehv
@@ -17,7 +39,7 @@ create table Commands
 
 create table States
 (
-    id    bigint       not null
+    id   bigint       not null
         primary key,
     name varchar(255) not null
         constraint uk_rdb7pnbo5e3l4vc5bkpk5q6t1
@@ -26,12 +48,12 @@ create table States
 
 create table command_state_dependency
 (
-    id              bigint not null
+    id                bigint not null
         primary key,
-    base_id          bigint
+    base_id           bigint
         constraint fkerjv4ayfkhw840r0tkpi3ounm
             references commands,
-    command_id       bigint
+    command_id        bigint
         constraint fk3swo3tv5uw84gt0h15o42y8s3
             references commands,
     current_state_id  bigint
@@ -47,7 +69,7 @@ create table command_state_dependency
 
 create table current_condition
 (
-    id        bigint not null
+    id         bigint not null
         primary key,
     command_id bigint not null
         constraint uk_d6bvyng0m5wooggruq1kygv3c
@@ -77,7 +99,7 @@ create table transaction_draft
     card_id bigint
         constraint fk3ng826qb34g3pri1j4hfqh8b8
             references cards,
-    amount  numeric(19, 2) not null
+    amount  numeric(19, 2)
 );
 
 create table command_state_message_history

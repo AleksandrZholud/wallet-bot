@@ -10,7 +10,7 @@ import telegrambot.model.util.drafts.TransactionDraft;
 import java.math.BigDecimal;
 
 public interface TransactionDraftRepository extends JpaRepository<TransactionDraft, Long> {
-    @Query(value = "SELECT tr.id, tr.type, tr.card_id, tr.status FROM transaction_draft AS tr LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT tr.id, tr.type, tr.card_id, tr.amount, tr.status FROM transaction_draft AS tr LIMIT 1", nativeQuery = true)
     TransactionDraft getFirstDraft();
 
     @Transactional
@@ -41,7 +41,7 @@ public interface TransactionDraftRepository extends JpaRepository<TransactionDra
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE transaction_draft SET amount = :amount AND status = :status", nativeQuery = true)
-    int updateStatusAndStatus(@Param("amount") BigDecimal amount,
+    @Query(value = "UPDATE transaction_draft SET amount = :amount, status = :status", nativeQuery = true)
+    int updateAmountAndStatus(@Param("amount") BigDecimal amount,
                               @Param("status") String status);
 }

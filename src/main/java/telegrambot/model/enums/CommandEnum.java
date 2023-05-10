@@ -8,8 +8,8 @@ public enum CommandEnum {
     CREATE_CARD_CONFIRM_COMMAND("Confirm creating card", false),
     CREATE_TRANSACTION_CONFIRM_COMMAND("Confirm transaction", false),
     START_COMMAND("/start", false),
-    LEFT_COMMAND("/left", false),
-    RIGHT_COMMAND("/right", false),
+    LEFT_COMMAND("←", false),
+    RIGHT_COMMAND("→", false),
     GO_BACK_COMMAND("Back", false);
 
     private final String command;

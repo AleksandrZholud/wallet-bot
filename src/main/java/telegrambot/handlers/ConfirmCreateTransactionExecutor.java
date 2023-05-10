@@ -4,11 +4,14 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import telegrambot.config.interceptor.UserDataContextHolder;
+import telegrambot.model.Card;
 import telegrambot.model.Transaction;
 import telegrambot.model.enums.DRAFT_STATUS;
+import telegrambot.model.enums.TransactionTypeEnum;
 import telegrambot.model.util.Command;
 import telegrambot.model.util.State;
 import telegrambot.model.util.drafts.TransactionDraft;
+import telegrambot.repository.CardRepository;
 import telegrambot.repository.TransactionRepository;
 import telegrambot.repository.util.*;
 
@@ -27,7 +30,8 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
     private final CommandRepository commandRepository;
     private final StateRepository stateRepository;
     private final MsgFromStateHistoryRepository msgFromStateHistoryRepository;
-    private static final String THIS_CMD = CREATE_TRANSACTION_COMMAND.getCommand();
+    private static final String THIS_CMD = CREATE_TRANSACTION_CONFIRM_COMMAND.getCommand();
+    private final CardRepository cardRepository;
 
     @Transactional
     @Override
@@ -63,6 +67,15 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
                     .transactionType(draft.get().getType())
                     .amount(draft.get().getAmount())
                     .build());
+            Card changedCard = cardRepository.getByName(transactionToSave.getCard().getName());
+
+            if (transactionToSave.getTransactionType().equals(TransactionTypeEnum.INCOME)) {
+                cardRepository.updateBalanceByName(changedCard.getBalance().add(transactionToSave.getAmount())
+                        , changedCard.getName());
+            } else {
+                cardRepository.updateBalanceByName(changedCard.getBalance().subtract(transactionToSave.getAmount())
+                        , changedCard.getName());
+            }
 
         }
 
