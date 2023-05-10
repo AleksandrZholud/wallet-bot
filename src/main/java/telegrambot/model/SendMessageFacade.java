@@ -17,18 +17,19 @@ import static telegrambot.model.enums.CommandEnum.GO_BACK_COMMAND;
 import static telegrambot.model.enums.CommandEnum.START_COMMAND;
 
 public class SendMessageFacade {
+    private SendMessageFacade() {}
 
     private SendMessage sendMessage;
-    private List<CommandEnum> buttonsSetList;
+    private List<CommandEnum> buttonsCommandList;
+    private List<String> buttonsStringList;
 
-    private SendMessageFacade() {
-    }
 
     public SendMessageFacade(@NotNull Long chatId) {
         SendMessage newSendMessage = new SendMessage();
         newSendMessage.setChatId(chatId);
         sendMessage = newSendMessage;
-        buttonsSetList = new ArrayList<>(20);
+        buttonsCommandList = new ArrayList<>(20);
+        buttonsStringList = new ArrayList<>(20);
     }
 
     public SendMessageFacade setText(String text) {
@@ -38,6 +39,31 @@ public class SendMessageFacade {
 
     public static String validateOutputMessage(String output) {
         return output == null || output.isEmpty() ? "Something went wrong." : output;
+    }
+
+    public SendMessageFacade addButtons(String... stringButtons) {
+        return acceptStringButtons(stringButtons);
+    }
+
+    public SendMessageFacade addButtonLeft() {
+        return acceptStringButtons("←");
+    }
+
+    public SendMessageFacade addButtonRight() {
+        return acceptStringButtons("→");
+    }
+
+    private SendMessageFacade acceptStringButtons(@NotNull String... stringButtons){
+
+        List<String> removeNullButtons = new ArrayList<>(stringButtons.length);
+        for (String stringButton : stringButtons) {
+            if (stringButton != null && !stringButton.isBlank()) {
+                removeNullButtons.add(stringButton);
+            }
+        }
+        buttonsStringList.addAll(removeNullButtons);
+
+        return this;
     }
 
     public SendMessageFacade addButtons(@NotNull @NotEmpty CommandEnum... commandEnums) {
@@ -52,6 +78,19 @@ public class SendMessageFacade {
     public SendMessageFacade addBackButton() {
         CommandEnum[] buttonsArray = {GO_BACK_COMMAND};
         return acceptAddedButtons(buttonsArray);
+    }
+
+    private SendMessageFacade acceptAddedButtons(@NotNull CommandEnum... commandEnums) {
+
+        List<CommandEnum> removeNullButtons = new ArrayList<>(commandEnums.length);
+        for (CommandEnum commandEnum : commandEnums) {
+            if (commandEnum != null) {
+                removeNullButtons.add(commandEnum);
+            }
+        }
+
+        buttonsCommandList.addAll(removeNullButtons);
+        return this;
     }
 
     public SendMessage performSendMsg() {
@@ -75,42 +114,34 @@ public class SendMessageFacade {
     }
 
     private void removeDuplicatedButtons() {
-        Set<CommandEnum> uniqueButtons = new HashSet<>(buttonsSetList);
-        buttonsSetList = new ArrayList<>(uniqueButtons.size());
-        buttonsSetList.addAll(uniqueButtons);
+        Set<CommandEnum> uniqueButtons = new HashSet<>(buttonsCommandList);
+        buttonsCommandList = new ArrayList<>(uniqueButtons.size());
+        buttonsCommandList.addAll(uniqueButtons);
     }
 
     private void fillKeyboardWithButtons(List<KeyboardRow> keyboard) {
-        int countOfButtons = buttonsSetList.size();
+        int countOfButtons = buttonsCommandList.size() + buttonsStringList.size();
         int buttonsPerRow = (countOfButtons >= 3) ? 3 : 2;
         int rows = (int) Math.ceil((double) countOfButtons / buttonsPerRow);
 
+        int buttonStringIndex = 0;
+        int buttonCommandIndex = 0;
+
         for (int i = 0; i < rows; i++) {
             KeyboardRow row = new KeyboardRow();
-            for (int j = 0; j < buttonsPerRow; j++) {
-                int index = i * buttonsPerRow + j;
-                if (index >= countOfButtons) {
-                    break;
+            for (int j = 0; j < buttonsPerRow && buttonCommandIndex < buttonsCommandList.size(); j++) {
+                KeyboardButton button;
+                if (buttonStringIndex < buttonsStringList.size()) {
+                    button = new KeyboardButton(buttonsStringList.get(buttonStringIndex));
+                    buttonStringIndex++;
+                } else {
+                    CommandEnum commandEnum = buttonsCommandList.get(buttonCommandIndex);
+                    button = new KeyboardButton(commandEnum.getCommand());
+                    buttonCommandIndex++;
                 }
-                CommandEnum commandEnum = buttonsSetList.get(index);
-                KeyboardButton button = new KeyboardButton();
-                button.setText(commandEnum.getCommand());
                 row.add(button);
             }
             keyboard.add(row);
         }
-    }
-
-    private SendMessageFacade acceptAddedButtons(@NotNull CommandEnum... commandEnums) {
-
-        List<CommandEnum> removeNullButtons = new ArrayList<>(commandEnums.length);
-        for (CommandEnum commandEnum : commandEnums) {
-            if (commandEnum != null) {
-                removeNullButtons.add(commandEnum);
-            }
-        }
-
-        buttonsSetList.addAll(removeNullButtons);
-        return this;
     }
 }
