@@ -8,10 +8,7 @@ import telegrambot.model.enums.CommandEnum;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static telegrambot.model.enums.CommandEnum.GO_BACK_COMMAND;
 import static telegrambot.model.enums.CommandEnum.START_COMMAND;
@@ -51,6 +48,17 @@ public class SendMessageFacade {
 
     public SendMessageFacade addButtonRight() {
         return acceptStringButtons("→");
+    }
+
+    public SendMessageFacade addButtons(@NotNull @NotEmpty List<String> stringButtons) {
+        List<String> removeNullButtons = new ArrayList<>(stringButtons.size());
+        for (String stringButton : stringButtons) {
+            if(stringButton != null && !stringButton.isBlank()) {
+                removeNullButtons.add(stringButton);
+            }
+        }
+        buttonsStringList.addAll(removeNullButtons);
+        return this;
     }
 
     private SendMessageFacade acceptStringButtons(@NotNull String... stringButtons){
@@ -104,6 +112,9 @@ public class SendMessageFacade {
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = new ArrayList<>();
+
+        sortButtons();
+
         fillKeyboardWithButtons(keyboard);
 
         keyboardMarkup.setOneTimeKeyboard(true);
@@ -113,10 +124,19 @@ public class SendMessageFacade {
         sendMessage.setReplyMarkup(keyboardMarkup);
     }
 
+    private void sortButtons() {
+        Collections.sort(buttonsStringList);
+        buttonsCommandList.sort(Collections.reverseOrder());
+    }
+
     private void removeDuplicatedButtons() {
         Set<CommandEnum> uniqueButtons = new HashSet<>(buttonsCommandList);
         buttonsCommandList = new ArrayList<>(uniqueButtons.size());
         buttonsCommandList.addAll(uniqueButtons);
+
+        Set<String> uniqueButtonsString = new HashSet<>(buttonsStringList);
+        buttonsStringList = new ArrayList<>(uniqueButtonsString.size());
+        buttonsStringList.addAll(uniqueButtonsString);
     }
 
     private void fillKeyboardWithButtons(List<KeyboardRow> keyboard) {

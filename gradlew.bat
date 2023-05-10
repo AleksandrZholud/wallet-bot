@@ -87,6 +87,4 @@ if not ""=="%GRADLE_EXIT_CONSOLE%" exit %EXIT_CODE%
 exit /b %EXIT_CODE%
 
 :mainEnd
-if "%OS%"=="Windows_NT" endlocal
-
-:omega
+if "%OS%"=="Wi
