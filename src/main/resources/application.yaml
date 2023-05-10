@@ -21,7 +21,7 @@ spring:
   sql:
     init:
       mode: always
-#      !!! Scripts executing before Entity tables creation !!!
+#Note:      !!! Scripts executing before Entity tables creation !!!
       schema-locations: classpath:db/changelog/util_tables_create_fill_sql/init_util_tables_schema_source.sql
       data-locations: classpath:db/changelog/util_tables_create_fill_sql/init_util_tables_data_source.sql
 

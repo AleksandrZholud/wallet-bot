@@ -1,4 +1,4 @@
-package telegrambot.handlers;
+package telegrambot.execurors;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

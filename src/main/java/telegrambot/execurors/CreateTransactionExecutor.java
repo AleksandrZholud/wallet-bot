@@ -1,4 +1,4 @@
-package telegrambot.handlers;
+package telegrambot.execurors;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -57,6 +57,7 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
         CurrentCondition currentCondition = currentConditionRepository.getCurrentCondition();
         StateEnum currentState = StateEnum.findByState(currentCondition.getState().getName());
 
+
         switch (currentState) {
             case NO_STATE:
                 doIfNoState();
@@ -76,17 +77,6 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
     }
 
     private void doIfNoState() {
-        //перевірити чи не є команди право-ліво
-        String msg = UserDataContextHolder.getInputtedTextCommand();
-        if (msg.equals("/right")) {
-            doIfRight();
-            return;
-        }
-        if (msg.equals("/left")) {
-            doIfLeft();
-            return;
-        }
-
         Command command = commandRepository.findByName(THIS_CMD);
         State state = stateRepository.findByName(CHOOSE_CARD.getState());
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
@@ -108,50 +98,83 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
             doIfNoCards();
             return;
         }
+        doNavigableList(cardNameList);
         if (cardNameList.size() > 4) {
-            doNavigableList(cardNameList);
             UserDataContextHolder.getFacade()
                     .setText(answerMsg)
-                    .addButtons(navigableList.get(0).toArray(new String[0]))
+                    .addButtons(navigableList.get(0))
                     .addButtonRight()
-                    .addStartButton()
-                    .addBackButton();
+                    .addStartButton();
         } else {
             UserDataContextHolder.getFacade()
                     .setText(answerMsg)
-                    .addButtons(cardNameList.toArray(new String[0]))
+                    .addButtons(navigableList.get(0))
+                    .addStartButton();
+        }
+    }
+
+    private void doIfChooseCard() {
+        //перевірити чи не є команди право-ліво
+        String msg = UserDataContextHolder.getInputtedTextCommand();
+        if (msg.equals(RIGHT_COMMAND.getCommand())) {
+            doIfRight();
+            return;
+        }
+        if (msg.equals(LEFT_COMMAND.getCommand())) {
+            doIfLeft();
+            return;
+        }
+
+        Command command = commandRepository.findByName(THIS_CMD);
+        State state = stateRepository.findByName(SET_TYPE.getState());
+
+        String inputtedText = UserDataContextHolder.getInputtedTextCommand();
+        Card chosenCardEntity = cardRepository.getByName(inputtedText);
+
+        if (chosenCardEntity != null) {
+            currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
+            transactionDraftRepository.updateCardId(chosenCardEntity.getId());
+            String answerMsg = "Want to add INCOME or EXPENSE?";
+            msgFromStateHistoryRepository.save(MsgFromStateHistory.builder()
+                    .message(answerMsg)
+                    .build());
+
+            UserDataContextHolder.getFacade()
+                    .setText(answerMsg)
+                    .addButtons(Arrays.stream(TransactionTypeEnum.values())
+                            .map(TransactionTypeEnum::getName)
+                            .collect(Collectors.toList()))
+                    .addStartButton()
+                    .addBackButton();
+        } else {
+            addButtonsToFacadeDependsOnNaviListSize();
+            UserDataContextHolder.getFacade()
+                    .setText("Card '" + inputtedText + "' not found:(\nType correct Card name or create new Card.")
+                    .addButtons(CREATE_CARD_COMMAND)
                     .addStartButton()
                     .addBackButton();
         }
     }
 
-    private void doIfChooseCard() {
-        Command command = commandRepository.findByName(THIS_CMD);
-        State state = stateRepository.findByName(SET_TYPE.getState());
-        currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
-        String chosenCardName = UserDataContextHolder.getInputtedTextCommand();
-
-        Card chosenCardEntity = cardRepository.getByName(chosenCardName);
-        transactionDraftRepository.updateCardId(chosenCardEntity.getId());
-
-        String answerMsg = "Want to add INCOME or EXPENSE?";
-        msgFromStateHistoryRepository.save(MsgFromStateHistory.builder()
-                .message(answerMsg)
-                .build());
-
-        UserDataContextHolder.getFacade()
-                .setText(answerMsg)
-                .addButtons(Arrays.stream(TransactionTypeEnum.values())
-                        .map(TransactionTypeEnum::getName).toArray(String[]::new))
-                .addStartButton();
-    }
-
     private void doIfSetType() {
+        TransactionTypeEnum chosenTrType;
+        try {
+            chosenTrType = TransactionTypeEnum.getByName(UserDataContextHolder.getInputtedTextCommand());
+        } catch (IllegalStateException ise) {
+            UserDataContextHolder.getFacade()
+                    .setText("No no no...\nChoose transaction type.")
+                    .addButtons(Arrays.stream(TransactionTypeEnum.values())
+                            .map(TransactionTypeEnum::getName)
+                            .collect(Collectors.toList()))
+                    .addStartButton()
+                    .addBackButton();
+            return;
+        }
+
         Command command = commandRepository.findByName(THIS_CMD);
         State state = stateRepository.findByName(SET_AMOUNT.getState());
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
 
-        TransactionTypeEnum chosenTrType = TransactionTypeEnum.getByName(UserDataContextHolder.getInputtedTextCommand());
         transactionDraftRepository.updateTransactionType(chosenTrType.name());
 
         String answerMsg = "Input amount:";
@@ -166,15 +189,24 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
     }
 
     private void doIfSetAmount() {
+        BigDecimal amount;
+        try {
+            amount = BigDecimal.valueOf(Double.parseDouble(UserDataContextHolder.getInputtedTextCommand()));
+        } catch (NumberFormatException nfe) {
+            UserDataContextHolder.getFacade()
+                    .setText("Input correct decimal amount.\nUse numbers please!")
+                    .addStartButton()
+                    .addBackButton();
+            return;
+        }
+
         Command command = commandRepository.findByName(THIS_CMD);
         State state = stateRepository.findByName(CONFIRMATION.getState());
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
 
-
-        BigDecimal amount = BigDecimal.valueOf(Double.parseDouble(UserDataContextHolder.getInputtedTextCommand()));
         transactionDraftRepository.updateAmountAndStatus(amount, DRAFT_STATUS.BUILT.name());
-        TransactionDraft transactionDraft = transactionDraftRepository.getFirstDraft();
 
+        TransactionDraft transactionDraft = transactionDraftRepository.getFirstDraft();
         String answerMsg = "Confirm transaction:"
                 + "\n  Card: " + transactionDraft.getCard().getName()
                 + "\n  Type: " + transactionDraft.getType()
@@ -196,20 +228,18 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
         if (navigableListCurrentPosition == navigableList.size() - 2) {
             navigableListCurrentPosition++;
             UserDataContextHolder.getFacade()
-                    .setText(null) // TODO: 08.05.2023 Ask ZH what if null? Msg wont show? Can we add mock button to fill out naviList?
-                    .addButtons(navigableList.get(navigableListCurrentPosition).toArray(new String[0]))
+                    .setText("Page " + (navigableListCurrentPosition + 1))
+                    .addButtons(navigableList.get(navigableListCurrentPosition))
                     .addButtonLeft()
-                    .addStartButton()
-                    .addBackButton();
+                    .addStartButton();
         } else {
             navigableListCurrentPosition++;
             UserDataContextHolder.getFacade()
-                    .setText(null)
-                    .addButtons(navigableList.get(navigableListCurrentPosition).toArray(new String[0]))
+                    .setText("Page " + (navigableListCurrentPosition + 1))
+                    .addButtons(navigableList.get(navigableListCurrentPosition))
                     .addButtonLeft()
                     .addButtonRight()
-                    .addStartButton()
-                    .addBackButton();
+                    .addStartButton();
         }
     }
 
@@ -217,22 +247,31 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
         if (navigableListCurrentPosition == 1) {
             navigableListCurrentPosition--;
             UserDataContextHolder.getFacade()
-                    .setText(null)
-                    .addButtons(navigableList.get(navigableListCurrentPosition).toArray(new String[0]))
+                    .setText("Page " + (navigableListCurrentPosition + 1))
+                    .addButtons(navigableList.get(navigableListCurrentPosition))
                     .addButtonRight()
-                    .addStartButton()
-                    .addBackButton();
+                    .addStartButton();
         } else {
             navigableListCurrentPosition--;
             UserDataContextHolder.getFacade()
-                    .setText(null)
-                    .addButtons(navigableList.get(navigableListCurrentPosition).toArray(new String[0]))
+                    .setText("Page " + (navigableListCurrentPosition + 1))
+                    .addButtons(navigableList.get(navigableListCurrentPosition))
                     .addButtonRight()
                     .addButtonLeft()
-                    .addStartButton()
-                    .addBackButton();
+                    .addStartButton();
         }
 
+    }
+
+    private void addButtonsToFacadeDependsOnNaviListSize() {
+        if (navigableList.size() > 1) {
+            UserDataContextHolder.getFacade()
+                    .addButtons(navigableList.get(0))
+                    .addButtonRight();
+        } else {
+            UserDataContextHolder.getFacade()
+                    .addButtons(navigableList.get(0));
+        }
     }
 
     private static void doNavigableList(List<String> sourceList) {
