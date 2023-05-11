@@ -1,4 +1,4 @@
-package telegrambot.model.util;
+package telegrambot.model.enums;
 
 public enum DRAFT_STATUS {
     BUILDING("building..."),
