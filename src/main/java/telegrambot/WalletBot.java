@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import telegrambot.config.interceptor.UserDataContextHolder;
 import telegrambot.config.telegram.BotConfig;
-import telegrambot.handlers.AbstractCommandExecutor;
+import telegrambot.execurors.AbstractCommandExecutor;
 
 import static telegrambot.config.interceptor.UserDataContextHolder.validateOutputMessage;
 
@@ -93,8 +93,7 @@ public class WalletBot extends TelegramLongPollingBot {
                 .addStartButton()
                 .setText(ERROR_EMPTY_MESSAGE_FOUND);
         try {
-            execute(UserDataContextHolder
-                    .performMessage());
+            execute(UserDataContextHolder.performMessage());
         } catch (TelegramApiException e) {
             log.error(e.getMessage());
         }

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import telegrambot.model.util.CardDraft;
+import telegrambot.model.util.drafts.CardDraft;
 
 import java.math.BigDecimal;
 

@@ -3,7 +3,7 @@ insert into Commands (id, name)
 values (1, '/start'),
        (2, 'Show balance'),
        (3, 'Create a card'),
-       (4, 'Create an operation'),
+       (4, 'Add income/expense'),
        (5, 'Show operation history'),
        (6, 'Back'),
        (7, 'Reset'),

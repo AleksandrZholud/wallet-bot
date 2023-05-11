@@ -30,20 +30,23 @@ public interface CurrentConditionRepository extends JpaRepository<CurrentConditi
     @Query(value = "SELECT c.id,c.command_id,c.state_id FROM current_condition AS c LIMIT 1", nativeQuery = true)
     CurrentCondition getCurrentCondition();
 
-    // TODO: 01.05.2023 Zholud - Думаю не можна прив'язуватись до індексу. А якщо ід зміняться колись
-    //да, нужно вместо единиц делать селект и брать дефолт команду по флагу isDefaultStep (добавить поле в базу)
     @Transactional
     @Modifying
-    @Query(value = "UPDATE current_condition SET state_id = 1, command_id = 1", nativeQuery = true)
+    @Query(value = "    DELETE FROM current_condition;                                                     "
+            + "         INSERT INTO current_condition (id, command_id, state_id)                           "
+            + "         VALUES (1, (SELECT id FROM commands c WHERE c.name = '/start'),                    "
+            + "                    (SELECT id FROM states s   WHERE s.name = 'NoState' ) )                 "
+            , nativeQuery = true)
     void reset();
 
     @Query(value = "    SELECT CASE                                                                        "
-            + "                  WHEN cc.state_id = 1 THEN 0                                               "
+            + "                  WHEN cc.state_id = (SELECT id FROM states s WHERE s.name = 'NoState')     "
+            + "                      THEN 0                                                                "
             + "                  ELSE csd.previous_state_id                                                "
             + "                END                                                                         "
             + "         FROM current_condition cc                                                          "
-            + "         LEFT JOIN command_state_dependency csd ON csd.current_state_id = cc.state_id       "
-            + "                                               AND csd.command_id = cc.command_id           "
+            + "         JOIN command_state_dependency csd ON csd.current_state_id = cc.state_id            "
+            + "                                          AND csd.command_id = cc.command_id                "
             , nativeQuery = true)
     long getPreviousStateId();
 }

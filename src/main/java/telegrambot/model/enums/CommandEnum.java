@@ -4,8 +4,12 @@ import java.util.Arrays;
 
 public enum CommandEnum {
     CREATE_CARD_COMMAND("Create a card", true),
+    CREATE_TRANSACTION_COMMAND("Add income/expense", true),
     CREATE_CARD_CONFIRM_COMMAND("Confirm creating card", false),
+    CREATE_TRANSACTION_CONFIRM_COMMAND("Confirm transaction", false),
     START_COMMAND("/start", false),
+    LEFT_COMMAND("←", false),
+    RIGHT_COMMAND("→", false),
     GO_BACK_COMMAND("Back", false);
 
     private final String command;
