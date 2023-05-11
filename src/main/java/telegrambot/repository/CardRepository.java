@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface CardRepository extends JpaRepository<Card, Long> {
 
     @Query(value = "SELECT c.id, c.name, c.balance  FROM cards c WHERE c.name=:name", nativeQuery = true)
-    Optional<Card> getByOptionalName(@Param("name") String name);
+    Optional<Card> getOptionalByName(@Param("name") String name);
 
 
     @Query(value = "SELECT c.id, c.name, c.balance  FROM cards c WHERE c.name=:name", nativeQuery = true)

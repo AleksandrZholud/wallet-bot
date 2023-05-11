@@ -9,6 +9,8 @@ import telegrambot.model.enums.TransactionTypeEnum;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Builder
 @Getter
@@ -31,4 +33,12 @@ public class Transaction {
 
     @Column(name = "amount", nullable = false)
     private BigDecimal amount;
+
+    @Column(name = "timestamp", columnDefinition = "timestamp default current_timestamp", nullable = false, unique = true)
+    private Timestamp timestamp;
+
+    @PrePersist
+    protected void setTimestamp() {
+        timestamp = Timestamp.valueOf(LocalDateTime.now());
+    }
 }

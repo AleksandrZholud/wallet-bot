@@ -67,14 +67,14 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
                     .transactionType(draft.get().getType())
                     .amount(draft.get().getAmount())
                     .build());
-            Card changedCard = cardRepository.getByName(transactionToSave.getCard().getName());
+            Card changingCard = cardRepository.getByName(transactionToSave.getCard().getName());
 
             if (transactionToSave.getTransactionType().equals(TransactionTypeEnum.INCOME)) {
-                cardRepository.updateBalanceByName(changedCard.getBalance().add(transactionToSave.getAmount())
-                        , changedCard.getName());
+                cardRepository.updateBalanceByName(changingCard.getBalance().add(transactionToSave.getAmount())
+                        , changingCard.getName());
             } else {
-                cardRepository.updateBalanceByName(changedCard.getBalance().subtract(transactionToSave.getAmount())
-                        , changedCard.getName());
+                cardRepository.updateBalanceByName(changingCard.getBalance().subtract(transactionToSave.getAmount())
+                        , changingCard.getName());
             }
 
         }

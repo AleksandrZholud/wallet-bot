@@ -25,7 +25,8 @@ create table if not exists transactions
     type    varchar(255),
     card_id bigint
         constraint fkjxdscq0bxpy0pl465vvsqc89j
-            references cards
+            references cards,
+    timestamp timestamp default CURRENT_TIMESTAMP
 );
 
 create table Commands

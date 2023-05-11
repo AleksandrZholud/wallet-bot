@@ -200,6 +200,16 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
             return;
         }
 
+        TransactionDraft draft = transactionDraftRepository.getFirstDraft();
+        BigDecimal cardAmount = cardRepository.getByName(draft.getCard().getName()).getBalance();
+        if (draft.getType().equals(TransactionTypeEnum.EXPENSE) && cardAmount.subtract(amount).compareTo(BigDecimal.ZERO) < 0) {
+            UserDataContextHolder.getFacade()
+                    .setText("Not enough money on card '"+draft.getCard().getName()+"'\nYou can spend only "+cardAmount+" UAH :(")
+                    .addStartButton()
+                    .addBackButton();
+            return;
+        }
+
         Command command = commandRepository.findByName(THIS_CMD);
         State state = stateRepository.findByName(CONFIRMATION.getState());
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
