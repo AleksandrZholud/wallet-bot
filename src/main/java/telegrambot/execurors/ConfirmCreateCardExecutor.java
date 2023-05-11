@@ -1,14 +1,14 @@
-package telegrambot.handlers;
+package telegrambot.execurors;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import telegrambot.config.interceptor.UserDataContextHolder;
 import telegrambot.model.Card;
-import telegrambot.model.util.CardDraft;
+import telegrambot.model.enums.DRAFT_STATUS;
 import telegrambot.model.util.Command;
-import telegrambot.model.util.DRAFT_STATUS;
 import telegrambot.model.util.State;
+import telegrambot.model.util.drafts.CardDraft;
 import telegrambot.repository.CardRepository;
 import telegrambot.repository.util.*;
 
