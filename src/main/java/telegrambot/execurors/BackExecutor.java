@@ -19,17 +19,17 @@ public class BackExecutor extends AbstractCommandExecutor {
     private static final String THIS_CMD = GO_BACK_COMMAND.getCommand();
 
     @Override
-    public boolean isSystemHandler() {
+    public boolean isSystemExecutor() {
         return true;
     }
 
     @Override
-    public void processMessage() {
+    public void exec() {
         try {
             goBack();
         } catch (Exception ex) {
             log.error(ex.getMessage());
-            AbstractCommandExecutor.getSpecificChild(StartExecutor.class).processMessage();
+            AbstractCommandExecutor.getSpecificChild(StartExecutor.class).exec();
         }
     }
 
@@ -39,7 +39,7 @@ public class BackExecutor extends AbstractCommandExecutor {
         long previousStateId = currentConditionRepository.getPreviousStateId();
 
         if (previousMessage == null || previousStateId == 0) {
-            AbstractCommandExecutor.getSpecificChild(StartExecutor.class).processMessage();
+            AbstractCommandExecutor.getSpecificChild(StartExecutor.class).exec();
         } else {
             msgFromStateHistoryRepository.removeLast();
             currentConditionRepository.updateState(previousStateId);
@@ -51,7 +51,7 @@ public class BackExecutor extends AbstractCommandExecutor {
     }
 
     @Override
-    public boolean canProcessMessage() {
+    public boolean canExec() {
         return UserDataContextHolder.getInputtedTextCommand().equals(THIS_CMD);
     }
 

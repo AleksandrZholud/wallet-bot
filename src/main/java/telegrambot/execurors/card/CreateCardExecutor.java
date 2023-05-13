@@ -1,12 +1,17 @@
-package telegrambot.execurors;
+package telegrambot.execurors.card;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import telegrambot.config.interceptor.UserDataContextHolder;
-import telegrambot.model.enums.DRAFT_STATUS;
+import telegrambot.execurors.AbstractCommandExecutor;
 import telegrambot.model.util.CurrentCondition;
 import telegrambot.model.util.MsgFromStateHistory;
-import telegrambot.repository.util.*;
+import telegrambot.model.util.drafts.CardDraft;
+import telegrambot.repository.util.CommandRepository;
+import telegrambot.repository.util.CurrentConditionRepository;
+import telegrambot.repository.util.MsgFromStateHistoryRepository;
+import telegrambot.repository.util.StateRepository;
+import telegrambot.service.carddraft.CardDraftService;
 
 import java.math.BigDecimal;
 
@@ -17,24 +22,23 @@ import static telegrambot.model.enums.StateEnum.*;
 @AllArgsConstructor
 @Component
 public class CreateCardExecutor extends AbstractCommandExecutor {
-    private final CardDraftRepository cardDraftRepository;
+    private final CardDraftService cardDraftService;
     private final CurrentConditionRepository currentConditionRepository;
     private final CommandRepository commandRepository;
     private final StateRepository stateRepository;
     private final MsgFromStateHistoryRepository msgFromStateHistoryRepository;
-
     private static final String THIS_CMD = CREATE_CARD_COMMAND.getCommand();
 
     @Override
-    public boolean isSystemHandler() {
+    public boolean isSystemExecutor() {
         return false;
     }
 
     @Override
-    public void processMessage() {
+    public void exec() {
 
         if (UserDataContextHolder.getInputtedTextCommand().equals(THIS_CMD)) {
-            cardDraftRepository.deleteAll();
+            cardDraftService.deleteAll();
             currentConditionRepository.updateCommandAndState(3L, 1L);
             msgFromStateHistoryRepository.deleteAll();
         }
@@ -58,8 +62,7 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
 
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
 
-        cardDraftRepository.deleteAll();
-        cardDraftRepository.createFirstDraft();
+        cardDraftService.claenupAndCreateFirst();
 
         String enterCardNameMsg = "Enter Card name:";
 
@@ -80,7 +83,7 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
 
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
 
-        cardDraftRepository.updateName(draftName);
+        cardDraftService.updateName(draftName);
 
         String setBalanceMsg = "Card name: '" + draftName + "'\n\nEnter start balance:";
         msgFromStateHistoryRepository.save(MsgFromStateHistory.builder()
@@ -101,9 +104,7 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
 
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
 
-        cardDraftRepository.updateBalance(draftBalance);
-        cardDraftRepository.updateStatus(DRAFT_STATUS.BUILT.name());
-        var cd = cardDraftRepository.getFirstDraft();
+        CardDraft cd = cardDraftService.updateBalanceAndGetEntity(draftBalance);
 
         String text = "Confirm your Card:\n"
                 + "\nCard name   : '" + cd.getName() + "'"
@@ -131,7 +132,7 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
     }
 
     @Override
-    public boolean canProcessMessage() {
+    public boolean canExec() {
         var currentCommandName = currentConditionRepository.getCurrentCondition().getCommand().getName();
         var message = UserDataContextHolder.getInputtedTextCommand();
 
@@ -140,7 +141,7 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
 
     @Override
     public boolean cleanAllData() {
-        cardDraftRepository.deleteAll();
-        return cardDraftRepository.getFirstDraft() == null;
+        cardDraftService.deleteAll();
+        return cardDraftService.getFirstDraft() == null;
     }
 }
