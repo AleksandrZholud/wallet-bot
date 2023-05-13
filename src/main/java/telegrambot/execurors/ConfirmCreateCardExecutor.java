@@ -7,6 +7,7 @@ import telegrambot.config.interceptor.UserDataContextHolder;
 import telegrambot.model.Card;
 import telegrambot.model.enums.DRAFT_STATUS;
 import telegrambot.model.util.Command;
+import telegrambot.model.util.CurrentCondition;
 import telegrambot.model.util.State;
 import telegrambot.model.util.drafts.CardDraft;
 import telegrambot.repository.CardRepository;
@@ -42,9 +43,9 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
     @Transactional
     @Override
     public void processMessage() {
-        var currentCondition = currentConditionRepository.getCurrentCondition();
-
+        CurrentCondition currentCondition = currentConditionRepository.getCurrentCondition();
         String currentConditionName = currentCondition.getCommand().getName();
+
         if (currentConditionName.equals(CREATE_CARD_COMMAND.getCommand())) {
             confirmCard();
         } else {
@@ -54,8 +55,8 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
     }
 
     private void confirmCard() {
-        var baseCommand = commandRepository.findByName(START_COMMAND.getCommand());
-        var baseState = stateRepository.findByName(NO_STATE.getState());
+        Command baseCommand = commandRepository.findByName(START_COMMAND.getCommand());
+        State baseState = stateRepository.findByName(NO_STATE.getState());
         Optional<CardDraft> draft = Optional.ofNullable(cardDraftRepository.getFirstDraft());
 
         Card cardToSave = null;
@@ -65,14 +66,13 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
             return;
         }
 
-        if (draft.get().getStatus().equals(DRAFT_STATUS.BUILT) ||
-                draft.get().getStatus().equals(DRAFT_STATUS.SAVING)) {
+        DRAFT_STATUS draftStatus = draft.get().getStatus();
+        if (draftStatus.equals(DRAFT_STATUS.BUILT) || draftStatus.equals(DRAFT_STATUS.SAVING)) {
             cardDraftRepository.updateStatus(DRAFT_STATUS.SAVING.name());
             cardToSave = cardRepository.save(Card.builder()
                     .name(draft.get().getName())
                     .balance(draft.get().getBalance())
                     .build());
-
         }
 
         if (cardToSave == null) {
@@ -89,7 +89,7 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
     private void processFinish(Card cardRes) {
         UserDataContextHolder.getFacade()
                 .setText("Card '" + cardRes.getName() + "' successfully saved.\nGood luck!")
-                .addStartButton();
+                .addButtons(getGlobalCommands());
     }
 
     private void processErrorCreation() {
@@ -103,8 +103,7 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
         UserDataContextHolder.getFacade()
                 .setText("Seems you have not started creating card.")
-                .addButtons(CREATE_CARD_COMMAND)
-                .addStartButton();
+                .addButtons(getGlobalCommands());
     }
 
     @Transactional

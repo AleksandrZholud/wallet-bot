@@ -9,6 +9,7 @@ import telegrambot.model.Transaction;
 import telegrambot.model.enums.DRAFT_STATUS;
 import telegrambot.model.enums.TransactionTypeEnum;
 import telegrambot.model.util.Command;
+import telegrambot.model.util.CurrentCondition;
 import telegrambot.model.util.State;
 import telegrambot.model.util.drafts.TransactionDraft;
 import telegrambot.repository.CardRepository;
@@ -36,9 +37,9 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
     @Transactional
     @Override
     public void processMessage() {
-        var currentCondition = currentConditionRepository.getCurrentCondition();
-
+        CurrentCondition currentCondition = currentConditionRepository.getCurrentCondition();
         String currentCommandName = currentCondition.getCommand().getName();
+
         if (currentCommandName.equals(CREATE_TRANSACTION_COMMAND.getCommand())) {
             confirmTransaction();
         } else {
@@ -48,8 +49,8 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
     }
 
     private void confirmTransaction() {
-        var baseCommand = commandRepository.findByName(START_COMMAND.getCommand());
-        var baseState = stateRepository.findByName(NO_STATE.getState());
+        Command baseCommand = commandRepository.findByName(START_COMMAND.getCommand());
+        State baseState = stateRepository.findByName(NO_STATE.getState());
         Optional<TransactionDraft> draft = Optional.ofNullable(transactionDraftRepository.getFirstDraft());
 
         Transaction transactionToSave = null;
@@ -59,8 +60,8 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
             return;
         }
 
-        if (draft.get().getStatus().equals(DRAFT_STATUS.BUILT) ||
-                draft.get().getStatus().equals(DRAFT_STATUS.SAVING)) {
+        DRAFT_STATUS draftStatus = draft.get().getStatus();
+        if (draftStatus.equals(DRAFT_STATUS.BUILT) || draftStatus.equals(DRAFT_STATUS.SAVING)) {
             transactionDraftRepository.updateStatus(DRAFT_STATUS.SAVING.name());
             transactionToSave = transactionRepository.save(Transaction.builder()
                     .card(draft.get().getCard())
@@ -76,7 +77,6 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
                 cardRepository.updateBalanceByName(changingCard.getBalance().subtract(transactionToSave.getAmount())
                         , changingCard.getName());
             }
-
         }
 
         if (transactionToSave == null) {
@@ -93,7 +93,7 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
     private void processFinish(Transaction transactionToSave) {
         UserDataContextHolder.getFacade()
                 .setText("Transaction on '" + transactionToSave.getAmount() + "' UAH successfully saved.\nGood luck!")
-                .addStartButton();
+                .addButtons(getGlobalCommands());
     }
 
     private void processErrorCreation() {
@@ -107,8 +107,7 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
         UserDataContextHolder.getFacade()
                 .setText("Seems you have not started creating transaction.")
-                .addButtons(CREATE_TRANSACTION_COMMAND)
-                .addStartButton();
+                .addButtons(getGlobalCommands());
     }
 
     @Override
