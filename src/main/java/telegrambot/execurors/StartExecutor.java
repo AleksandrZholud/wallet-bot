@@ -18,12 +18,12 @@ public class StartExecutor extends AbstractCommandExecutor {
     private static final String THIS_CMD = START_COMMAND.getCommand();
 
     @Override
-    public boolean isSystemHandler() {
+    public boolean isSystemExecutor() {
         return true;
     }
 
     @Override
-    public void processMessage() {
+    public void exec() {
         currentConditionRepository.reset();
 
         boolean notCleaned = !cleanAllData();
@@ -39,7 +39,7 @@ public class StartExecutor extends AbstractCommandExecutor {
     }
 
     @Override
-    public boolean canProcessMessage() {
+    public boolean canExec() {
         return UserDataContextHolder.getInputtedTextCommand().equals(THIS_CMD);
     }
 

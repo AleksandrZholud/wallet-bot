@@ -1,7 +1,7 @@
 package telegrambot.model.util.drafts;
 
 import lombok.*;
-import telegrambot.model.enums.DRAFT_STATUS;
+import telegrambot.model.enums.DraftStatus;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -30,5 +30,5 @@ public class CardDraft {
     @Setter
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private DRAFT_STATUS status;
+    private DraftStatus status;
 }
