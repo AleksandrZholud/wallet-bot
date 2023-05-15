@@ -13,6 +13,7 @@ import telegrambot.repository.util.MsgFromStateHistoryRepository;
 import telegrambot.repository.util.StateRepository;
 import telegrambot.service.carddraft.CardDraftService;
 import telegrambot.service.command.CommandService;
+import telegrambot.service.msgfromstatehistory.MsgFromStateHistoryService;
 import telegrambot.service.state.StateService;
 
 import java.math.BigDecimal;
@@ -30,7 +31,7 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
     private final CurrentConditionRepository currentConditionRepository;
     private final CommandService commandService;
     private final StateService stateService;
-    private final MsgFromStateHistoryRepository msgFromStateHistoryRepository;
+    private final MsgFromStateHistoryService msgFromStateHistoryService;
     private static final String THIS_CMD = CREATE_CARD_COMMAND.getCommand();
 
     @Override
@@ -44,7 +45,7 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
         if (UserDataContextHolder.getInputtedTextCommand().equals(THIS_CMD)) {
             cardDraftService.deleteAll();
             currentConditionRepository.updateCommandAndState(3L, 1L);
-            msgFromStateHistoryRepository.deleteAll();
+            msgFromStateHistoryService.deleteAll();
         }
 
         CurrentCondition currentCondition = currentConditionRepository.getCurrentCondition();
@@ -70,7 +71,7 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
 
         String enterCardNameMsg = "Enter Card name:";
 
-        msgFromStateHistoryRepository.save(
+        msgFromStateHistoryService.save(
                 MsgFromStateHistory.builder()
                         .message(enterCardNameMsg)
                         .build());
@@ -90,7 +91,7 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
         cardDraftService.updateName(draftName);
 
         String setBalanceMsg = "Card name: '" + draftName + "'\n\nEnter start balance:";
-        msgFromStateHistoryRepository.save(MsgFromStateHistory.builder()
+        msgFromStateHistoryService.save(MsgFromStateHistory.builder()
                 .message(setBalanceMsg)
                 .build());
 
@@ -114,7 +115,7 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
                 + "\nCard name   : '" + cd.getName() + "'"
                 + "\nCard balance: " + cd.getBalance();
 
-        msgFromStateHistoryRepository.save(MsgFromStateHistory.builder()
+        msgFromStateHistoryService.save(MsgFromStateHistory.builder()
                 .message(text)
                 .build());
 
