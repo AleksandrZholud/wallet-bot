@@ -12,6 +12,7 @@ import telegrambot.repository.util.CurrentConditionRepository;
 import telegrambot.repository.util.MsgFromStateHistoryRepository;
 import telegrambot.repository.util.StateRepository;
 import telegrambot.service.carddraft.CardDraftService;
+import telegrambot.service.command.CommandService;
 import telegrambot.service.state.StateService;
 
 import java.math.BigDecimal;
@@ -27,8 +28,7 @@ import static telegrambot.model.enums.StateEnum.*;
 public class CreateCardExecutor extends AbstractCommandExecutor {
     private final CardDraftService cardDraftService;
     private final CurrentConditionRepository currentConditionRepository;
-    private final CommandRepository commandRepository;
-//    private final StateRepository stateRepository;
+    private final CommandService commandService;
     private final StateService stateService;
     private final MsgFromStateHistoryRepository msgFromStateHistoryRepository;
     private static final String THIS_CMD = CREATE_CARD_COMMAND.getCommand();
@@ -61,8 +61,7 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
     }
 
     private void doCreateCard() {
-        var command = commandRepository.findByName(THIS_CMD);
-//        var state = stateRepository.findByName(SET_NAME.getState());
+        var command = commandService.findByName(THIS_CMD);
         var state = stateService.findByName(SET_NAME.getState());
 
         currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
@@ -82,8 +81,7 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
     }
 
     private void doSetName() {
-        var command = commandRepository.findByName(THIS_CMD);
-//        var state = stateRepository.findByName(SET_BALANCE.getState());
+        var command = commandService.findByName(THIS_CMD);
         var state = stateService.findByName(SET_BALANCE.getState());
         var draftName = UserDataContextHolder.getInputtedTextCommand();
 
@@ -103,8 +101,7 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
     }
 
     private void doSetBalance() {
-        var command = commandRepository.findByName(THIS_CMD);
-//        var state = stateRepository.findByName(CONFIRMATION.getState());
+        var command = commandService.findByName(THIS_CMD);
         var state = stateService.findByName(SET_BALANCE.getState());
         long longValueOfInput = tryGetLongValue();
         var draftBalance = BigDecimal.valueOf(longValueOfInput);
