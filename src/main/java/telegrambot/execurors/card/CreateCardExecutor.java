@@ -13,6 +13,7 @@ import telegrambot.repository.util.MsgFromStateHistoryRepository;
 import telegrambot.repository.util.StateRepository;
 import telegrambot.service.carddraft.CardDraftService;
 import telegrambot.service.command.CommandService;
+import telegrambot.service.currentcondition.CurrentConditionService;
 import telegrambot.service.msgfromstatehistory.MsgFromStateHistoryService;
 import telegrambot.service.state.StateService;
 
@@ -28,7 +29,7 @@ import static telegrambot.model.enums.StateEnum.*;
 //TODO: HERE!
 public class CreateCardExecutor extends AbstractCommandExecutor {
     private final CardDraftService cardDraftService;
-    private final CurrentConditionRepository currentConditionRepository;
+    private final CurrentConditionService currentConditionService;
     private final CommandService commandService;
     private final StateService stateService;
     private final MsgFromStateHistoryService msgFromStateHistoryService;
@@ -44,11 +45,11 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
 
         if (UserDataContextHolder.getInputtedTextCommand().equals(THIS_CMD)) {
             cardDraftService.deleteAll();
-            currentConditionRepository.updateCommandAndState(3L, 1L);
+            currentConditionService.updateCommandAndState(3L, 1L);
             msgFromStateHistoryService.deleteAll();
         }
 
-        CurrentCondition currentCondition = currentConditionRepository.getCurrentCondition();
+        CurrentCondition currentCondition = currentConditionService.getCurrentCondition();
 
         if (currentCondition.getState().getName().equals(NO_STATE.getState())) {
             doCreateCard();
@@ -65,7 +66,7 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
         var command = commandService.findByName(THIS_CMD);
         var state = stateService.findByName(SET_NAME.getState());
 
-        currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
+        currentConditionService.updateCommandAndState(command.getId(), state.getId());
 
         cardDraftService.claenupAndCreateFirst();
 
@@ -86,7 +87,7 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
         var state = stateService.findByName(SET_BALANCE.getState());
         var draftName = UserDataContextHolder.getInputtedTextCommand();
 
-        currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
+        currentConditionService.updateCommandAndState(command.getId(), state.getId());
 
         cardDraftService.updateName(draftName);
 
@@ -107,7 +108,7 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
         long longValueOfInput = tryGetLongValue();
         var draftBalance = BigDecimal.valueOf(longValueOfInput);
 
-        currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
+        currentConditionService.updateCommandAndState(command.getId(), state.getId());
 
         CardDraft cd = cardDraftService.updateBalanceAndGetEntity(draftBalance);
 
@@ -138,7 +139,7 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
 
     @Override
     public boolean canExec() {
-        var currentCommandName = currentConditionRepository.getCurrentCondition().getCommand().getName();
+        var currentCommandName = currentConditionService.getCurrentCondition().getCommand().getName();
         var message = UserDataContextHolder.getInputtedTextCommand();
 
         return message.equals(THIS_CMD) || currentCommandName.equals(THIS_CMD);

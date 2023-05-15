@@ -7,6 +7,7 @@ import telegrambot.repository.util.StateRepository;
 @Service
 @RequiredArgsConstructor
 public class StateServiceImpl implements StateService {
+
     private final StateRepository stateRepository;
 
     @Override

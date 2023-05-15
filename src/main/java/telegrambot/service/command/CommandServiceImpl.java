@@ -8,6 +8,7 @@ import telegrambot.repository.util.CommandRepository;
 @AllArgsConstructor
 @Component
 public class CommandServiceImpl implements CommandService {
+
     private final CommandRepository commandRepository;
 
     @Override
