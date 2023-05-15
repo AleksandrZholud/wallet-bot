@@ -4,7 +4,7 @@ import telegrambot.model.util.MsgFromStateHistory;
 
 public interface MsgFromStateHistoryService {
 
-    public void deleteAll();
+    void deleteAll();
 
-    public MsgFromStateHistory save(MsgFromStateHistory msgFromStateHistory);
+    void save(MsgFromStateHistory msgFromStateHistory);
 }

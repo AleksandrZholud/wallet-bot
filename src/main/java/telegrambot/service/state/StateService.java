@@ -4,5 +4,5 @@ import telegrambot.model.util.State;
 
 public interface StateService {
 
-    public State findByName(String name);
+    State findByName(String name);
 }

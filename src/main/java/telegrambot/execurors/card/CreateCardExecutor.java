@@ -7,10 +7,6 @@ import telegrambot.execurors.AbstractCommandExecutor;
 import telegrambot.model.util.CurrentCondition;
 import telegrambot.model.util.MsgFromStateHistory;
 import telegrambot.model.util.drafts.CardDraft;
-import telegrambot.repository.util.CommandRepository;
-import telegrambot.repository.util.CurrentConditionRepository;
-import telegrambot.repository.util.MsgFromStateHistoryRepository;
-import telegrambot.repository.util.StateRepository;
 import telegrambot.service.carddraft.CardDraftService;
 import telegrambot.service.command.CommandService;
 import telegrambot.service.currentcondition.CurrentConditionService;
@@ -26,7 +22,6 @@ import static telegrambot.model.enums.StateEnum.*;
 @AllArgsConstructor
 @Component
 
-//TODO: HERE!
 public class CreateCardExecutor extends AbstractCommandExecutor {
     private final CardDraftService cardDraftService;
     private final CurrentConditionService currentConditionService;
