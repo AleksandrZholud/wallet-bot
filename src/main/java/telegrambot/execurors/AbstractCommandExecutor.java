@@ -14,7 +14,7 @@ public abstract class AbstractCommandExecutor {
 
     private static final List<AbstractCommandExecutor> allChildEntities = new ArrayList<>();
 
-    AbstractCommandExecutor() {
+    protected AbstractCommandExecutor() {
         allChildEntities.add(this);
     }
 
