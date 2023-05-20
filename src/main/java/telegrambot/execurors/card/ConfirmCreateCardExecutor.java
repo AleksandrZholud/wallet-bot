@@ -12,10 +12,10 @@ import telegrambot.model.util.CurrentCondition;
 import telegrambot.model.util.State;
 import telegrambot.model.util.drafts.CardDraft;
 import telegrambot.repository.CardRepository;
-import telegrambot.repository.util.MsgFromStateHistoryRepository;
 import telegrambot.service.carddraft.CardDraftService;
 import telegrambot.service.command.CommandService;
 import telegrambot.service.currentcondition.CurrentConditionService;
+import telegrambot.service.msgfromstatehistory.MsgFromStateHistoryService;
 import telegrambot.service.state.StateService;
 
 import java.util.Optional;
@@ -31,7 +31,7 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
     private final CurrentConditionService currentConditionService;
     private final CommandService commandService;
     private final StateService stateService;
-    private final MsgFromStateHistoryRepository msgFromStateHistoryRepository;
+    private final MsgFromStateHistoryService msgFromStateHistoryService;
 
     private static final String THIS_CMD = CREATE_CARD_CONFIRM_COMMAND.getCommand();
 
@@ -115,8 +115,8 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
     @Override
     public boolean cleanAllData() {
         cardDraftService.deleteAll();
-        msgFromStateHistoryRepository.deleteAll();
+        msgFromStateHistoryService.deleteAll();
 
-        return msgFromStateHistoryRepository.findLast() == null && cardDraftService.getFirstDraft() == null;
+        return msgFromStateHistoryService.findLast() == null && cardDraftService.getFirstDraft() == null;
     }
 }

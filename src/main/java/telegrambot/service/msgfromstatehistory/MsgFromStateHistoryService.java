@@ -7,4 +7,6 @@ public interface MsgFromStateHistoryService {
     void deleteAll();
 
     void save(MsgFromStateHistory msgFromStateHistory);
+
+    MsgFromStateHistory findLast();
 }
