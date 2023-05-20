@@ -11,7 +11,7 @@ import telegrambot.model.util.Command;
 import telegrambot.model.util.CurrentCondition;
 import telegrambot.model.util.State;
 import telegrambot.model.util.drafts.CardDraft;
-import telegrambot.repository.CardRepository;
+import telegrambot.service.card.CardService;
 import telegrambot.service.carddraft.CardDraftService;
 import telegrambot.service.command.CommandService;
 import telegrambot.service.currentcondition.CurrentConditionService;
@@ -27,7 +27,7 @@ import static telegrambot.model.enums.StateEnum.NO_STATE;
 @Component
 public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
     private final CardDraftService cardDraftService;
-    private final CardRepository cardRepository;
+    private final CardService cardService;
     private final CurrentConditionService currentConditionService;
     private final CommandService commandService;
     private final StateService stateService;
@@ -74,7 +74,7 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
         DraftStatus draftStatus = draft.get().getStatus();
         if (draftStatus.equals(DraftStatus.BUILT) || draftStatus.equals(DraftStatus.SAVING)) {
             cardDraftService.updateStatus(DraftStatus.SAVING);
-            cardToSave = cardRepository.save(Card.builder()
+            cardToSave = cardService.save(Card.builder()
                     .name(draft.get().getName())
                     .balance(draft.get().getBalance())
                     .build());
