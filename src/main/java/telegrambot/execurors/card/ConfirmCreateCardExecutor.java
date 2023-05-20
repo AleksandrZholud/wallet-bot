@@ -13,10 +13,10 @@ import telegrambot.model.util.State;
 import telegrambot.model.util.drafts.CardDraft;
 import telegrambot.repository.CardRepository;
 import telegrambot.repository.util.CommandRepository;
-import telegrambot.repository.util.CurrentConditionRepository;
 import telegrambot.repository.util.MsgFromStateHistoryRepository;
 import telegrambot.repository.util.StateRepository;
 import telegrambot.service.carddraft.CardDraftService;
+import telegrambot.service.currentcondition.CurrentConditionService;
 
 import java.util.Optional;
 
@@ -28,7 +28,7 @@ import static telegrambot.model.enums.StateEnum.NO_STATE;
 public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
     private final CardDraftService cardDraftService;
     private final CardRepository cardRepository;
-    private final CurrentConditionRepository currentConditionRepository;
+    private final CurrentConditionService currentConditionService;
     private final CommandRepository commandRepository;
     private final StateRepository stateRepository;
     private final MsgFromStateHistoryRepository msgFromStateHistoryRepository;
@@ -48,7 +48,7 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
     @Transactional
     @Override
     public void exec() {
-        CurrentCondition currentCondition = currentConditionRepository.getCurrentCondition();
+        CurrentCondition currentCondition = currentConditionService.getCurrentCondition();
         String currentConditionName = currentCondition.getCommand().getName();
 
         if (currentConditionName.equals(CREATE_CARD_COMMAND.getCommand())) {
@@ -86,7 +86,7 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
         }
 
         cleanAllData();
-        currentConditionRepository.updateCommandAndState(baseCommand.getId(), baseState.getId());
+        currentConditionService.updateCommandAndState(baseCommand.getId(), baseState.getId());
 
         processFinish(cardToSave);
     }
@@ -105,7 +105,7 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
     }
 
     private void processStartCreateCard(Command command, State state) {
-        currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
+        currentConditionService.updateCommandAndState(command.getId(), state.getId());
         UserDataContextHolder.getFacade()
                 .setText("Seems you have not started creating card.")
                 .addButtons(getGlobalCommands());
