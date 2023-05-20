@@ -13,10 +13,10 @@ import telegrambot.model.util.State;
 import telegrambot.model.util.drafts.CardDraft;
 import telegrambot.repository.CardRepository;
 import telegrambot.repository.util.MsgFromStateHistoryRepository;
-import telegrambot.repository.util.StateRepository;
 import telegrambot.service.carddraft.CardDraftService;
 import telegrambot.service.command.CommandService;
 import telegrambot.service.currentcondition.CurrentConditionService;
+import telegrambot.service.state.StateService;
 
 import java.util.Optional;
 
@@ -30,7 +30,7 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
     private final CardRepository cardRepository;
     private final CurrentConditionService currentConditionService;
     private final CommandService commandService;
-    private final StateRepository stateRepository;
+    private final StateService stateService;
     private final MsgFromStateHistoryRepository msgFromStateHistoryRepository;
 
     private static final String THIS_CMD = CREATE_CARD_CONFIRM_COMMAND.getCommand();
@@ -61,7 +61,7 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
 
     private void confirmCard() {
         Command baseCommand = commandService.findByName(START_COMMAND.getCommand());
-        State baseState = stateRepository.findByName(NO_STATE.getState());
+        State baseState = stateService.findByName(NO_STATE.getState());
         Optional<CardDraft> draft = Optional.ofNullable(cardDraftService.getFirstDraft());
 
         Card cardToSave = null;
