@@ -12,7 +12,11 @@ import telegrambot.model.util.CurrentCondition;
 import telegrambot.model.util.State;
 import telegrambot.model.util.drafts.CardDraft;
 import telegrambot.repository.CardRepository;
-import telegrambot.repository.util.*;
+import telegrambot.repository.util.CommandRepository;
+import telegrambot.repository.util.CurrentConditionRepository;
+import telegrambot.repository.util.MsgFromStateHistoryRepository;
+import telegrambot.repository.util.StateRepository;
+import telegrambot.service.carddraft.CardDraftService;
 
 import java.util.Optional;
 
@@ -22,7 +26,7 @@ import static telegrambot.model.enums.StateEnum.NO_STATE;
 @AllArgsConstructor
 @Component
 public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
-    private final CardDraftRepository cardDraftRepository;
+    private final CardDraftService cardDraftService;
     private final CardRepository cardRepository;
     private final CurrentConditionRepository currentConditionRepository;
     private final CommandRepository commandRepository;
@@ -58,7 +62,7 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
     private void confirmCard() {
         Command baseCommand = commandRepository.findByName(START_COMMAND.getCommand());
         State baseState = stateRepository.findByName(NO_STATE.getState());
-        Optional<CardDraft> draft = Optional.ofNullable(cardDraftRepository.getFirstDraft());
+        Optional<CardDraft> draft = Optional.ofNullable(cardDraftService.getFirstDraft());
 
         Card cardToSave = null;
 
@@ -69,7 +73,7 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
 
         DraftStatus draftStatus = draft.get().getStatus();
         if (draftStatus.equals(DraftStatus.BUILT) || draftStatus.equals(DraftStatus.SAVING)) {
-            cardDraftRepository.updateStatus(DraftStatus.SAVING.name());
+            cardDraftService.updateStatus(DraftStatus.SAVING);
             cardToSave = cardRepository.save(Card.builder()
                     .name(draft.get().getName())
                     .balance(draft.get().getBalance())
@@ -110,9 +114,9 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
     @Transactional
     @Override
     public boolean cleanAllData() {
-        cardDraftRepository.deleteAll();
+        cardDraftService.deleteAll();
         msgFromStateHistoryRepository.deleteAll();
 
-        return msgFromStateHistoryRepository.findLast() == null && cardDraftRepository.getFirstDraft() == null;
+        return msgFromStateHistoryRepository.findLast() == null && cardDraftService.getFirstDraft() == null;
     }
 }
