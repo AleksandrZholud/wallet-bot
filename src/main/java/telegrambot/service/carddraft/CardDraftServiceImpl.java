@@ -33,9 +33,7 @@ public class CardDraftServiceImpl implements CardDraftService{
 
     @Override
     public CardDraft updateBalanceAndGetEntity(BigDecimal draftBalance) {
-        //TODO: VALERY изменить метод 'updateBalance' чтобы он сразу сетил и BUILD статус //BUILD.name()
-        cardDraftRepository.updateBalance(draftBalance);
-        updateStatus(BUILT);
+        cardDraftRepository.updateBalanceAndSetStatus(draftBalance, BUILT.name());
         return getFirstDraft();
     }
 

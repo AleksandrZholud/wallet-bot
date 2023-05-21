@@ -14,17 +14,23 @@ import java.math.BigDecimal;
 public interface CardDraftRepository extends JpaRepository<CardDraft, Long> {
     @Transactional
     @Modifying
-    @Query(value = "UPDATE card_draft  SET name =:name", nativeQuery = true)
+    @Query(value = "UPDATE card_draft  SET name = :name", nativeQuery = true)
     int updateName(@Param("name") String name);
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE card_draft SET balance =:balance", nativeQuery = true)
+    @Query(value = "UPDATE card_draft SET balance = :balance", nativeQuery = true)
     int updateBalance(@Param("balance") BigDecimal balance);
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE card_draft SET status =:status", nativeQuery = true)
+    @Query(value = "UPDATE card_draft SET balance = :balance, status = :status", nativeQuery = true)
+    int updateBalanceAndSetStatus(@Param("balance") BigDecimal balance,
+                                  @Param("status") String status);
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE card_draft SET status = :status", nativeQuery = true)
     int updateStatus(@Param("status") String status);
 
     @Transactional

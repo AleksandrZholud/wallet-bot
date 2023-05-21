@@ -11,8 +11,12 @@ import telegrambot.model.util.Command;
 import telegrambot.model.util.CurrentCondition;
 import telegrambot.model.util.State;
 import telegrambot.model.util.drafts.CardDraft;
-import telegrambot.repository.CardRepository;
-import telegrambot.repository.util.*;
+import telegrambot.service.card.CardService;
+import telegrambot.service.carddraft.CardDraftService;
+import telegrambot.service.command.CommandService;
+import telegrambot.service.currentcondition.CurrentConditionService;
+import telegrambot.service.msgfromstatehistory.MsgFromStateHistoryService;
+import telegrambot.service.state.StateService;
 
 import java.util.Optional;
 
@@ -22,12 +26,12 @@ import static telegrambot.model.enums.StateEnum.NO_STATE;
 @AllArgsConstructor
 @Component
 public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
-    private final CardDraftRepository cardDraftRepository;
-    private final CardRepository cardRepository;
-    private final CurrentConditionRepository currentConditionRepository;
-    private final CommandRepository commandRepository;
-    private final StateRepository stateRepository;
-    private final MsgFromStateHistoryRepository msgFromStateHistoryRepository;
+    private final CardDraftService cardDraftService;
+    private final CardService cardService;
+    private final CurrentConditionService currentConditionService;
+    private final CommandService commandService;
+    private final StateService stateService;
+    private final MsgFromStateHistoryService msgFromStateHistoryService;
 
     private static final String THIS_CMD = CREATE_CARD_CONFIRM_COMMAND.getCommand();
 
@@ -44,7 +48,7 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
     @Transactional
     @Override
     public void exec() {
-        CurrentCondition currentCondition = currentConditionRepository.getCurrentCondition();
+        CurrentCondition currentCondition = currentConditionService.getCurrentCondition();
         String currentConditionName = currentCondition.getCommand().getName();
 
         if (currentConditionName.equals(CREATE_CARD_COMMAND.getCommand())) {
@@ -56,9 +60,9 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
     }
 
     private void confirmCard() {
-        Command baseCommand = commandRepository.findByName(START_COMMAND.getCommand());
-        State baseState = stateRepository.findByName(NO_STATE.getState());
-        Optional<CardDraft> draft = Optional.ofNullable(cardDraftRepository.getFirstDraft());
+        Command baseCommand = commandService.findByName(START_COMMAND.getCommand());
+        State baseState = stateService.findByName(NO_STATE.getState());
+        Optional<CardDraft> draft = Optional.ofNullable(cardDraftService.getFirstDraft());
 
         Card cardToSave = null;
 
@@ -69,8 +73,8 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
 
         DraftStatus draftStatus = draft.get().getStatus();
         if (draftStatus.equals(DraftStatus.BUILT) || draftStatus.equals(DraftStatus.SAVING)) {
-            cardDraftRepository.updateStatus(DraftStatus.SAVING.name());
-            cardToSave = cardRepository.save(Card.builder()
+            cardDraftService.updateStatus(DraftStatus.SAVING);
+            cardToSave = cardService.save(Card.builder()
                     .name(draft.get().getName())
                     .balance(draft.get().getBalance())
                     .build());
@@ -82,7 +86,7 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
         }
 
         cleanAllData();
-        currentConditionRepository.updateCommandAndState(baseCommand.getId(), baseState.getId());
+        currentConditionService.updateCommandAndState(baseCommand.getId(), baseState.getId());
 
         processFinish(cardToSave);
     }
@@ -101,7 +105,7 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
     }
 
     private void processStartCreateCard(Command command, State state) {
-        currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
+        currentConditionService.updateCommandAndState(command.getId(), state.getId());
         UserDataContextHolder.getFacade()
                 .setText("Seems you have not started creating card.")
                 .addButtons(getGlobalCommands());
@@ -110,9 +114,9 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
     @Transactional
     @Override
     public boolean cleanAllData() {
-        cardDraftRepository.deleteAll();
-        msgFromStateHistoryRepository.deleteAll();
+        cardDraftService.deleteAll();
+        msgFromStateHistoryService.deleteAll();
 
-        return msgFromStateHistoryRepository.findLast() == null && cardDraftRepository.getFirstDraft() == null;
+        return msgFromStateHistoryService.findLast() == null && cardDraftService.getFirstDraft() == null;
     }
 }
