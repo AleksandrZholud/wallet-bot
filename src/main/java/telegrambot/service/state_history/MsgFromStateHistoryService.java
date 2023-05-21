@@ -1,4 +1,4 @@
-package telegrambot.service.msgfromstatehistory;
+package telegrambot.service.state_history;
 
 import telegrambot.model.util.MsgFromStateHistory;
 

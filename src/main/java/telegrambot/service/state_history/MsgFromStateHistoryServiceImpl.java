@@ -1,4 +1,4 @@
-package telegrambot.service.msgfromstatehistory;
+package telegrambot.service.state_history;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -7,7 +7,6 @@ import telegrambot.repository.util.MsgFromStateHistoryRepository;
 
 @AllArgsConstructor
 @Component
-
 public class MsgFromStateHistoryServiceImpl implements MsgFromStateHistoryService {
 
     private final MsgFromStateHistoryRepository msgFromStateHistoryRepository;

@@ -1,4 +1,4 @@
-package telegrambot.service.currentcondition;
+package telegrambot.service.current_condition;
 
 import telegrambot.model.util.CurrentCondition;
 

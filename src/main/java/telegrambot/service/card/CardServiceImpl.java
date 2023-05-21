@@ -6,6 +6,7 @@ import telegrambot.model.Card;
 import telegrambot.repository.CardRepository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,16 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public Card save(Card card) {
-        return  cardRepository.save(card);
+        return cardRepository.save(card);
+    }
+
+    @Override
+    public void updateBalanceByName(BigDecimal amount, String name) {
+        cardRepository.updateBalanceByName(amount, name);
+    }
+
+    @Override
+    public List<Card> findAll(){
+        return cardRepository.findAll();
     }
 }

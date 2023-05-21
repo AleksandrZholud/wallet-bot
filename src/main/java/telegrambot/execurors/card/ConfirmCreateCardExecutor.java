@@ -12,11 +12,11 @@ import telegrambot.model.util.CurrentCondition;
 import telegrambot.model.util.State;
 import telegrambot.model.util.drafts.CardDraft;
 import telegrambot.service.card.CardService;
-import telegrambot.service.carddraft.CardDraftService;
+import telegrambot.service.card_draft.CardDraftService;
 import telegrambot.service.command.CommandService;
-import telegrambot.service.currentcondition.CurrentConditionService;
-import telegrambot.service.msgfromstatehistory.MsgFromStateHistoryService;
+import telegrambot.service.current_condition.CurrentConditionService;
 import telegrambot.service.state.StateService;
+import telegrambot.service.state_history.MsgFromStateHistoryService;
 
 import java.util.Optional;
 

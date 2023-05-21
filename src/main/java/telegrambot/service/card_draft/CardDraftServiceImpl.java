@@ -1,4 +1,4 @@
-package telegrambot.service.carddraft;
+package telegrambot.service.card_draft;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
