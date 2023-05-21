@@ -7,4 +7,9 @@ public interface CurrentConditionService {
     CurrentCondition getCurrentCondition();
 
     void updateCommandAndState(Long command, Long state);
+
+    long getPreviousStateId();
+
+    void updateState(long previousStateId);
+
 }
