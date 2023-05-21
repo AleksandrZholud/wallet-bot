@@ -9,4 +9,9 @@ public interface MsgFromStateHistoryService {
     void save(MsgFromStateHistory msgFromStateHistory);
 
     MsgFromStateHistory findLast();
+
+    String findPreLast();
+
+    void removeLast();
+
 }
