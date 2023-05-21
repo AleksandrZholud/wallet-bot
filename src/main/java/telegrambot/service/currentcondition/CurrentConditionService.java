@@ -12,4 +12,5 @@ public interface CurrentConditionService {
 
     void updateState(long previousStateId);
 
+    void reset();
 }

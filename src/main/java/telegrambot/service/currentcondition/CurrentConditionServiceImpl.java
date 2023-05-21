@@ -31,4 +31,9 @@ public class CurrentConditionServiceImpl implements CurrentConditionService {
     public void updateState(long previousStateId) {
         currentConditionRepository.updateState(previousStateId);
     }
+
+    @Override
+    public void reset() {
+        currentConditionRepository.reset();
+    }
 }
