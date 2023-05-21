@@ -21,4 +21,19 @@ public class CurrentConditionServiceImpl implements CurrentConditionService {
     public void updateCommandAndState(Long command, Long state) {
         currentConditionRepository.updateCommandAndState(command, state);
     }
+
+    @Override
+    public long getPreviousStateId() {
+        return currentConditionRepository.getPreviousStateId();
+    }
+
+    @Override
+    public void updateState(long previousStateId) {
+        currentConditionRepository.updateState(previousStateId);
+    }
+
+    @Override
+    public void reset() {
+        currentConditionRepository.reset();
+    }
 }

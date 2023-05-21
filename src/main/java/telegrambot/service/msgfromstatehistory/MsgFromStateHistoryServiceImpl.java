@@ -26,4 +26,14 @@ public class MsgFromStateHistoryServiceImpl implements MsgFromStateHistoryServic
     public MsgFromStateHistory findLast() {
         return msgFromStateHistoryRepository.findLast();
     }
+
+    @Override
+    public String findPreLast() {
+        return msgFromStateHistoryRepository.findPreLast();
+    }
+
+    @Override
+    public void removeLast() {
+        msgFromStateHistoryRepository.removeLast();
+    }
 }
