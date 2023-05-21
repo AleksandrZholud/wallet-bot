@@ -22,4 +22,9 @@ public class CardServiceImpl implements CardService {
     public BigDecimal getBalance() {
         return null;
     }
+
+    @Override
+    public Card save(Card card) {
+        return  cardRepository.save(card);
+    }
 }

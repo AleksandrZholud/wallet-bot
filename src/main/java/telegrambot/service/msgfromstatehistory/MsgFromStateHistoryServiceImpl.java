@@ -21,4 +21,9 @@ public class MsgFromStateHistoryServiceImpl implements MsgFromStateHistoryServic
     public void save(MsgFromStateHistory msgFromStateHistory) {
         msgFromStateHistoryRepository.save(msgFromStateHistory);
     }
+
+    @Override
+    public MsgFromStateHistory findLast() {
+        return msgFromStateHistoryRepository.findLast();
+    }
 }
