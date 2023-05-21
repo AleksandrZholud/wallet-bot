@@ -3,8 +3,8 @@ package telegrambot.execurors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import telegrambot.config.interceptor.UserDataContextHolder;
-import telegrambot.repository.util.MsgFromStateHistoryRepository;
 import telegrambot.service.currentcondition.CurrentConditionService;
+import telegrambot.service.msgfromstatehistory.MsgFromStateHistoryService;
 
 import static telegrambot.model.enums.CommandEnum.START_COMMAND;
 import static telegrambot.model.enums.CommandEnum.getGlobalCommands;
@@ -13,7 +13,7 @@ import static telegrambot.model.enums.CommandEnum.getGlobalCommands;
 @Component
 public class StartExecutor extends AbstractCommandExecutor {
     private final CurrentConditionService currentConditionService;
-    private final MsgFromStateHistoryRepository msgFromStateHistoryRepository;
+    private final MsgFromStateHistoryService msgFromStateHistoryService;
 
     private static final String THIS_CMD = START_COMMAND.getCommand();
 
@@ -54,8 +54,8 @@ public class StartExecutor extends AbstractCommandExecutor {
             }
         }
 
-        msgFromStateHistoryRepository.deleteAll();
+        msgFromStateHistoryService.deleteAll();
 
-        return msgFromStateHistoryRepository.findLast() == null;
+        return msgFromStateHistoryService.findLast() == null;
     }
 }
