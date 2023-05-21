@@ -7,7 +7,6 @@ import telegrambot.repository.util.MsgFromStateHistoryRepository;
 
 @AllArgsConstructor
 @Component
-
 public class MsgFromStateHistoryServiceImpl implements MsgFromStateHistoryService {
 
     private final MsgFromStateHistoryRepository msgFromStateHistoryRepository;
