@@ -1,4 +1,4 @@
-package telegrambot.service.currentcondition;
+package telegrambot.service.current_condition;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

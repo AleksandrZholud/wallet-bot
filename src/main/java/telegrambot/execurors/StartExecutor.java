@@ -3,8 +3,8 @@ package telegrambot.execurors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import telegrambot.config.interceptor.UserDataContextHolder;
-import telegrambot.service.currentcondition.CurrentConditionService;
-import telegrambot.service.msgfromstatehistory.MsgFromStateHistoryService;
+import telegrambot.service.current_condition.CurrentConditionService;
+import telegrambot.service.state_history.MsgFromStateHistoryService;
 
 import static telegrambot.model.enums.CommandEnum.START_COMMAND;
 import static telegrambot.model.enums.CommandEnum.getGlobalCommands;

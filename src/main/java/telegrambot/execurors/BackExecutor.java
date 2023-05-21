@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import telegrambot.config.interceptor.UserDataContextHolder;
-import telegrambot.service.currentcondition.CurrentConditionService;
-import telegrambot.service.msgfromstatehistory.MsgFromStateHistoryService;
+import telegrambot.service.current_condition.CurrentConditionService;
+import telegrambot.service.state_history.MsgFromStateHistoryService;
 
 import static telegrambot.model.enums.CommandEnum.GO_BACK_COMMAND;
 

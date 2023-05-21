@@ -1,4 +1,4 @@
-package telegrambot.service.carddraft;
+package telegrambot.service.card_draft;
 
 import telegrambot.model.enums.DraftStatus;
 import telegrambot.model.util.drafts.CardDraft;
