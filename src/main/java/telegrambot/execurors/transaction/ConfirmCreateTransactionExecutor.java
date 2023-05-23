@@ -130,6 +130,6 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
         transactionDraftService.deleteAll();
         msgFromStateHistoryService.deleteAll();
 
-        return msgFromStateHistoryService.findLast() == null && transactionDraftService.getFirstDraft() == null;
+        return msgFromStateHistoryService.isEmpty() && transactionDraftService.getFirstDraft() == null;
     }
 }

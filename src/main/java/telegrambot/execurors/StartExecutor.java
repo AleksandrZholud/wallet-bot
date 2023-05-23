@@ -56,6 +56,6 @@ public class StartExecutor extends AbstractCommandExecutor {
 
         msgFromStateHistoryService.deleteAll();
 
-        return msgFromStateHistoryService.findLast() == null;
+        return msgFromStateHistoryService.isEmpty();
     }
 }
