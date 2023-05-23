@@ -22,7 +22,6 @@ import static telegrambot.model.enums.StateEnum.*;
 @AllArgsConstructor
 @Component
 
-//TODO: HERE!
 public class CreateCardExecutor extends AbstractCommandExecutor {
     private final CardDraftService cardDraftService;
     private final CurrentConditionService currentConditionService;
@@ -144,6 +143,6 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
     @Override
     public boolean cleanAllData() {
         cardDraftService.deleteAll();
-        return cardDraftService.getFirstDraft() == null;
+        return cardDraftService.isEmpty();
     }
 }

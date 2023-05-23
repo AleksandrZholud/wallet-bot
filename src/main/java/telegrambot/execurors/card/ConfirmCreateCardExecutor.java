@@ -117,6 +117,6 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
         cardDraftService.deleteAll();
         msgFromStateHistoryService.deleteAll();
 
-        return msgFromStateHistoryService.isEmpty() && cardDraftService.getFirstDraft() == null;
+        return msgFromStateHistoryService.isEmpty() && cardDraftService.isEmpty();
     }
 }

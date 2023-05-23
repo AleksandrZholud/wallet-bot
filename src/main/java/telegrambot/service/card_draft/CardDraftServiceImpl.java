@@ -45,7 +45,13 @@ public class CardDraftServiceImpl implements CardDraftService{
 
     @Override
     public CardDraft getFirstDraft() {
-        return cardDraftRepository.getFirstDraft();
+        return cardDraftRepository.getFirstDraft()
+                .orElseThrow(() -> new IllegalStateException("CardDraft is not found."));
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return cardDraftRepository.getFirstDraft().isEmpty();
     }
 
     @Override
