@@ -6,9 +6,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import telegrambot.model.util.Command;
 
+import java.util.Optional;
+
 @Repository
 public interface CommandRepository extends JpaRepository<Command, Long> {
 
     @Query(value = "SELECT c.id,c.name FROM commands AS c WHERE c.name =:name", nativeQuery = true)
     Command findByName(@Param("name") String name);
+
+    @Query(value = "SELECT c.id,c.name FROM commands AS c WHERE c.name =:name", nativeQuery = true)
+    Optional<Command> findOptionalByName(@Param("name") String name);
 }
