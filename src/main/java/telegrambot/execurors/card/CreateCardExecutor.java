@@ -7,11 +7,11 @@ import telegrambot.execurors.AbstractCommandExecutor;
 import telegrambot.model.util.CurrentCondition;
 import telegrambot.model.util.MsgFromStateHistory;
 import telegrambot.model.util.drafts.CardDraft;
-import telegrambot.service.carddraft.CardDraftService;
+import telegrambot.service.card_draft.CardDraftService;
 import telegrambot.service.command.CommandService;
-import telegrambot.service.currentcondition.CurrentConditionService;
-import telegrambot.service.msgfromstatehistory.MsgFromStateHistoryService;
+import telegrambot.service.current_condition.CurrentConditionService;
 import telegrambot.service.state.StateService;
+import telegrambot.service.state_history.MsgFromStateHistoryService;
 
 import java.math.BigDecimal;
 
