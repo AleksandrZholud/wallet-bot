@@ -8,10 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import telegrambot.model.util.drafts.TransactionDraft;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 public interface TransactionDraftRepository extends JpaRepository<TransactionDraft, Long> {
     @Query(value = "SELECT tr.id, tr.type, tr.card_id, tr.amount, tr.status FROM transaction_draft AS tr LIMIT 1", nativeQuery = true)
-    TransactionDraft getFirstDraft();
+    Optional<TransactionDraft> getFirstDraft();
 
     @Transactional
     @Modifying

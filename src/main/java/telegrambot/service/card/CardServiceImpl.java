@@ -16,7 +16,7 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public Card getByName(String name) {
-        return cardRepository.getOptionalByName(name).orElseThrow(() -> new IllegalStateException("Card is not exist."));
+        return cardRepository.getByName(name).orElseThrow(() -> new IllegalStateException("Card is not exist."));
     }
 
     @Override
