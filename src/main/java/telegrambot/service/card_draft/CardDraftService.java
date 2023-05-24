@@ -19,5 +19,7 @@ public interface CardDraftService {
 
     CardDraft getFirstDraft();
 
+    boolean isEmpty();
+
     void claenupAndCreateFirst();
 }

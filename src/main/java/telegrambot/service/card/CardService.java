@@ -15,4 +15,7 @@ public interface CardService {
     void updateBalanceByName(BigDecimal amount, String name);
 
     List<Card> findAll();
+
+
+    boolean checkIfExistByName(String name);
 }

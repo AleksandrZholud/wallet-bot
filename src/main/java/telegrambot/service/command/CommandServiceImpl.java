@@ -13,6 +13,7 @@ public class CommandServiceImpl implements CommandService {
 
     @Override
     public Command findByName(String name) {
-        return commandRepository.findByName(name);
+        return commandRepository.findByName(name).
+                orElseThrow(() -> new IllegalStateException("Command is not found."));
     }
 }

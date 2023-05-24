@@ -14,7 +14,9 @@ public class CurrentConditionServiceImpl implements CurrentConditionService {
 
     @Override
     public CurrentCondition getCurrentCondition() {
-        return currentConditionRepository.getCurrentCondition();
+        return currentConditionRepository
+                .getOptionalCurrentCondition()
+                .orElseThrow(() -> new IllegalStateException("CurrentCondition is not found."));
     }
 
     @Override

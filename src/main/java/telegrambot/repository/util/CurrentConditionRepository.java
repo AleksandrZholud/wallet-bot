@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import telegrambot.model.util.CurrentCondition;
 
+import java.util.Optional;
+
 @Repository
 public interface CurrentConditionRepository extends JpaRepository<CurrentCondition, Long> {
 
@@ -28,7 +30,7 @@ public interface CurrentConditionRepository extends JpaRepository<CurrentConditi
     int updateState(@Param("stateId") Long stateId);
 
     @Query(value = "SELECT c.id,c.command_id,c.state_id FROM current_condition AS c LIMIT 1", nativeQuery = true)
-    CurrentCondition getCurrentCondition();
+    Optional<CurrentCondition> getOptionalCurrentCondition();
 
     @Transactional
     @Modifying
