@@ -38,4 +38,10 @@ public class CardServiceImpl implements CardService {
     public List<Card> findAll(){
         return cardRepository.findAll();
     }
+
+    @Override
+    public boolean checkIfExistByName(String name) {
+        var card = cardRepository.getByName(name);
+        return card.isPresent();
+    }
 }

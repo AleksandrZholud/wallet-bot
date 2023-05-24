@@ -14,7 +14,7 @@ create table if not exists cards
     id      bigint not null
         primary key,
     balance numeric(19, 2),
-    name    varchar(255)
+    name    varchar(255) unique
 );
 
 create table if not exists transactions
