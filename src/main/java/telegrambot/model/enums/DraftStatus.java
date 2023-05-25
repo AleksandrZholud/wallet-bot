@@ -1,6 +1,6 @@
 package telegrambot.model.enums;
 
-public enum DRAFT_STATUS {
+public enum DraftStatus {
     BUILDING("building..."),
     BUILT("built..."),
     SAVING("saving..."),
@@ -8,7 +8,7 @@ public enum DRAFT_STATUS {
 
     String statusName;
 
-    DRAFT_STATUS(String statusName) {
+    DraftStatus(String statusName) {
         this.statusName = statusName;
     }
 }

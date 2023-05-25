@@ -1,19 +1,25 @@
-package telegrambot.execurors;
+package telegrambot.execurors.transaction;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import telegrambot.config.interceptor.UserDataContextHolder;
+import telegrambot.execurors.AbstractCommandExecutor;
 import telegrambot.model.Card;
 import telegrambot.model.Transaction;
-import telegrambot.model.enums.DRAFT_STATUS;
+import telegrambot.model.enums.DraftStatus;
 import telegrambot.model.enums.TransactionTypeEnum;
 import telegrambot.model.util.Command;
+import telegrambot.model.util.CurrentCondition;
 import telegrambot.model.util.State;
 import telegrambot.model.util.drafts.TransactionDraft;
-import telegrambot.repository.CardRepository;
-import telegrambot.repository.TransactionRepository;
-import telegrambot.repository.util.*;
+import telegrambot.service.card.CardService;
+import telegrambot.service.command.CommandService;
+import telegrambot.service.current_condition.CurrentConditionService;
+import telegrambot.service.state.StateService;
+import telegrambot.service.state_history.MsgFromStateHistoryService;
+import telegrambot.service.transaction.TransactionService;
+import telegrambot.service.transaction_draft.TransactionDraftService;
 
 import java.util.Optional;
 
@@ -24,21 +30,21 @@ import static telegrambot.model.enums.StateEnum.NO_STATE;
 @Component
 public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
 
-    private final TransactionDraftRepository transactionDraftRepository;
-    private final TransactionRepository transactionRepository;
-    private final CurrentConditionRepository currentConditionRepository;
-    private final CommandRepository commandRepository;
-    private final StateRepository stateRepository;
-    private final MsgFromStateHistoryRepository msgFromStateHistoryRepository;
+    private final TransactionDraftService transactionDraftService;
+    private final TransactionService transactionService;
+    private final CurrentConditionService currentConditionService;
+    private final CommandService commandService;
+    private final StateService stateService;
+    private final MsgFromStateHistoryService msgFromStateHistoryService;
+    private final CardService cardService;
     private static final String THIS_CMD = CREATE_TRANSACTION_CONFIRM_COMMAND.getCommand();
-    private final CardRepository cardRepository;
 
     @Transactional
     @Override
-    public void processMessage() {
-        var currentCondition = currentConditionRepository.getCurrentCondition();
-
+    public void exec() {
+        CurrentCondition currentCondition = currentConditionService.getCurrentCondition();
         String currentCommandName = currentCondition.getCommand().getName();
+
         if (currentCommandName.equals(CREATE_TRANSACTION_COMMAND.getCommand())) {
             confirmTransaction();
         } else {
@@ -48,9 +54,9 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
     }
 
     private void confirmTransaction() {
-        var baseCommand = commandRepository.findByName(START_COMMAND.getCommand());
-        var baseState = stateRepository.findByName(NO_STATE.getState());
-        Optional<TransactionDraft> draft = Optional.ofNullable(transactionDraftRepository.getFirstDraft());
+        Command baseCommand = commandService.findByName(START_COMMAND.getCommand());
+        State baseState = stateService.findByName(NO_STATE.getState());
+        Optional<TransactionDraft> draft = Optional.ofNullable(transactionDraftService.getFirstDraft());
 
         Transaction transactionToSave = null;
 
@@ -59,24 +65,23 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
             return;
         }
 
-        if (draft.get().getStatus().equals(DRAFT_STATUS.BUILT) ||
-                draft.get().getStatus().equals(DRAFT_STATUS.SAVING)) {
-            transactionDraftRepository.updateStatus(DRAFT_STATUS.SAVING.name());
-            transactionToSave = transactionRepository.save(Transaction.builder()
+        DraftStatus draftStatus = draft.get().getStatus();
+        if (draftStatus.equals(DraftStatus.BUILT) || draftStatus.equals(DraftStatus.SAVING)) {
+            transactionDraftService.updateStatus(DraftStatus.SAVING.name());
+            transactionToSave = transactionService.save(Transaction.builder()
                     .card(draft.get().getCard())
                     .transactionType(draft.get().getType())
                     .amount(draft.get().getAmount())
                     .build());
-            Card changingCard = cardRepository.getByName(transactionToSave.getCard().getName());
+            Card changingCard = cardService.getByName(transactionToSave.getCard().getName());
 
             if (transactionToSave.getTransactionType().equals(TransactionTypeEnum.INCOME)) {
-                cardRepository.updateBalanceByName(changingCard.getBalance().add(transactionToSave.getAmount())
+                cardService.updateBalanceByName(changingCard.getBalance().add(transactionToSave.getAmount())
                         , changingCard.getName());
             } else {
-                cardRepository.updateBalanceByName(changingCard.getBalance().subtract(transactionToSave.getAmount())
+                cardService.updateBalanceByName(changingCard.getBalance().subtract(transactionToSave.getAmount())
                         , changingCard.getName());
             }
-
         }
 
         if (transactionToSave == null) {
@@ -85,7 +90,7 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
         }
 
         cleanAllData();
-        currentConditionRepository.updateCommandAndState(baseCommand.getId(), baseState.getId());
+        currentConditionService.updateCommandAndState(baseCommand.getId(), baseState.getId());
 
         processFinish(transactionToSave);
     }
@@ -93,7 +98,7 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
     private void processFinish(Transaction transactionToSave) {
         UserDataContextHolder.getFacade()
                 .setText("Transaction on '" + transactionToSave.getAmount() + "' UAH successfully saved.\nGood luck!")
-                .addStartButton();
+                .addButtons(getGlobalCommands());
     }
 
     private void processErrorCreation() {
@@ -104,28 +109,27 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
     }
 
     private void processStartCreateTransaction(Command command, State state) {
-        currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
+        currentConditionService.updateCommandAndState(command.getId(), state.getId());
         UserDataContextHolder.getFacade()
                 .setText("Seems you have not started creating transaction.")
-                .addButtons(CREATE_TRANSACTION_COMMAND)
-                .addStartButton();
+                .addButtons(getGlobalCommands());
     }
 
     @Override
-    public boolean isSystemHandler() {
+    public boolean isSystemExecutor() {
         return false;
     }
 
     @Override
-    public boolean canProcessMessage() {
+    public boolean canExec() {
         return UserDataContextHolder.getInputtedTextCommand().equals(THIS_CMD);
     }
 
     @Override
     public boolean cleanAllData() {
-        transactionDraftRepository.deleteAll();
-        msgFromStateHistoryRepository.deleteAll();
+        transactionDraftService.deleteAll();
+        msgFromStateHistoryService.deleteAll();
 
-        return msgFromStateHistoryRepository.findLast() == null && transactionDraftRepository.getFirstDraft() == null;
+        return msgFromStateHistoryService.isEmpty() && transactionDraftService.isEmpty();
     }
 }

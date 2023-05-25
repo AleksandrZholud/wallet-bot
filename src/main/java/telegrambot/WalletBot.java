@@ -53,17 +53,17 @@ public class WalletBot extends TelegramLongPollingBot {
         //All logic of TelegramBot is here ↓
         //////////////////////////////////////////////////////////////////////////
 
-        for (AbstractCommandExecutor handler : AbstractCommandExecutor.getAllChildEntities()) {
-            if (handler.isSystemHandler() && handler.canProcessMessage()) {
-                handler.processMessage();
+        for (AbstractCommandExecutor executor : AbstractCommandExecutor.getAllChildEntities()) {
+            if (executor.isSystemExecutor() && executor.canExec()) {
+                executor.exec();
                 sendOutput();
                 return;
             }
         }
 
         for (AbstractCommandExecutor handler : AbstractCommandExecutor.getAllChildEntities()) {
-            if (!handler.isSystemHandler() && handler.canProcessMessage()) {
-                handler.processMessage();
+            if (!handler.isSystemExecutor() && handler.canExec()) {
+                handler.exec();
                 sendOutput();
                 return;
             }

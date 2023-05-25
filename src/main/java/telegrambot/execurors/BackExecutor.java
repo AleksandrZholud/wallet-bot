@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import telegrambot.config.interceptor.UserDataContextHolder;
-import telegrambot.repository.util.CurrentConditionRepository;
-import telegrambot.repository.util.MsgFromStateHistoryRepository;
+import telegrambot.service.current_condition.CurrentConditionService;
+import telegrambot.service.state_history.MsgFromStateHistoryService;
 
 import static telegrambot.model.enums.CommandEnum.GO_BACK_COMMAND;
 
@@ -13,36 +13,36 @@ import static telegrambot.model.enums.CommandEnum.GO_BACK_COMMAND;
 @RequiredArgsConstructor
 @Component
 public class BackExecutor extends AbstractCommandExecutor {
-    private final CurrentConditionRepository currentConditionRepository;
-    private final MsgFromStateHistoryRepository msgFromStateHistoryRepository;
+    private final CurrentConditionService currentConditionService;
+    private final MsgFromStateHistoryService msgFromStateHistoryService;
 
     private static final String THIS_CMD = GO_BACK_COMMAND.getCommand();
 
     @Override
-    public boolean isSystemHandler() {
+    public boolean isSystemExecutor() {
         return true;
     }
 
     @Override
-    public void processMessage() {
+    public void exec() {
         try {
             goBack();
         } catch (Exception ex) {
             log.error(ex.getMessage());
-            AbstractCommandExecutor.getSpecificChild(StartExecutor.class).processMessage();
+            AbstractCommandExecutor.getSpecificChild(StartExecutor.class).exec();
         }
     }
 
     private void goBack() {
 
-        String previousMessage = msgFromStateHistoryRepository.findPreLast();
-        long previousStateId = currentConditionRepository.getPreviousStateId();
+        String previousMessage = msgFromStateHistoryService.findPreLast();
+        long previousStateId = currentConditionService.getPreviousStateId();
 
         if (previousMessage == null || previousStateId == 0) {
-            AbstractCommandExecutor.getSpecificChild(StartExecutor.class).processMessage();
+            AbstractCommandExecutor.getSpecificChild(StartExecutor.class).exec();
         } else {
-            msgFromStateHistoryRepository.removeLast();
-            currentConditionRepository.updateState(previousStateId);
+            msgFromStateHistoryService.removeLast();
+            currentConditionService.updateState(previousStateId);
             UserDataContextHolder.getFacade()
                     .setText(previousMessage)
                     .addBackButton()
@@ -51,7 +51,7 @@ public class BackExecutor extends AbstractCommandExecutor {
     }
 
     @Override
-    public boolean canProcessMessage() {
+    public boolean canExec() {
         return UserDataContextHolder.getInputtedTextCommand().equals(THIS_CMD);
     }
 

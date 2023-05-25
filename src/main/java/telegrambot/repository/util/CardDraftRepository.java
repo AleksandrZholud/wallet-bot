@@ -9,22 +9,29 @@ import org.springframework.transaction.annotation.Transactional;
 import telegrambot.model.util.drafts.CardDraft;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Repository
 public interface CardDraftRepository extends JpaRepository<CardDraft, Long> {
     @Transactional
     @Modifying
-    @Query(value = "UPDATE card_draft  SET name =:name", nativeQuery = true)
+    @Query(value = "UPDATE card_draft  SET name = :name", nativeQuery = true)
     int updateName(@Param("name") String name);
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE card_draft SET balance =:balance", nativeQuery = true)
+    @Query(value = "UPDATE card_draft SET balance = :balance", nativeQuery = true)
     int updateBalance(@Param("balance") BigDecimal balance);
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE card_draft SET status =:status", nativeQuery = true)
+    @Query(value = "UPDATE card_draft SET balance = :balance, status = :status", nativeQuery = true)
+    int updateBalanceAndSetStatus(@Param("balance") BigDecimal balance,
+                                  @Param("status") String status);
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE card_draft SET status = :status", nativeQuery = true)
     int updateStatus(@Param("status") String status);
 
     @Transactional
@@ -36,5 +43,5 @@ public interface CardDraftRepository extends JpaRepository<CardDraft, Long> {
     CardDraft getById(@Param("id") Long id);
 
     @Query(value = "SELECT c.id, c.name, c.balance, c.status FROM card_draft AS c LIMIT 1", nativeQuery = true)
-    CardDraft getFirstDraft();
+    Optional<CardDraft> getFirstDraft();
 }

@@ -14,7 +14,7 @@ public abstract class AbstractCommandExecutor {
 
     private static final List<AbstractCommandExecutor> allChildEntities = new ArrayList<>();
 
-    AbstractCommandExecutor() {
+    protected AbstractCommandExecutor() {
         allChildEntities.add(this);
     }
 
@@ -33,16 +33,16 @@ public abstract class AbstractCommandExecutor {
                 });
     }
 
-    public abstract boolean isSystemHandler();
+    public abstract boolean isSystemExecutor();
 
     /**
      * Retrieve last message from DB
      * Remove last msg from DB and set current State to previous
      * Fails with default SendMessage if current condition wasn`t set, or if last msg wasn`t removed
      */
-    public abstract void processMessage() throws IllegalAccessException;
+    public abstract void exec() throws IllegalAccessException;
 
-    public abstract boolean canProcessMessage();
+    public abstract boolean canExec();
 
     /**
      * Must clean and check if all handlerData cleaned

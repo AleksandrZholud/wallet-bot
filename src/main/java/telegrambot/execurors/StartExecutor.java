@@ -3,8 +3,8 @@ package telegrambot.execurors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import telegrambot.config.interceptor.UserDataContextHolder;
-import telegrambot.repository.util.CurrentConditionRepository;
-import telegrambot.repository.util.MsgFromStateHistoryRepository;
+import telegrambot.service.current_condition.CurrentConditionService;
+import telegrambot.service.state_history.MsgFromStateHistoryService;
 
 import static telegrambot.model.enums.CommandEnum.START_COMMAND;
 import static telegrambot.model.enums.CommandEnum.getGlobalCommands;
@@ -12,19 +12,19 @@ import static telegrambot.model.enums.CommandEnum.getGlobalCommands;
 @RequiredArgsConstructor
 @Component
 public class StartExecutor extends AbstractCommandExecutor {
-    private final CurrentConditionRepository currentConditionRepository;
-    private final MsgFromStateHistoryRepository msgFromStateHistoryRepository;
+    private final CurrentConditionService currentConditionService;
+    private final MsgFromStateHistoryService msgFromStateHistoryService;
 
     private static final String THIS_CMD = START_COMMAND.getCommand();
 
     @Override
-    public boolean isSystemHandler() {
+    public boolean isSystemExecutor() {
         return true;
     }
 
     @Override
-    public void processMessage() {
-        currentConditionRepository.reset();
+    public void exec() {
+        currentConditionService.reset();
 
         boolean notCleaned = !cleanAllData();
         if (notCleaned) {
@@ -39,7 +39,7 @@ public class StartExecutor extends AbstractCommandExecutor {
     }
 
     @Override
-    public boolean canProcessMessage() {
+    public boolean canExec() {
         return UserDataContextHolder.getInputtedTextCommand().equals(THIS_CMD);
     }
 
@@ -54,8 +54,8 @@ public class StartExecutor extends AbstractCommandExecutor {
             }
         }
 
-        msgFromStateHistoryRepository.deleteAll();
+        msgFromStateHistoryService.deleteAll();
 
-        return msgFromStateHistoryRepository.findLast() == null;
+        return msgFromStateHistoryService.isEmpty();
     }
 }
