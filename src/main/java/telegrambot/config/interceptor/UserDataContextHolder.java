@@ -43,4 +43,8 @@ public class UserDataContextHolder {
     public static String getSenderName() {
         return CONTEXT_HOLDER.get().getUpdate().getMessage().getChat().getFirstName();
     }
+
+    public static Long getChatId() {
+        return CONTEXT_HOLDER.get().getUpdate().getMessage().getChatId();
+    }
 }

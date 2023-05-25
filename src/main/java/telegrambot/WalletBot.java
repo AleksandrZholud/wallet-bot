@@ -36,7 +36,7 @@ public class WalletBot extends TelegramLongPollingBot {
         try {
             setContext(update);
             if (update.hasMessage() && update.getMessage().hasText()) {
-                go();
+//                setDatasource();
             } else {
                 sendEmptyMessageError();
             }
@@ -48,6 +48,19 @@ public class WalletBot extends TelegramLongPollingBot {
             sendOutput(sendMessage);
         }
     }
+
+//    private void setDatasource() {
+//        String senderName = UserDataContextHolder.getSenderName();
+//        Long chatId = UserDataContextHolder.getChatId();
+//        try (Connection connection = appConfig.dataSource().getConnection()) {
+//            connection.setSchema(senderName + "_" + chatId);
+//
+//            go();
+//            connection.endRequest();
+//        } catch (Exception e) {
+//            throw new IllegalStateException(e.getMessage());
+//        }
+//    }
 
     private void go() throws IllegalAccessException {
         //All logic of TelegramBot is here ↓

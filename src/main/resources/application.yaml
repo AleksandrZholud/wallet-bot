@@ -1,11 +1,24 @@
 server:
-  port: 0
+  port: 8487
+  ssl:
+    enabled: false
+
 
 spring:
   datasource:
-    url: jdbc:postgresql://walletdb-postgresql-instance.cjlbkgvenvzw.eu-north-1.rds.amazonaws.com:5432/${main-db-name}
-    username: ば
-    password: 場
+    url: jdbc:${db-properties.jdbc-provider}://${db-properties.host}:${db-properties.port}/${db-properties.db-name}
+    username: ${db-properties.username}
+    password: ${db-properties.password}
+    name: ololoika
+  #    hikari:
+#      jdbc-url: jdbc:${db-properties.jdbc-provider}://${db-properties.host}:${db-properties.port}/${db-properties.db-name}
+#      username: ${db-properties.username}
+#      password: ${db-properties.password}
+#      connectionTimeout: 5000
+#      idleTimeout: 10000
+#      maxLifetime: 30000
+#      minimumIdle: 1
+#      maximumPoolSize: 2
   jpa:
     hibernate:
       ddl-auto: update
@@ -15,6 +28,9 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQL10Dialect
         temp:
           use_jdbc_metadata_defaults: false
+        multiTenancy: DATABASE
+        show_sql: true
+
   liquibase:
     enabled: false
     change-log: db/changelog/db.changelog-master.yaml
@@ -25,7 +41,13 @@ spring:
       schema-locations: classpath:db/changelog/util_tables_create_fill_sql/init_util_tables_schema_source.sql
       data-locations: classpath:db/changelog/util_tables_create_fill_sql/init_util_tables_data_source.sql
 
-main-db-name: 所
+db-properties:
+  jdbc-provider: postgresql
+  host: walletdb-postgresql-instance.cjlbkgvenvzw.eu-north-1.rds.amazonaws.com
+  port: 5432
+  username: ば
+  password: 場
+  db-name: 所
 
 telegram-bot:
   name: 野
