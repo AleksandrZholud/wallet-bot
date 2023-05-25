@@ -14,7 +14,8 @@ public class TransactionDraftServiceImpl implements TransactionDraftService {
 
     @Override
     public TransactionDraft getFirstDraft() {
-        return transactionDraftRepository.getFirstDraft();
+        return transactionDraftRepository.getFirstDraft()
+                .orElseThrow(() -> new IllegalStateException("TransactionDraft is not found"));
     }
 
     @Override
@@ -46,6 +47,11 @@ public class TransactionDraftServiceImpl implements TransactionDraftService {
     @Override
     public void updateAmountAndStatus(BigDecimal amount, String status) {
         transactionDraftRepository.updateAmountAndStatus(amount, status);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return transactionDraftRepository.getFirstDraft().isEmpty();
     }
 
 }

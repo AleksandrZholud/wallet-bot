@@ -12,6 +12,7 @@ public class StateServiceImpl implements StateService {
 
     @Override
     public State findByName(String name) {
-        return stateRepository.findByName(name);
+        return stateRepository.findByName(name)
+                .orElseThrow(() -> new IllegalStateException("State is not found."));
     }
 }

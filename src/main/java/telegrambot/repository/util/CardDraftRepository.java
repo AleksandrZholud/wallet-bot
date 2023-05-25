@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import telegrambot.model.util.drafts.CardDraft;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Repository
 public interface CardDraftRepository extends JpaRepository<CardDraft, Long> {
@@ -42,5 +43,5 @@ public interface CardDraftRepository extends JpaRepository<CardDraft, Long> {
     CardDraft getById(@Param("id") Long id);
 
     @Query(value = "SELECT c.id, c.name, c.balance, c.status FROM card_draft AS c LIMIT 1", nativeQuery = true)
-    CardDraft getFirstDraft();
+    Optional<CardDraft> getFirstDraft();
 }

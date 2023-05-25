@@ -18,4 +18,6 @@ public interface TransactionDraftService {
     void updateTransactionType(String type);
 
     void updateAmountAndStatus(BigDecimal amount, String status);
+
+    boolean isEmpty();
 }

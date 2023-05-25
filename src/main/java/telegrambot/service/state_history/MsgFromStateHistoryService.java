@@ -8,7 +8,7 @@ public interface MsgFromStateHistoryService {
 
     void save(MsgFromStateHistory msgFromStateHistory);
 
-    MsgFromStateHistory findLast();
+    boolean isEmpty();
 
     String findPreLast();
 

@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import telegrambot.model.util.MsgFromStateHistory;
 import telegrambot.repository.util.MsgFromStateHistoryRepository;
 
+import java.util.Optional;
+
 @AllArgsConstructor
 @Component
 public class MsgFromStateHistoryServiceImpl implements MsgFromStateHistoryService {
@@ -22,8 +24,9 @@ public class MsgFromStateHistoryServiceImpl implements MsgFromStateHistoryServic
     }
 
     @Override
-    public MsgFromStateHistory findLast() {
-        return msgFromStateHistoryRepository.findLast();
+    public boolean isEmpty() {
+        Optional<MsgFromStateHistory> optionalMsgFromStateHistory = msgFromStateHistoryRepository.findLast();
+        return optionalMsgFromStateHistory.isEmpty();
     }
 
     @Override

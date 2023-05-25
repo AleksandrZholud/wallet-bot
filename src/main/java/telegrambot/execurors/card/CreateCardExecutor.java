@@ -7,6 +7,7 @@ import telegrambot.execurors.AbstractCommandExecutor;
 import telegrambot.model.util.CurrentCondition;
 import telegrambot.model.util.MsgFromStateHistory;
 import telegrambot.model.util.drafts.CardDraft;
+import telegrambot.service.card.CardService;
 import telegrambot.service.card_draft.CardDraftService;
 import telegrambot.service.command.CommandService;
 import telegrambot.service.current_condition.CurrentConditionService;
@@ -15,20 +16,19 @@ import telegrambot.service.state_history.MsgFromStateHistoryService;
 
 import java.math.BigDecimal;
 
-import static telegrambot.model.enums.CommandEnum.CREATE_CARD_COMMAND;
-import static telegrambot.model.enums.CommandEnum.CREATE_CARD_CONFIRM_COMMAND;
+import static telegrambot.model.enums.CommandEnum.*;
 import static telegrambot.model.enums.StateEnum.*;
 
 @AllArgsConstructor
 @Component
 
-//TODO: HERE!
 public class CreateCardExecutor extends AbstractCommandExecutor {
     private final CardDraftService cardDraftService;
     private final CurrentConditionService currentConditionService;
     private final CommandService commandService;
     private final StateService stateService;
     private final MsgFromStateHistoryService msgFromStateHistoryService;
+    private final CardService cardService;
     private static final String THIS_CMD = CREATE_CARD_COMMAND.getCommand();
 
     @Override
@@ -79,9 +79,17 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
     }
 
     private void doSetName() {
+        var draftName = UserDataContextHolder.getInputtedTextCommand();
+
+        if(cardService.checkIfExistByName(draftName)) {
+            UserDataContextHolder.getFacade()
+                    .setText("Card with '" + draftName + "' already exist.")
+                    .addButtons(CREATE_TRANSACTION_COMMAND, CREATE_CARD_COMMAND);
+            return;
+        }
+
         var command = commandService.findByName(THIS_CMD);
         var state = stateService.findByName(SET_BALANCE.getState());
-        var draftName = UserDataContextHolder.getInputtedTextCommand();
 
         currentConditionService.updateCommandAndState(command.getId(), state.getId());
 
@@ -144,6 +152,6 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
     @Override
     public boolean cleanAllData() {
         cardDraftService.deleteAll();
-        return cardDraftService.getFirstDraft() == null;
+        return cardDraftService.isEmpty();
     }
 }

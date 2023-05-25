@@ -341,6 +341,6 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
     @Override
     public boolean cleanAllData() {
         transactionDraftService.deleteAll();
-        return transactionDraftService.getFirstDraft() == null;
+        return transactionDraftService.isEmpty();
     }
 }
