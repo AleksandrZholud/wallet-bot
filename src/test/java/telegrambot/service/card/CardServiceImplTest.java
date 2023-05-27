@@ -33,7 +33,7 @@ class CardServiceImplTest {
 
         //before
         Long id = 1L;
-        String name = "Exist name";
+        String name = "Exist_name";
         BigDecimal balance = BigDecimal.ONE;
 
         Card expectedRes = new Card(id, name, balance);
@@ -57,7 +57,7 @@ class CardServiceImplTest {
     void getByName_whenCardIsNotFound_throwEx() {
 
         //before
-        String name = "Not exist name";
+        String name = "Not_exist_name";
         when(cardRepository.getByName(name)).thenReturn(Optional.empty());
 
         //when
@@ -83,7 +83,7 @@ class CardServiceImplTest {
 
         //before
         Long id = 1L;
-        String name = "Card name";
+        String name = "Card_name";
         BigDecimal balance = BigDecimal.ONE;
 
         Card expectedRes = new Card(id, name, balance);
@@ -105,7 +105,7 @@ class CardServiceImplTest {
 
         // before
         BigDecimal amount = BigDecimal.ONE;
-        String name = "Card name";
+        String name = "Card_name";
 
         when(cardRepository.updateBalanceByName(amount, name)).thenReturn(1);
 
@@ -137,7 +137,7 @@ class CardServiceImplTest {
 
         //before
         Long id = 1L;
-        String name = "Card name";
+        String name = "Card_name";
         BigDecimal balance = BigDecimal.ONE;
         Optional<Card> res = Optional.of(new Card(id, name, balance));
 
