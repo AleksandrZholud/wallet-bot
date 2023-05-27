@@ -47,7 +47,6 @@ class CardServiceImplTest {
         //then
         assertThat(actualRes)
                 .isNotNull()
-                .usingRecursiveComparison()
                 .isEqualTo(expectedRes);
 
         verify(cardRepository).getByName(name);
