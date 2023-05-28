@@ -26,10 +26,9 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQL10Dialect
+        show_sql: true
         temp:
           use_jdbc_metadata_defaults: false
-        multiTenancy: DATABASE
-        show_sql: true
 
   liquibase:
     enabled: false
@@ -52,6 +51,7 @@ db-properties:
 telegram-bot:
   name: 野
   token: 食
+  webhookPath: ば
 
 logging:
   level:
