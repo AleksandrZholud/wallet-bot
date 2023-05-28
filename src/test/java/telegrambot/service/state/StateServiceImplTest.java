@@ -32,7 +32,7 @@ class StateServiceImplTest {
         Long id = 1L;
         String name = "SetBalance";
 
-        State expectedRes = new State(1L, name);
+        State expectedRes = new State(id, name);
         Optional<State> optionalState = Optional.of(expectedRes);
 
         when(stateRepository.findByName(name)).thenReturn(optionalState);
