@@ -13,8 +13,12 @@ import telegrambot.model.util.CurrentCondition;
 import telegrambot.model.util.MsgFromStateHistory;
 import telegrambot.model.util.State;
 import telegrambot.model.util.drafts.TransactionDraft;
-import telegrambot.repository.CardRepository;
-import telegrambot.repository.util.*;
+import telegrambot.service.card.CardService;
+import telegrambot.service.command.CommandService;
+import telegrambot.service.current_condition.CurrentConditionService;
+import telegrambot.service.state.StateService;
+import telegrambot.service.state_history.MsgFromStateHistoryService;
+import telegrambot.service.transaction_draft.TransactionDraftService;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -29,14 +33,14 @@ import static telegrambot.model.enums.StateEnum.*;
 @Component
 public class CreateTransactionExecutor extends AbstractCommandExecutor {
 
-    private static final String THIS_CMD = CREATE_TRANSACTION_COMMAND.getCommand();
 
-    private final CurrentConditionRepository currentConditionRepository;
-    private final CommandRepository commandRepository;
-    private final StateRepository stateRepository;
-    private final MsgFromStateHistoryRepository msgFromStateHistoryRepository;
-    private final TransactionDraftRepository transactionDraftRepository;
-    private final CardRepository cardRepository;
+    private final CurrentConditionService currentConditionService;
+    private final CommandService commandService;
+    private final StateService stateService;
+    private final MsgFromStateHistoryService msgFromStateHistoryService;
+    private final TransactionDraftService transactionDraftService;
+    private final CardService cardService;
+    private static final String THIS_CMD = CREATE_TRANSACTION_COMMAND.getCommand();
     private static List<List<String>> navigableList;
     private static int navigableListCurrentPosition;
 
@@ -50,12 +54,12 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
     public void exec() throws IllegalAccessException {
 
         if (UserDataContextHolder.getInputtedTextCommand().equals(THIS_CMD)) {
-            transactionDraftRepository.deleteAll();
-            currentConditionRepository.updateCommandAndState(4L, 1L);
-            msgFromStateHistoryRepository.deleteAll();
+            transactionDraftService.deleteAll();
+            currentConditionService.updateCommandAndState(4L, 1L);
+            msgFromStateHistoryService.deleteAll();
         }
 
-        CurrentCondition currentCondition = currentConditionRepository.getCurrentCondition();
+        CurrentCondition currentCondition = currentConditionService.getCurrentCondition();
         StateEnum currentState = StateEnum.findByState(currentCondition.getState().getName());
 
 
@@ -78,19 +82,19 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
     }
 
     private void doIfNoState() {
-        Command command = commandRepository.findByName(THIS_CMD);
-        State state = stateRepository.findByName(CHOOSE_CARD.getState());
-        currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
+        Command command = commandService.findByName(THIS_CMD);
+        State state = stateService.findByName(CHOOSE_CARD.getState());
+        currentConditionService.updateCommandAndState(command.getId(), state.getId());
 
-        transactionDraftRepository.deleteAll();
-        transactionDraftRepository.createFirstDraft();
+        transactionDraftService.deleteAll();
+        transactionDraftService.createFirstDraft();
 
         String answerMsg = "Choose card:";
-        msgFromStateHistoryRepository.save(MsgFromStateHistory.builder()
+        msgFromStateHistoryService.save(MsgFromStateHistory.builder()
                 .message(answerMsg)
                 .build());
 
-        List<String> cardNameList = cardRepository.findAll()
+        List<String> cardNameList = cardService.findAll()
                 .stream()
                 .map(Card::getName)
                 .sorted()
@@ -126,17 +130,17 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
             return;
         }
 
-        Command command = commandRepository.findByName(THIS_CMD);
-        State state = stateRepository.findByName(SET_TYPE.getState());
+        Command command = commandService.findByName(THIS_CMD);
+        State state = stateService.findByName(SET_TYPE.getState());
 
         String inputtedText = UserDataContextHolder.getInputtedTextCommand();
-        Card chosenCardEntity = cardRepository.getByName(inputtedText);
+        Card chosenCardEntity = cardService.getByName(inputtedText);
 
         if (chosenCardEntity != null) {
-            currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
-            transactionDraftRepository.updateCardId(chosenCardEntity.getId());
+            currentConditionService.updateCommandAndState(command.getId(), state.getId());
+            transactionDraftService.updateCardId(chosenCardEntity.getId());
             String answerMsg = "Want to add INCOME or EXPENSE?";
-            msgFromStateHistoryRepository.save(MsgFromStateHistory.builder()
+            msgFromStateHistoryService.save(MsgFromStateHistory.builder()
                     .message(answerMsg)
                     .build());
 
@@ -172,14 +176,14 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
             return;
         }
 
-        Command command = commandRepository.findByName(THIS_CMD);
-        State state = stateRepository.findByName(SET_AMOUNT.getState());
-        currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
+        Command command = commandService.findByName(THIS_CMD);
+        State state = stateService.findByName(SET_AMOUNT.getState());
+        currentConditionService.updateCommandAndState(command.getId(), state.getId());
 
-        transactionDraftRepository.updateTransactionType(chosenTrType.name());
+        transactionDraftService.updateTransactionType(chosenTrType.name());
 
         String answerMsg = "Input amount:";
-        msgFromStateHistoryRepository.save(MsgFromStateHistory.builder()
+        msgFromStateHistoryService.save(MsgFromStateHistory.builder()
                 .message(answerMsg)
                 .build());
 
@@ -201,8 +205,8 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
             return;
         }
 
-        TransactionDraft draft = transactionDraftRepository.getFirstDraft();
-        BigDecimal cardAmount = cardRepository.getByName(draft.getCard().getName()).getBalance();
+        TransactionDraft draft = transactionDraftService.getFirstDraft();
+        BigDecimal cardAmount = cardService.getByName(draft.getCard().getName()).getBalance();
         if (draft.getType().equals(TransactionTypeEnum.EXPENSE) && cardAmount.subtract(amount).compareTo(BigDecimal.ZERO) < 0) {
             UserDataContextHolder.getFacade()
                     .setText("Not enough money on card '"+draft.getCard().getName()+"'\nYou can spend only "+cardAmount+" UAH :(")
@@ -211,19 +215,19 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
             return;
         }
 
-        Command command = commandRepository.findByName(THIS_CMD);
-        State state = stateRepository.findByName(CONFIRMATION.getState());
-        currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
+        Command command = commandService.findByName(THIS_CMD);
+        State state = stateService.findByName(CONFIRMATION.getState());
+        currentConditionService.updateCommandAndState(command.getId(), state.getId());
 
-        transactionDraftRepository.updateAmountAndStatus(amount, DraftStatus.BUILT.name());
+        transactionDraftService.updateAmountAndStatus(amount, DraftStatus.BUILT.name());
 
-        TransactionDraft transactionDraft = transactionDraftRepository.getFirstDraft();
+        TransactionDraft transactionDraft = transactionDraftService.getFirstDraft();
         String answerMsg = "Confirm transaction:"
                 + "\n  Card: " + transactionDraft.getCard().getName()
                 + "\n  Type: " + transactionDraft.getType()
                 + "\nAmount: " + transactionDraft.getAmount();
 
-        msgFromStateHistoryRepository.save(MsgFromStateHistory.builder()
+        msgFromStateHistoryService.save(MsgFromStateHistory.builder()
                 .message(answerMsg)
                 .build());
 
@@ -305,9 +309,9 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
     }
 
     private void doIfNoCards() {
-        Command command = commandRepository.findByName(START_COMMAND.getCommand());
-        State state = stateRepository.findByName(NO_STATE.getState());
-        currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
+        Command command = commandService.findByName(START_COMMAND.getCommand());
+        State state = stateService.findByName(NO_STATE.getState());
+        currentConditionService.updateCommandAndState(command.getId(), state.getId());
         UserDataContextHolder.getFacade()
                 .setText("Seems you have no any card yet;(\nCreate your first card.")
                 .addButtons(CREATE_CARD_COMMAND)
@@ -315,9 +319,9 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
     }
 
     private void doIfNothingExecuted() {
-        Command command = commandRepository.findByName(START_COMMAND.getCommand());
-        State state = stateRepository.findByName(NO_STATE.getState());
-        currentConditionRepository.updateCommandAndState(command.getId(), state.getId());
+        Command command = commandService.findByName(START_COMMAND.getCommand());
+        State state = stateService.findByName(NO_STATE.getState());
+        currentConditionService.updateCommandAndState(command.getId(), state.getId());
         cleanAllData();
         UserDataContextHolder.getFacade()
                 .setText("Something gone wrong:(\nTry to create Transaction again.")
@@ -328,7 +332,7 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
 
     @Override
     public boolean canExec() {
-        String currentCommandName = currentConditionRepository.getCurrentCondition().getCommand().getName();
+        String currentCommandName = currentConditionService.getCurrentCondition().getCommand().getName();
         String message = UserDataContextHolder.getInputtedTextCommand();
 
         return message.equals(THIS_CMD) || currentCommandName.equals(THIS_CMD);
@@ -336,7 +340,7 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
 
     @Override
     public boolean cleanAllData() {
-        transactionDraftRepository.deleteAll();
-        return transactionDraftRepository.getFirstDraft() == null;
+        transactionDraftService.deleteAll();
+        return transactionDraftService.isEmpty();
     }
 }

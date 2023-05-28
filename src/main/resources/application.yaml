@@ -21,7 +21,7 @@ spring:
 #      maximumPoolSize: 2
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     open-in-view: off
     properties:
       hibernate:

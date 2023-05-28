@@ -1,4 +1,4 @@
-package telegrambot.service.carddraft;
+package telegrambot.service.card_draft;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,9 +33,7 @@ public class CardDraftServiceImpl implements CardDraftService{
 
     @Override
     public CardDraft updateBalanceAndGetEntity(BigDecimal draftBalance) {
-        //TODO: VALERY изменить метод 'updateBalance' чтобы он сразу сетил и BUILD статус //BUILD.name()
-        cardDraftRepository.updateBalance(draftBalance);
-        updateStatus(BUILT);
+        cardDraftRepository.updateBalanceAndSetStatus(draftBalance, BUILT.name());
         return getFirstDraft();
     }
 
@@ -47,7 +45,13 @@ public class CardDraftServiceImpl implements CardDraftService{
 
     @Override
     public CardDraft getFirstDraft() {
-        return cardDraftRepository.getFirstDraft();
+        return cardDraftRepository.getFirstDraft()
+                .orElseThrow(() -> new IllegalStateException("CardDraft is not found."));
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return cardDraftRepository.getFirstDraft().isEmpty();
     }
 
     @Override

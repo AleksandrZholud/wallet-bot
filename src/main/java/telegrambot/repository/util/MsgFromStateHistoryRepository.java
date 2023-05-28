@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import telegrambot.model.util.MsgFromStateHistory;
 
+import java.util.Optional;
+
 @Repository
 public interface MsgFromStateHistoryRepository extends JpaRepository<MsgFromStateHistory, Long> {
 
@@ -19,7 +21,7 @@ public interface MsgFromStateHistoryRepository extends JpaRepository<MsgFromStat
             + "                     FROM command_state_message_history                                 "
             + "                 )                                                                      ",
             nativeQuery = true)
-    MsgFromStateHistory findLast();
+    Optional<MsgFromStateHistory> findLast();
 
     @Query(value = "     SELECT message                                                                "
             + "          FROM command_state_message_history                                            "
