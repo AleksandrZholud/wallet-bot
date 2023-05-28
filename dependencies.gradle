@@ -1,9 +1,10 @@
-//if ("${useExperimentalFunctional}" == "true") {
-//    println("Use Experimental Functional -> include odd libs !!!")
-//    apply from: "exp_dependencies.gradle"
-//} else {
-//    println("Use local artifactory to get libs !!!")
-//}
+if ("${useExperimentalFunctional}" == "true") {
+    println("Using Experimental Functional !!!")
+    apply from: "exp_dependencies.gradle"
+}
+else {
+    println("Use standard libs.")
+}
 println("Welcome to MaZHo !!!")
 
 dependencies {

@@ -1,6 +1,7 @@
 package telegrambot.service.card;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import telegrambot.model.Card;
 import telegrambot.repository.CardRepository;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class CardServiceImpl implements CardService {
 

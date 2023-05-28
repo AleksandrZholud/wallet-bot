@@ -51,7 +51,7 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
     }
 
     @Override
-    public void exec() throws IllegalAccessException {
+    public void exec() {
 
         if (UserDataContextHolder.getInputtedTextCommand().equals(THIS_CMD)) {
             transactionDraftService.deleteAll();

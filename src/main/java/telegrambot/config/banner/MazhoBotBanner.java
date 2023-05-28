@@ -1,4 +1,4 @@
-package telegrambot.config.telegram.banner;
+package telegrambot.config.banner;
 
 import org.springframework.boot.Banner;
 import org.springframework.core.env.Environment;
