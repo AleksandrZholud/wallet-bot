@@ -61,7 +61,6 @@ class CurrentConditionServiceImplTest {
 
         //then
         verify(currentConditionRepository).getOptionalCurrentCondition();
-
     }
 
     @Test
