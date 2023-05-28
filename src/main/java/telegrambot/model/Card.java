@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 public class Card {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)//why thos class is here?
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)//why thos class is here? -hz
     private Long id;
 
     private String name;
