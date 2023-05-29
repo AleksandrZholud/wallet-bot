@@ -1,7 +1,9 @@
-package telegrambot.model.util.drafts;
+package telegrambot.model.drafts;
 
 import lombok.*;
+import telegrambot.model.Card;
 import telegrambot.model.enums.DraftStatus;
+import telegrambot.model.enums.TransactionTypeEnum;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -9,10 +11,11 @@ import java.math.BigDecimal;
 @Builder
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
-@Table(name = "card_draft")
-public class CardDraft {
+@Table(name = "transaction_draft")
+@AllArgsConstructor
+public class TransactionDraft {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hibernate_sequence")
     @SequenceGenerator(name = "hibernate_sequence", sequenceName = "hibernate_sequence", allocationSize = 1)
@@ -20,12 +23,18 @@ public class CardDraft {
     private Long id;
 
     @Setter
-    @Column(name = "name")
-    private String name;
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private TransactionTypeEnum type;
 
     @Setter
-    @Column(name = "balance")
-    private BigDecimal balance;
+    @ManyToOne
+    @JoinColumn(name = "card_id", referencedColumnName = "id")
+    private Card card;
+
+    @Setter
+    @Column(name = "amount")
+    private BigDecimal amount;
 
     @Setter
     @Column(name = "status")

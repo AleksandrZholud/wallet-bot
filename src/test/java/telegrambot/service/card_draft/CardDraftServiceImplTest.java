@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import telegrambot.model.drafts.CardDraft;
 import telegrambot.model.enums.DraftStatus;
-import telegrambot.model.util.drafts.CardDraft;
-import telegrambot.repository.util.CardDraftRepository;
+import telegrambot.repository.draft.CardDraftRepository;
 
 import java.math.BigDecimal;
 import java.util.Optional;
