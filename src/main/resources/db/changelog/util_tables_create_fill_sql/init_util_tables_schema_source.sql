@@ -110,4 +110,9 @@ create table command_state_message_history
     message   varchar(255),
     timestamp timestamp default current_timestamp
 );
+
+create sequence if not exists hibernate_sequence;
+
+alter sequence hibernate_sequence owner to "postgre_MaZHo";
+
 END;

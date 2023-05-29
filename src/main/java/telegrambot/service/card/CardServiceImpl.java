@@ -1,14 +1,17 @@
 package telegrambot.service.card;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import telegrambot.model.Card;
 import telegrambot.repository.CardRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class CardServiceImpl implements CardService {
 
@@ -16,7 +19,8 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public Card getByName(String name) {
-        return cardRepository.getByName(name).orElseThrow(() -> new IllegalStateException("Card is not exist."));
+        return cardRepository.getByName(name)
+                .orElseThrow(() -> new IllegalStateException("Card is not exist."));
     }
 
     @Override
@@ -35,13 +39,13 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public List<Card> findAll(){
+    public List<Card> findAll() {
         return cardRepository.findAll();
     }
 
     @Override
     public boolean checkIfExistByName(String name) {
-        var card = cardRepository.getByName(name);
-        return card.isPresent();
+        Optional<Card> optionalCard = cardRepository.getByName(name);
+        return optionalCard.isPresent();
     }
 }

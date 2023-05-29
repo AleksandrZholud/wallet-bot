@@ -6,21 +6,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 
+@Table(name = "default_table")
 @Builder
 @Getter
-@NoArgsConstructor
 @Entity
-@Table(name = "cards")
+@NoArgsConstructor
 @AllArgsConstructor
-public class Card {
+public class DefaultTable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)//why thos class is here? -hz
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-
-    private BigDecimal balance;
+    private String message;
 }
