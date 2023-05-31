@@ -21,11 +21,15 @@ public class WebhookBotController {
 
     private final TelegramWalletBot telegramWalletBot;
 
+    private static final String ERROR_EMPTY_MESSAGE_FOUND = "Error: Cannot understand an empty command!";
+
     @PostMapping(value = "/general")
     public ResponseEntity<SendMessage> receiveUpdate(@RequestBody Update update) {
 
-        if (update == null || update.getMessage() == null) {
-            return ResponseEntity.badRequest().build();
+        if (!update.hasMessage()) {
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.setText(ERROR_EMPTY_MESSAGE_FOUND);
+            return ResponseEntity.ok(sendMessage);
         }
 
         Duration duration = getDurationBetweenRequestAndCurrentTime(update);

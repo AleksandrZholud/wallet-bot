@@ -15,8 +15,8 @@ import telegrambot.execurors.AbstractCommandExecutor;
 public class TelegramWalletBot extends TelegramWebhookBot {
 
     private final BotConfig botConfig;
-    public static final String ERROR_EMPTY_MESSAGE_FOUND = "Error: Cannot understand an empty command!";
-    public static final String ERROR_UNDEFINED_COMMAND = "Error: Undefined command, try again.";
+    private static final String ERROR_EMPTY_MESSAGE_FOUND = "Error: Cannot understand an empty command!";
+    private static final String ERROR_UNDEFINED_COMMAND = "Error: Undefined command, try again.";
 
     @Override
     public String getBotPath() {
