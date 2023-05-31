@@ -21,8 +21,12 @@ public class WebhookBotController {
 
     private final TelegramWalletBot telegramWalletBot;
 
-    @PostMapping(value = "/go")
+    @PostMapping(value = "/general")
     public ResponseEntity<SendMessage> receiveUpdate(@RequestBody Update update) {
+
+        if (update == null || update.getMessage() == null) {
+            return ResponseEntity.badRequest().build();
+        }
 
         Duration duration = getDurationBetweenRequestAndCurrentTime(update);
 
