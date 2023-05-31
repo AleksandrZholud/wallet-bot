@@ -1,5 +1,6 @@
 server:
   port: 8487
+  locale: en
   ssl:
     enabled: false
 
@@ -11,14 +12,14 @@ spring:
     password: ${db-properties.password}
     name: ololoika
   #    hikari:
-#      jdbc-url: jdbc:${db-properties.jdbc-provider}://${db-properties.host}:${db-properties.port}/${db-properties.db-name}
-#      username: ${db-properties.username}
-#      password: ${db-properties.password}
-#      connectionTimeout: 5000
-#      idleTimeout: 10000
-#      maxLifetime: 30000
-#      minimumIdle: 1
-#      maximumPoolSize: 2
+  #      jdbc-url: jdbc:${db-properties.jdbc-provider}://${db-properties.host}:${db-properties.port}/${db-properties.db-name}
+  #      username: ${db-properties.username}
+  #      password: ${db-properties.password}
+  #      connectionTimeout: 5000
+  #      idleTimeout: 10000
+  #      maxLifetime: 30000
+  #      minimumIdle: 1
+  #      maximumPoolSize: 2
   jpa:
     hibernate:
       ddl-auto: validate
@@ -36,7 +37,7 @@ spring:
   sql:
     init:
       mode: always
-#Note:      !!! Scripts executing before Entity tables creation !!!
+      #Note:      !!! Scripts executing before Entity tables creation !!!
       schema-locations: classpath:db/changelog/util_tables_create_fill_sql/init_util_tables_schema_source.sql
       data-locations: classpath:db/changelog/util_tables_create_fill_sql/init_util_tables_data_source.sql
 
@@ -57,3 +58,7 @@ logging:
   level:
     org.hibernate: info
     liquibase: info
+
+telegram-update-validation-properties:
+  enabled: true
+  annotation-based-validation-enabled: true
