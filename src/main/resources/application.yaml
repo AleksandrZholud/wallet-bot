@@ -62,3 +62,5 @@ logging:
 telegram-update-validation-properties:
   enabled: true
   annotation-based-validation-enabled: true
+
+user-response-delay-in-seconds: 43200
