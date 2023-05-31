@@ -15,25 +15,10 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class TelegramUpdateValidationMethods {
-
     @NotEmpty
     @Value("${user-response-delay-in-seconds}")
-    private long responseDelay;
+    private long delayProperty;
     private static final String FIELD_MESSAGE = "message";
-
-    public void responseTimeTooLong(Integer msgUnixTimeDate, Errors errors) {
-        if (!errors.hasFieldErrors(FIELD_MESSAGE)) {
-            long delay = Instant.now().getEpochSecond() - msgUnixTimeDate.longValue();
-
-
-            log.info(getFormattedTimeFromSeconds(delay) + " passed from user response");
-            if (delay > responseDelay) {
-                log.warn("Response is irrelevant for now");
-                Object[] errorArgs = {FIELD_MESSAGE};
-                errors.rejectValue(FIELD_MESSAGE, "telegram_update.field.message.date.tooOld", errorArgs, "");
-            }
-        }
-    }
 
     private String getFormattedTimeFromSeconds(long seconds) {
         long h = seconds / 3600;
@@ -47,4 +32,18 @@ public class TelegramUpdateValidationMethods {
 
         return resultList.isEmpty() ? "0 seconds" : String.join(", ", resultList);
     }
+
+    public void responseTimeTooLong(Integer msgUnixTimeDate, Errors errors) {
+        if (!errors.hasFieldErrors(FIELD_MESSAGE)) {
+            long delay = Instant.now().getEpochSecond() - msgUnixTimeDate.longValue();
+            log.info(getFormattedTimeFromSeconds(delay) + " passed from user response");
+
+            if (delay > delayProperty) {
+                log.warn("Response is irrelevant for now due to long delay");
+                Object[] errorArgs = {FIELD_MESSAGE};
+                errors.rejectValue(FIELD_MESSAGE, "telegram_update.field.message.date.tooOld", errorArgs, "");
+            }
+        }
+    }
+
 }
