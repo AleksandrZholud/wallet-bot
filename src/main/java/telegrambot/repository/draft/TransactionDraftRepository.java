@@ -1,11 +1,11 @@
-package telegrambot.repository.util;
+package telegrambot.repository.draft;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
-import telegrambot.model.util.drafts.TransactionDraft;
+import telegrambot.model.drafts.TransactionDraft;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -29,11 +29,6 @@ public interface TransactionDraftRepository extends JpaRepository<TransactionDra
     @Modifying
     @Query(value = "UPDATE transaction_draft SET type = :type", nativeQuery = true)
     int updateTransactionType(@Param("type") String type);
-
-    @Transactional
-    @Modifying
-    @Query(value = "UPDATE transaction_draft SET amount = :amount", nativeQuery = true)
-    int updateAmount(@Param("amount") BigDecimal amount);
 
     @Transactional
     @Modifying
