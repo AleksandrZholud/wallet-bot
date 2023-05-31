@@ -1,5 +1,6 @@
 package telegrambot.config.exception.handler;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -7,9 +8,10 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import telegrambot.config.exception.DatabaseOperationException;
-import telegrambot.config.exception.LongResponseException;
+import telegrambot.config.exception.TelegramUpdateValidationException;
 import telegrambot.config.interceptor.UserDataContextHolder;
 
+@Slf4j
 @ControllerAdvice
 public class WebHookExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -40,8 +42,12 @@ public class WebHookExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.ok(UserDataContextHolder.performMessage());
     }
 
-    @ExceptionHandler(LongResponseException.class)
-    public ResponseEntity<SendMessage> myExceptionHandler(LongResponseException ex, WebRequest request) {
-        return ResponseEntity.ok().build();
+    @ExceptionHandler(TelegramUpdateValidationException.class)
+    public ResponseEntity<SendMessage> myExceptionHandler(TelegramUpdateValidationException ex, WebRequest request) {
+        UserDataContextHolder
+                .getFacade()
+                .addStartButton()
+                .setText(ex.getMessage());
+        return ResponseEntity.ok(UserDataContextHolder.performMessage());
     }
 }
