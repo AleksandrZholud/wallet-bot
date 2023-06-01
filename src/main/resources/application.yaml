@@ -54,7 +54,6 @@ logging:
     liquibase: info
     org.hibernate: info
     telegrambot.config.multitenancy.TenantManager: trace
-    liquibase: info
 
 telegram-update-validation-properties:
   enabled: true
