@@ -1,24 +1,24 @@
 server:
-  port: 8487
+  port: 228
   ssl:
     enabled: false
 
-
 spring:
+  profiles:
+    active: default
+  resources:
+    static-locations: classpath:/META-INF/resources/, classpath:/resources/, classpath:/static/, classpath:/public/, classpath:/db/changelog/
   datasource:
-    url: jdbc:${db-properties.jdbc-provider}://${db-properties.host}:${db-properties.port}/${db-properties.db-name}
-    username: ${db-properties.username}
-    password: ${db-properties.password}
-    name: ololoika
-  #    hikari:
-#      jdbc-url: jdbc:${db-properties.jdbc-provider}://${db-properties.host}:${db-properties.port}/${db-properties.db-name}
-#      username: ${db-properties.username}
-#      password: ${db-properties.password}
-#      connectionTimeout: 5000
-#      idleTimeout: 10000
-#      maxLifetime: 30000
-#      minimumIdle: 1
-#      maximumPoolSize: 2
+    hikari:
+      jdbc-url: jdbc:${db-properties.jdbc-provider}://${db-properties.host}:${db-properties.port}/${db-properties.db-name}
+      username: ${db-properties.username}
+      password: ${db-properties.password}
+      idleTimeout: 10000
+      maxLifetime: 30000
+      minimumIdle: 0
+      maximumPoolSize: 2
+      pool-name: ololoika
+      connectionTimeout: 3000
   jpa:
     hibernate:
       ddl-auto: validate
@@ -27,18 +27,12 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQL10Dialect
         show_sql: true
+        format_sql: true
         temp:
           use_jdbc_metadata_defaults: false
-
   liquibase:
-    enabled: false
+    enabled: true
     change-log: db/changelog/db.changelog-master.yaml
-  sql:
-    init:
-      mode: always
-#Note:      !!! Scripts executing before Entity tables creation !!!
-      schema-locations: classpath:db/changelog/util_tables_create_fill_sql/init_util_tables_schema_source.sql
-      data-locations: classpath:db/changelog/util_tables_create_fill_sql/init_util_tables_data_source.sql
 
 db-properties:
   jdbc-provider: postgresql
@@ -53,7 +47,13 @@ telegram-bot:
   token: 食
   webhookPath: ば
 
+multi-tenancy:
+  master:
+    entityManager:
+      packages: "telegrambot"
+
 logging:
   level:
-    org.hibernate: info
     liquibase: info
+    org.hibernate: info
+    telegrambot.config.multitenancy.TenantManager: trace

@@ -42,7 +42,7 @@ public class WebHookExceptionHandler extends ResponseEntityExceptionHandler {
         UserDataContextHolder
                 .getFacade()
                 .addStartButton()
-                .setText(ex.getMessage());
+                .setText("Server error.");
         telegramWalletBot.execute(UserDataContextHolder.performMessage());
         return ResponseEntity.ok().build();
     }
