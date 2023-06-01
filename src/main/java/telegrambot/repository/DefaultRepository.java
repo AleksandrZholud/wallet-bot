@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import telegrambot.model.DefaultTable;
 
+// TODO: 29.05.2023 Zholud: remove this class
 public interface DefaultRepository extends JpaRepository<DefaultTable, Long> {
 
     @Transactional

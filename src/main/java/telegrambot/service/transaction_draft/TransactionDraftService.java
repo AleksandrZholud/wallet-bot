@@ -1,6 +1,6 @@
 package telegrambot.service.transaction_draft;
 
-import telegrambot.model.util.drafts.TransactionDraft;
+import telegrambot.model.drafts.TransactionDraft;
 
 import java.math.BigDecimal;
 
