@@ -1,13 +1,11 @@
 package telegrambot.config.properties;
 
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
-import javax.sql.DataSource;
 import javax.validation.constraints.NotBlank;
 
 @Validated
@@ -15,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @Configuration
 @ConfigurationProperties(prefix = "db-properties")
-public class DatabaseProperties {
+public class DefaultDatabaseProperties {
 
     @NotBlank
     private String jdbcProvider;
@@ -35,27 +33,7 @@ public class DatabaseProperties {
     @NotBlank
     private String dbName;
 
-    protected String getJdbcUrl() {
+    protected String getJdbcUrl(String dbName) {
         return String.format("jdbc:%s://%s:%s/%s", jdbcProvider, host, port, dbName);
-    }
-
-    public DataSource getNewDataSource(String dbName) {
-        this.dbName = dbName;
-
-        HikariDataSource dataSource = new HikariDataSource();
-
-        dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setJdbcUrl(getJdbcUrl());
-        dataSource.setUsername(username);
-        dataSource.setPassword(password);
-
-        dataSource.setConnectionTimeout(3000);
-        dataSource.setIdleTimeout(10000);
-        dataSource.setMaxLifetime(30000);
-
-        dataSource.setMinimumIdle(3);
-        dataSource.setMaximumPoolSize(8);
-
-        return dataSource;
     }
 }

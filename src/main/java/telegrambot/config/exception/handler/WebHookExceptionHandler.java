@@ -1,6 +1,5 @@
 package telegrambot.config.exception.handler;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,7 +10,6 @@ import telegrambot.config.exception.DatabaseOperationException;
 import telegrambot.config.exception.TelegramUpdateValidationException;
 import telegrambot.config.interceptor.UserDataContextHolder;
 
-@Slf4j
 @ControllerAdvice
 public class WebHookExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -47,7 +45,7 @@ public class WebHookExceptionHandler extends ResponseEntityExceptionHandler {
         UserDataContextHolder
                 .getFacade()
                 .addStartButton()
-                .setText(ex.getMessage());
+                .setText("Server error.");
         return ResponseEntity.ok(UserDataContextHolder.performMessage());
     }
 }
