@@ -50,8 +50,8 @@ public class DataSourceConfiguration {
         dataSource.setIdleTimeout(10000);
         dataSource.setMaxLifetime(30000);
 
-        dataSource.setMinimumIdle(1);
-        dataSource.setMaximumPoolSize(2);
+        dataSource.setMinimumIdle(0);
+        dataSource.setMaximumPoolSize(3);
 
         dataSource.setPoolName("masterDataSource");
 
@@ -114,8 +114,8 @@ public class DataSourceConfiguration {
         newDataSource.setIdleTimeout(10000);
         newDataSource.setMaxLifetime(30000);
 
-        newDataSource.setMinimumIdle(3);
-        newDataSource.setMaximumPoolSize(8);
+        newDataSource.setMinimumIdle(0);
+        newDataSource.setMaximumPoolSize(2);
 
         return newDataSource;
     }

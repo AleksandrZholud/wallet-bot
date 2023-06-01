@@ -2,6 +2,7 @@ package telegrambot.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +17,7 @@ public class DatabaseController {
     private final TenantManager tenantManager;
     private final CurrentConditionRepository currentConditionRepository;
 
+    @Transactional
     @GetMapping("/switch-database/{name}")
     public String switchDatabase(@PathVariable String name) {
 
