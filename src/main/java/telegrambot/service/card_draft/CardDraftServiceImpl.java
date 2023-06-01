@@ -2,9 +2,9 @@ package telegrambot.service.card_draft;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import telegrambot.model.drafts.CardDraft;
 import telegrambot.model.enums.DraftStatus;
-import telegrambot.model.util.drafts.CardDraft;
-import telegrambot.repository.util.CardDraftRepository;
+import telegrambot.repository.draft.CardDraftRepository;
 
 import java.math.BigDecimal;
 

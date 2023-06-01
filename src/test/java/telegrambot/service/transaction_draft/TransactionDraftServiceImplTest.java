@@ -6,10 +6,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import telegrambot.model.Card;
+import telegrambot.model.drafts.TransactionDraft;
 import telegrambot.model.enums.DraftStatus;
 import telegrambot.model.enums.TransactionTypeEnum;
-import telegrambot.model.util.drafts.TransactionDraft;
-import telegrambot.repository.util.TransactionDraftRepository;
+import telegrambot.repository.draft.TransactionDraftRepository;
 
 import java.math.BigDecimal;
 import java.util.Optional;

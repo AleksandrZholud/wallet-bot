@@ -1,5 +1,6 @@
 server:
   port: 228
+  locale: en
   ssl:
     enabled: false
 
@@ -53,3 +54,10 @@ logging:
     liquibase: info
     org.hibernate: info
     telegrambot.config.multitenancy.TenantManager: trace
+    liquibase: info
+
+telegram-update-validation-properties:
+  enabled: true
+  annotation-based-validation-enabled: true
+
+user-response-delay-in-seconds: 43200

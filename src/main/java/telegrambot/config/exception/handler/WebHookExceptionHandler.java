@@ -1,49 +1,51 @@
 package telegrambot.config.exception.handler;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import telegrambot.config.exception.DatabaseOperationException;
+import telegrambot.config.exception.TelegramUpdateValidationException;
 import telegrambot.config.interceptor.UserDataContextHolder;
-import telegrambot.config.telegram.TelegramWalletBot;
 
 @ControllerAdvice
-@RequiredArgsConstructor
 public class WebHookExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private final TelegramWalletBot telegramWalletBot;
-
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<Void> handleIllegalStateException(IllegalStateException ex, WebRequest request) throws TelegramApiException {
+    public ResponseEntity<SendMessage> handleIllegalStateException(IllegalStateException ex, WebRequest request) {
         UserDataContextHolder
                 .getFacade()
                 .addStartButton()
                 .setText(ex.getMessage());
-        telegramWalletBot.execute(UserDataContextHolder.performMessage());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(UserDataContextHolder.performMessage());
     }
 
     @ExceptionHandler(DatabaseOperationException.class)
-    public ResponseEntity<Void> handleDatabaseOperationException(DatabaseOperationException ex, WebRequest request) throws TelegramApiException {
+    public ResponseEntity<SendMessage> handleDatabaseOperationException(DatabaseOperationException ex, WebRequest request) {
         UserDataContextHolder
                 .getFacade()
                 .addStartButton()
                 .setText(ex.getMessage());
-        telegramWalletBot.execute(UserDataContextHolder.performMessage());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(UserDataContextHolder.performMessage());
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Void> unhandledExceptionHandler(Exception ex, WebRequest request) throws TelegramApiException {
+    public ResponseEntity<SendMessage> unhandledExceptionHandler(Exception ex, WebRequest request) {
+        UserDataContextHolder
+                .getFacade()
+                .addStartButton()
+                .setText(ex.getMessage());
+        return ResponseEntity.ok(UserDataContextHolder.performMessage());
+    }
+
+    @ExceptionHandler(TelegramUpdateValidationException.class)
+    public ResponseEntity<SendMessage> myExceptionHandler(TelegramUpdateValidationException ex, WebRequest request) {
         UserDataContextHolder
                 .getFacade()
                 .addStartButton()
                 .setText("Server error.");
-        telegramWalletBot.execute(UserDataContextHolder.performMessage());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(UserDataContextHolder.performMessage());
     }
 }
