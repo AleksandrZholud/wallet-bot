@@ -20,11 +20,10 @@ public class CardController {
                                  @PathVariable String newName) {
 
         Card card = cardService.getCardById(id);
-        if (card != null) {
-            card.setName(newName);
-            cardService.save(card);
-            return "You have successfully renamed the card to " + card.getName() + ".";
-        }
-        return "The card with your id was not found";
+
+        card.setName(newName);
+        cardService.save(card);
+
+        return "You have successfully renamed the card to " + card.getName() + ".";
     }
 }
