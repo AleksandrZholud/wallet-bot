@@ -16,6 +16,7 @@ public interface CardService {
 
     List<Card> findAll();
 
-
     boolean checkIfExistByName(String name);
+
+    Card getCardById(Long id);
 }

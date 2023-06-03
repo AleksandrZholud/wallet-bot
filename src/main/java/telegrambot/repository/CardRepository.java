@@ -17,6 +17,9 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     @Query(value = "SELECT c.id, c.name, c.balance  FROM cards c WHERE c.name = :name", nativeQuery = true)
     Optional<Card> getByName(@Param("name") String name);
 
+    @Query(value = "SELECT c.id, c.name, c.balance  FROM cards c WHERE c.id = :id", nativeQuery = true)
+    Optional<Card> getCardById(@Param("id") Long id);
+
     @Transactional
     @Modifying
     @Query(value = "UPDATE cards SET balance = :amount WHERE name = :name", nativeQuery = true)

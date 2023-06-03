@@ -48,4 +48,10 @@ public class CardServiceImpl implements CardService {
         Optional<Card> optionalCard = cardRepository.getByName(name);
         return optionalCard.isPresent();
     }
+
+    @Override
+    public Card getCardById(Long id) {
+        return cardRepository.getCardById(id)
+                .orElseThrow(() -> new IllegalStateException("Card with id is not found."));
+    }
 }
