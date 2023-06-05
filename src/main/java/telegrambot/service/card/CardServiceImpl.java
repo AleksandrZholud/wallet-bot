@@ -54,4 +54,10 @@ public class CardServiceImpl implements CardService {
         return cardRepository.getCardById(id)
                 .orElseThrow(() -> new IllegalStateException("Card with id is not found."));
     }
+
+    @Override
+    public String updateNameById(Card card) {
+        cardRepository.save(card);
+        return "You have successfully renamed the card to " + card.getName() + ".";
+    }
 }

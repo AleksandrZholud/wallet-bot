@@ -19,4 +19,6 @@ public interface CardService {
     boolean checkIfExistByName(String name);
 
     Card getCardById(Long id);
+
+    String updateNameById(Card card);
 }
