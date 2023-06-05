@@ -51,7 +51,7 @@ public class DataSourceConfiguration {
         dataSource.setMaxLifetime(30000);
 
         dataSource.setMinimumIdle(0);
-        dataSource.setMaximumPoolSize(3);
+        dataSource.setMaximumPoolSize(2);
 
         dataSource.setPoolName("masterDataSource");
 
