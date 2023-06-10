@@ -1,6 +1,7 @@
 package telegrambot.repository;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -15,6 +16,7 @@ import telegrambot.model.Card;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+@Tag("slow")
 @DataJpaTest
 @Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
