@@ -8,7 +8,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.validation.Validator;
 import telegrambot.config.exception.TelegramUpdateValidationException;
 import telegrambot.config.properties.TelegramUpdateValidationProperties;
-import telegrambot.model.ErrorDto;
+import telegrambot.model.dto.ErrorDto;
 import telegrambot.model.enums.ErrorCode;
 import telegrambot.service.message.MessageService;
 
