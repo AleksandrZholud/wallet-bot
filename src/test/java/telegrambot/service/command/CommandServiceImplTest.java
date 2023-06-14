@@ -37,7 +37,7 @@ class CommandServiceImplTest {
         when(commandRepository.findByName(name)).thenReturn(commandOptional);
         //when
 
-        var actualRes = commandService.findByName(name);
+        var actualRes = commandService.getByName(name);
 
         //then
         assertThat(actualRes)
@@ -56,7 +56,7 @@ class CommandServiceImplTest {
         when(commandRepository.findByName(name)).thenReturn(Optional.empty());
 
         //when
-        assertThatThrownBy(() -> commandService.findByName(name)).isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> commandService.getByName(name)).isInstanceOf(IllegalStateException.class);
 
         //then
         verify(commandRepository).findByName(name);

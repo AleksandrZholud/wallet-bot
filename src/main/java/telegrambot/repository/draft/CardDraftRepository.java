@@ -29,11 +29,6 @@ public interface CardDraftRepository extends JpaRepository<CardDraft, Long> {
     @Query(value = "UPDATE card_draft SET status = :status", nativeQuery = true)
     int updateStatus(@Param("status") String status);
 
-    @Transactional
-    @Modifying
-    @Query(value = "INSERT INTO card_draft(id, status) VALUES (2, 'BUILDING')", nativeQuery = true)
-    int createFirstDraft();
-
     @Query(value = "SELECT c.id, c.name, c.balance, c.status FROM card_draft AS c LIMIT 1", nativeQuery = true)
     Optional<CardDraft> getFirstDraft();
 }

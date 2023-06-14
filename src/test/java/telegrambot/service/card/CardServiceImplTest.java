@@ -15,8 +15,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
 @SpringBootTest(classes = CardServiceImpl.class)
@@ -32,24 +31,24 @@ class CardServiceImplTest {
     void getByName_ok() {
 
         //before
-        Long id = 1L;
-        String name = "Exist_name";
-        BigDecimal balance = BigDecimal.ONE;
+        String cardName = "card";
+        Card expectedResult = Card.builder()
+                .id(1L)
+                .name(cardName)
+                .balance(BigDecimal.ONE)
+                .build();
 
-        Card expectedRes = new Card(id, name, balance);
-        Optional<Card> optExistedCard = Optional.of(expectedRes);
-
-        when(cardRepository.getByName(name)).thenReturn(optExistedCard);
+        when(cardRepository.getByName(cardName)).thenReturn(Optional.of(expectedResult));
 
         //when
-        var actualRes = cardService.getByName(name);
+        Card actualResult = cardService.getByName(cardName);
 
         //then
-        assertThat(actualRes)
+        assertThat(actualResult)
                 .isNotNull()
-                .isEqualTo(expectedRes);
+                .isEqualTo(expectedResult);
 
-        verify(cardRepository).getByName(name);
+        verify(cardRepository).getByName(cardName);
     }
 
     @Test
@@ -60,59 +59,118 @@ class CardServiceImplTest {
         when(cardRepository.getByName(name)).thenReturn(Optional.empty());
 
         //when
-        assertThatThrownBy(() -> cardService.getByName(name)).isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> cardService.getByName(name))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("No Card with name '" + name + "' in database");
 
         //then
         verify(cardRepository).getByName(name);
     }
 
     @Test
-    void getBalance() {
-
-        //when
-        var actualRes = cardService.getBalance();
-
-        //then
-        assertThat(actualRes)
-                .isNull();
-    }
-
-    @Test
-    void save() {
+    void createCard_ok() {
 
         //before
-        Long id = 1L;
-        String name = "Card_name";
-        BigDecimal balance = BigDecimal.ONE;
+        Card expectedResult = Card.builder()
+                .id(1L)
+                .name("cardName")
+                .balance(BigDecimal.ONE)
+                .build();
 
-        Card expectedRes = new Card(id, name, balance);
-
-        when(cardRepository.save(expectedRes)).thenReturn(expectedRes);
+        when(cardRepository.getByName(expectedResult.getName())).thenReturn(Optional.empty());
+        when(cardRepository.save(expectedResult)).thenReturn(expectedResult);
 
         //when
-        var actualRes = cardService.save(expectedRes);
+        Card actualResult = cardService.createCard(expectedResult);
 
         //then
-        assertThat(actualRes)
-                .isEqualTo(expectedRes);
+        assertThat(actualResult)
+                .isEqualTo(expectedResult);
 
-        verify(cardRepository).save(actualRes);
+        verify(cardRepository).getByName(expectedResult.getName());
+        verify(cardRepository).save(actualResult);
     }
 
     @Test
-    void updateBalanceByName() {
+    void createCard_AlreadyExist() {
+
+        //before
+        Card expectedResult = Card.builder()
+                .id(1L)
+                .name("cardName")
+                .balance(BigDecimal.ONE)
+                .build();
+
+        when(cardRepository.getByName(expectedResult.getName())).thenReturn(Optional.of(expectedResult));
+
+        //when
+
+        //then
+        assertThatThrownBy(() -> cardService.createCard(expectedResult))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Card with name '" + expectedResult.getName() + "' already exist in database");
+
+        verify(cardRepository).getByName(expectedResult.getName());
+        verify(cardRepository, never()).save(new Card());
+    }
+
+    @Test
+    void updateBalanceByName_ok() {
 
         // before
-        BigDecimal amount = BigDecimal.ONE;
+        BigDecimal amount = BigDecimal.TEN;
         String name = "Card_name";
+        Card existingCard = Card.builder()
+                .id(1L)
+                .name(name)
+                .balance(BigDecimal.ZERO)
+                .build();
+        Card changedCard = Card.builder()
+                .id(1L)
+                .name(name)
+                .balance(BigDecimal.ZERO.add(amount))
+                .build();
 
-        when(cardRepository.updateBalanceByName(amount, name)).thenReturn(1);
+        when(cardRepository.getByName(name)).thenReturn(Optional.of(existingCard));
+        when(cardRepository.save(changedCard)).thenReturn(changedCard);
 
         // when
-        cardService.updateBalanceByName(amount, name);
+        Card actualResult = cardService.updateBalanceByName(amount, name);
 
         // then
-        verify(cardRepository).updateBalanceByName(amount, name);
+        assertThat(actualResult)
+                .isEqualTo(changedCard);
+        verify(cardRepository).getByName(name);
+        verify(cardRepository).save(changedCard);
+    }
+
+    @Test
+    void updateBalanceByName_NoCardWithName() {
+
+        // before
+        BigDecimal amount = BigDecimal.TEN;
+        String name = "Card_name";
+        Card existingCard = Card.builder()
+                .id(1L)
+                .name(name)
+                .balance(BigDecimal.ZERO)
+                .build();
+        Card changedCard = Card.builder()
+                .id(1L)
+                .name(name)
+                .balance(BigDecimal.ZERO.add(amount))
+                .build();
+
+        when(cardRepository.getByName(name)).thenReturn(Optional.empty());
+
+        // when
+
+        // then
+        assertThatThrownBy(() -> cardService.updateBalanceByName(amount, name))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("No Card with name '" + name + "' in database");
+        verify(cardRepository).getByName(name);
+        verify(cardRepository, never()).save(new Card());
     }
 
     @Test
@@ -123,7 +181,7 @@ class CardServiceImplTest {
         when(cardRepository.findAll()).thenReturn(expectedRes);
 
         //when
-        var actualRes = cardService.findAll();
+        var actualRes = cardService.getAll();
 
         //then
         assertThat(actualRes)

@@ -35,7 +35,7 @@ class StateServiceImplTest {
         State expectedRes = new State(id, name);
         Optional<State> optionalState = Optional.of(expectedRes);
 
-        when(stateRepository.findByName(name)).thenReturn(optionalState);
+        when(stateRepository.findByNameOptional(name)).thenReturn(optionalState);
 
         //when
         var actualRes = stateService.findByName(name);
@@ -44,7 +44,7 @@ class StateServiceImplTest {
         assertThat(actualRes)
                 .isNotNull()
                 .isEqualTo(expectedRes);
-        verify(stateRepository).findByName(name);
+        verify(stateRepository).findByNameOptional(name);
     }
 
     @Test
@@ -52,12 +52,12 @@ class StateServiceImplTest {
 
         //before
         String name = "GetUp";
-        when(stateRepository.findByName(name)).thenReturn(Optional.empty());
+        when(stateRepository.findByNameOptional(name)).thenReturn(Optional.empty());
 
         //when
         assertThatThrownBy(() -> stateService.findByName(name)).isInstanceOf(IllegalStateException.class);
 
         //then
-        verify(stateRepository).findByName(name);
+        verify(stateRepository).findByNameOptional(name);
     }
 }

@@ -36,7 +36,7 @@ class CurrentConditionServiceImplTest {
         CurrentCondition expectedRes = new CurrentCondition(1L, command, state);
         Optional<CurrentCondition> optionalCurrentCondition = Optional.of(expectedRes);
 
-        when(currentConditionRepository.getOptionalCurrentCondition()).thenReturn(optionalCurrentCondition);
+        when(currentConditionRepository.getCurrentConditionOptional()).thenReturn(optionalCurrentCondition);
         //when
 
         var actualRes = currentConditionService.getCurrentCondition();
@@ -46,21 +46,21 @@ class CurrentConditionServiceImplTest {
         assertThat(actualRes)
                 .isNotNull()
                 .isEqualTo(expectedRes);
-        verify(currentConditionRepository).getOptionalCurrentCondition();
+        verify(currentConditionRepository).getCurrentConditionOptional();
     }
 
     @Test
     void getCurrentCondition_whenConditionIsNotFound_throwEx() {
 
         //before
-        when(currentConditionRepository.getOptionalCurrentCondition()).thenReturn(Optional.empty());
+        when(currentConditionRepository.getCurrentConditionOptional()).thenReturn(Optional.empty());
 
         //when
         assertThatThrownBy(() -> currentConditionService.getCurrentCondition())
                 .isInstanceOf(IllegalStateException.class);
 
         //then
-        verify(currentConditionRepository).getOptionalCurrentCondition();
+        verify(currentConditionRepository).getCurrentConditionOptional();
     }
 
     @Test
@@ -85,16 +85,16 @@ class CurrentConditionServiceImplTest {
         //before
         Long expectedRes = 1L;
 
-        when(currentConditionRepository.getPreviousStateId()).thenReturn(expectedRes);
+        when(currentConditionRepository.getPreviousStateOptional()).thenReturn(expectedRes);
 
         //when
-        var actualRes = currentConditionService.getPreviousStateId();
+        var actualRes = currentConditionService.getPreviousState();
 
         //then
 
         assertThat(actualRes)
                 .isEqualTo(expectedRes);
-        verify(currentConditionRepository).getPreviousStateId();
+        verify(currentConditionRepository).getPreviousStateOptional();
     }
 
     @Test

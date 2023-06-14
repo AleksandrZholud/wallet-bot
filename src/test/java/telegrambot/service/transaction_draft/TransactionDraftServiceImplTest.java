@@ -101,7 +101,7 @@ class TransactionDraftServiceImplTest {
         when(transactionDraftRepository.createFirstDraft()).thenReturn(2);
 
         //when
-        transactionDraftService.createFirstDraft();
+        transactionDraftService.createSingleDraft();
 
         //then
         verify(transactionDraftRepository).createFirstDraft();
@@ -116,7 +116,7 @@ class TransactionDraftServiceImplTest {
         when(transactionDraftRepository.updateCardId(id)).thenReturn(11);
 
         //when
-        transactionDraftService.updateCardId(id);
+        transactionDraftService.updateCard(id);
 
         //then
         verify(transactionDraftRepository).updateCardId(id);

@@ -12,8 +12,8 @@ public class CommandServiceImpl implements CommandService {
     private final CommandRepository commandRepository;
 
     @Override
-    public Command findByName(String name) {
+    public Command getByName(String name) {
         return commandRepository.findByName(name).
-                orElseThrow(() -> new IllegalStateException("Command is not found."));
+                orElseThrow(() -> new IllegalStateException("Command with name '" + name + "' not found."));
     }
 }

@@ -20,26 +20,31 @@ public class CardServiceImpl implements CardService {
     @Override
     public Card getByName(String name) {
         return cardRepository.getByName(name)
-                .orElseThrow(() -> new IllegalStateException("Card is not exist."));
+                .orElseThrow(() -> new IllegalStateException("No Card with name '" + name + "' in database"));
     }
 
     @Override
-    public BigDecimal getBalance() {
-        return null;
-    }
+    public Card createCard(Card card) {
+        Optional<Card> cardToCheckOptional = cardRepository.getByName(card.getName());
 
-    @Override
-    public Card save(Card card) {
+        if (cardToCheckOptional.isPresent()) {
+            throw new IllegalStateException("Card with name '" + card.getName() + "' already exist in database");
+        }
         return cardRepository.save(card);
     }
 
     @Override
-    public void updateBalanceByName(BigDecimal amount, String name) {
-        cardRepository.updateBalanceByName(amount, name);
+    public Card updateBalanceByName(BigDecimal amount, String name) {
+        Optional<Card> cardToChangeOptional = cardRepository.getByName(name);
+        Card changedCard = cardToChangeOptional
+                .orElseThrow(() -> new IllegalStateException("No Card with name '" + name + "' in database"));
+
+        changedCard.setName(name);
+        return cardRepository.save(changedCard);
     }
 
     @Override
-    public List<Card> findAll() {
+    public List<Card> getAll() {
         return cardRepository.findAll();
     }
 

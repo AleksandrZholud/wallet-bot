@@ -9,17 +9,15 @@ public interface CardDraftService {
 
     void deleteAll();
 
-    void createFirstDraft();
+    CardDraft createSingleDraft();
 
-    void updateName(String draftName);
+    CardDraft updateName(String draftName);
 
-    CardDraft updateBalanceAndGetEntity(BigDecimal draftBalance);
+    CardDraft updateBalance(BigDecimal draftBalance);
 
-    void updateStatus(DraftStatus draftStatus);
+    CardDraft updateStatus(DraftStatus draftStatus);
 
     CardDraft getFirstDraft();
 
     boolean isEmpty();
-
-    void claenupAndCreateFirst();
 }

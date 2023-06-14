@@ -61,7 +61,7 @@ class MsgFromStateHistoryServiceImplTest {
         MsgFromStateHistory expectedRes = new MsgFromStateHistory(1L, "SetBalance", timestamp);
         Optional<MsgFromStateHistory> optionalMsgFromStateHistory = Optional.of(expectedRes);
 
-        when(msgFromStateHistoryRepository.findLast()).thenReturn(optionalMsgFromStateHistory);
+        when(msgFromStateHistoryRepository.getLastOptional()).thenReturn(optionalMsgFromStateHistory);
 
         //when
         Boolean actualRes = msgFromStateHistoryService.isEmpty();
@@ -69,7 +69,7 @@ class MsgFromStateHistoryServiceImplTest {
         //then
         assertThat(actualRes)
                 .isNotNull();
-        verify(msgFromStateHistoryRepository).findLast();
+        verify(msgFromStateHistoryRepository).getLastOptional();
     }
 
     @Test
@@ -78,15 +78,15 @@ class MsgFromStateHistoryServiceImplTest {
         //before
         String expectedRes = "SetBalance";
 
-        when(msgFromStateHistoryRepository.findPreLast()).thenReturn(expectedRes);
+        when(msgFromStateHistoryRepository.getPreLast()).thenReturn(expectedRes);
 
         //when
-        var actualRes = msgFromStateHistoryService.findPreLast();
+        var actualRes = msgFromStateHistoryService.getPreLast();
 
         //then
         assertThat(actualRes)
                 .isEqualTo(expectedRes);
-        verify(msgFromStateHistoryRepository).findPreLast();
+        verify(msgFromStateHistoryRepository).getPreLast();
     }
 
     @Test

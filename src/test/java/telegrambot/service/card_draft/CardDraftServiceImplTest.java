@@ -45,7 +45,7 @@ class CardDraftServiceImplTest {
         //before
         when(cardDraftRepository.createFirstDraft()).thenReturn(1);
         //when
-        cardDraftService.createFirstDraft();
+        cardDraftService.createSingleDraft();
         //then
         verify(cardDraftRepository).createFirstDraft();
     }
@@ -83,7 +83,7 @@ class CardDraftServiceImplTest {
         doReturn(expectedRes).when(spyCardDraftService).getFirstDraft();
 
         //when
-        var actualRes = spyCardDraftService.updateBalanceAndGetEntity(draftBalance);
+        var actualRes = spyCardDraftService.updateBalance(draftBalance);
 
         //then
         assertThat(actualRes)
@@ -179,7 +179,7 @@ class CardDraftServiceImplTest {
         when(cardDraftRepository.createFirstDraft()).thenReturn(1);
 
         //when
-        cardDraftService.claenupAndCreateFirst();
+        cardDraftService.cleanUpAndCreateFirst();
 
         //then
         verify(cardDraftRepository).deleteAll();
