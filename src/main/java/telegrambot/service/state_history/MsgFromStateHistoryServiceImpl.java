@@ -8,17 +8,20 @@ import telegrambot.repository.util.MsgFromStateHistoryRepository;
 
 import java.util.Optional;
 
+/**
+ * Methods placed in CRUD order, then private methods
+ * Base return types:
+ * Create - <Entity>
+ * Read - <Entity>
+ * Update - <Entity>
+ * Delete - void
+ */
 @Slf4j
 @AllArgsConstructor
 @Component
 public class MsgFromStateHistoryServiceImpl implements MsgFromStateHistoryService {
 
     private final MsgFromStateHistoryRepository msgFromStateHistoryRepository;
-
-    @Override
-    public void deleteAll() {
-        msgFromStateHistoryRepository.deleteAll();
-    }
 
     @Override
     public MsgFromStateHistory save(MsgFromStateHistory msgFromStateHistory) {
@@ -42,5 +45,10 @@ public class MsgFromStateHistoryServiceImpl implements MsgFromStateHistoryServic
         if (msgFromStateHistoryRepository.removeLast() == 0) {
             log.warn("Method 'removeLast()' of MsgFromStateHistoryRepository.class didn`t remove any messages from Command-State message history table");
         }
+    }
+
+    @Override
+    public void deleteAll() {
+        msgFromStateHistoryRepository.deleteAll();
     }
 }

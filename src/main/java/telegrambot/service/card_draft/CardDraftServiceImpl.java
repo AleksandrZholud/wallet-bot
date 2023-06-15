@@ -9,6 +9,14 @@ import telegrambot.repository.draft.CardDraftRepository;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+/**
+ * Methods placed in CRUD order, then private methods
+ * Base return types:
+ * Create - <Entity>
+ * Read - <Entity>
+ * Update - <Entity>
+ * Delete - void
+ */
 @Service
 @RequiredArgsConstructor
 public class CardDraftServiceImpl implements CardDraftService {
@@ -71,9 +79,10 @@ public class CardDraftServiceImpl implements CardDraftService {
         cardDraftRepository.deleteAll();
     }
 
+
     private CardDraft getDraftOrThrowEx() {
         Optional<CardDraft> draftOptional = cardDraftRepository.getFirstDraft();
         return draftOptional
-                .orElseThrow(()->new IllegalStateException("No draft in DataBase"));
+                .orElseThrow(() -> new IllegalStateException("No draft in DataBase"));
     }
 }

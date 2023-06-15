@@ -13,6 +13,14 @@ import telegrambot.repository.util.StateRepository;
 
 import java.util.Optional;
 
+/**
+ * Methods placed in CRUD order, then private methods
+ * Base return types:
+ * Create - <Entity>
+ * Read - <Entity>
+ * Update - <Entity>
+ * Delete - void
+ */
 @AllArgsConstructor
 @Component
 
@@ -23,18 +31,20 @@ public class CurrentConditionServiceImpl implements CurrentConditionService {
     private final StateRepository stateRepository;
 
     @Override
+    public void reset() {
+        currentConditionRepository.reset();
+    }
+
+    @Override
     public CurrentCondition getCurrentCondition() {
-        return currentConditionRepository.getCurrentConditionOptional()
-                .orElseThrow(() -> new IllegalStateException("No Current Condition in Data Base."));
+        return getCurrentConditionOrElseThrowEx();
     }
 
     @Override
     public CurrentCondition updateCommandAndState(CommandEnum commandEnum, StateEnum stateEnum) {
-        Optional<CurrentCondition> currentConditionToChangeOptional = currentConditionRepository.getCurrentConditionOptional();
-        CurrentCondition changedCurrentCondition = currentConditionToChangeOptional
-                .orElseThrow(() -> new IllegalStateException("No Current Condition in Data Base."));
+        CurrentCondition changedCurrentCondition = getCurrentConditionOrElseThrowEx();
 
-        Command command = commandRepository.findByName(commandEnum.getCommand())
+        Command command = commandRepository.findByNameOptional(commandEnum.getCommand())
                 .orElseThrow(() -> new IllegalStateException("No Command with name '" + commandEnum.getCommand() + "' in DataBase"));
         State state = stateRepository.findByNameOptional(stateEnum.getState())
                 .orElseThrow(() -> new IllegalStateException("No State with name '" + stateEnum.getState() + "' in DataBase"));
@@ -46,9 +56,7 @@ public class CurrentConditionServiceImpl implements CurrentConditionService {
 
     @Override
     public CurrentCondition updateCommandAndState(Command command, State state) {
-        Optional<CurrentCondition> currentConditionToChangeOptional = currentConditionRepository.getCurrentConditionOptional();
-        CurrentCondition changedCurrentCondition = currentConditionToChangeOptional
-                .orElseThrow(() -> new IllegalStateException("No Current Condition in Data Base."));
+        CurrentCondition changedCurrentCondition = getCurrentConditionOrElseThrowEx();
 
         changedCurrentCondition.setCommand(command);
         changedCurrentCondition.setState(state);
@@ -57,9 +65,7 @@ public class CurrentConditionServiceImpl implements CurrentConditionService {
 
     @Override
     public CurrentCondition updateState(State newState) {
-        Optional<CurrentCondition> currentConditionToChangeOptional = currentConditionRepository.getCurrentConditionOptional();
-        CurrentCondition changedCurrentCondition = currentConditionToChangeOptional
-                .orElseThrow(() -> new IllegalStateException("No Current Condition in Data Base."));
+        CurrentCondition changedCurrentCondition = getCurrentConditionOrElseThrowEx();
 
         changedCurrentCondition.setState(newState);
         return currentConditionRepository.save(changedCurrentCondition);
@@ -72,8 +78,8 @@ public class CurrentConditionServiceImpl implements CurrentConditionService {
                 .orElseThrow(() -> new IllegalStateException("No Previous State in DataBase"));
     }
 
-    @Override
-    public void reset() {
-        currentConditionRepository.reset();
+    private CurrentCondition getCurrentConditionOrElseThrowEx() {
+        return currentConditionRepository.getCurrentConditionOptional()
+                .orElseThrow(() -> new IllegalStateException("No Current Condition in DataBase."));
     }
 }

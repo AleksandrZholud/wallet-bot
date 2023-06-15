@@ -10,18 +10,20 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Methods placed in CRUD order, then private methods
+ * Base return types:
+ * Create - <Entity>
+ * Read - <Entity>
+ * Update - <Entity>
+ * Delete - void
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class CardServiceImpl implements CardService {
 
     private final CardRepository cardRepository;
-
-    @Override
-    public Card getByName(String name) {
-        return cardRepository.getByName(name)
-                .orElseThrow(() -> new IllegalStateException("No Card with name '" + name + "' in database"));
-    }
 
     @Override
     public Card createCard(Card card) {
@@ -34,13 +36,8 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public Card updateBalanceByName(BigDecimal amount, String name) {
-        Optional<Card> cardToChangeOptional = cardRepository.getByName(name);
-        Card changedCard = cardToChangeOptional
-                .orElseThrow(() -> new IllegalStateException("No Card with name '" + name + "' in database"));
-
-        changedCard.setName(name);
-        return cardRepository.save(changedCard);
+    public Card getByName(String name) {
+        return getCardByNameOrElseThrowException(name);
     }
 
     @Override
@@ -52,5 +49,20 @@ public class CardServiceImpl implements CardService {
     public boolean checkIfExistByName(String name) {
         Optional<Card> optionalCard = cardRepository.getByName(name);
         return optionalCard.isPresent();
+    }
+
+    @Override
+    public Card updateBalanceByName(BigDecimal amount, String name) {
+        Card changedCard = getCardByNameOrElseThrowException(name);
+
+        changedCard.setName(name);
+        return cardRepository.save(changedCard);
+    }
+
+
+
+    private Card getCardByNameOrElseThrowException(String name) {
+        return cardRepository.getByName(name)
+                .orElseThrow(() -> new IllegalStateException("No such Card in database"));
     }
 }

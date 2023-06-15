@@ -5,11 +5,21 @@ import telegrambot.model.enums.DraftStatus;
 
 import java.math.BigDecimal;
 
+/**
+ * Methods placed in CRUD order, then private methods
+ * Base return types:
+ * Create - <Entity>
+ * Read - <Entity>
+ * Update - <Entity>
+ * Delete - void
+ */
 public interface CardDraftService {
 
-    void deleteAll();
-
     CardDraft createSingleDraft();
+
+    CardDraft getFirstDraft();
+
+    boolean isEmpty();
 
     CardDraft updateName(String draftName);
 
@@ -17,7 +27,5 @@ public interface CardDraftService {
 
     CardDraft updateStatus(DraftStatus draftStatus);
 
-    CardDraft getFirstDraft();
-
-    boolean isEmpty();
+    void deleteAll();
 }

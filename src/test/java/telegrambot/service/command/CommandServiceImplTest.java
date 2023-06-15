@@ -34,7 +34,7 @@ class CommandServiceImplTest {
         Command expectedRes = new Command(1L, name);
         Optional<Command> commandOptional = Optional.of(expectedRes);
 
-        when(commandRepository.findByName(name)).thenReturn(commandOptional);
+        when(commandRepository.findByNameOptional(name)).thenReturn(commandOptional);
         //when
 
         var actualRes = commandService.getByName(name);
@@ -44,7 +44,7 @@ class CommandServiceImplTest {
                 .isNotNull()
                 .isEqualTo(expectedRes);
 
-        verify(commandRepository).findByName(name);
+        verify(commandRepository).findByNameOptional(name);
     }
 
     @Test
@@ -53,12 +53,12 @@ class CommandServiceImplTest {
         //before
         String name = "Create the card";
 
-        when(commandRepository.findByName(name)).thenReturn(Optional.empty());
+        when(commandRepository.findByNameOptional(name)).thenReturn(Optional.empty());
 
         //when
         assertThatThrownBy(() -> commandService.getByName(name)).isInstanceOf(IllegalStateException.class);
 
         //then
-        verify(commandRepository).findByName(name);
+        verify(commandRepository).findByNameOptional(name);
     }
 }

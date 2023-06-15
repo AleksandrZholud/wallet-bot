@@ -5,6 +5,14 @@ import org.springframework.stereotype.Component;
 import telegrambot.model.util.Command;
 import telegrambot.repository.util.CommandRepository;
 
+/**
+ * Methods placed in CRUD order, then private methods
+ * Base return types:
+ * Create - <Entity>
+ * Read - <Entity>
+ * Update - <Entity>
+ * Delete - void
+ */
 @AllArgsConstructor
 @Component
 public class CommandServiceImpl implements CommandService {
@@ -13,7 +21,7 @@ public class CommandServiceImpl implements CommandService {
 
     @Override
     public Command getByName(String name) {
-        return commandRepository.findByName(name).
-                orElseThrow(() -> new IllegalStateException("Command with name '" + name + "' not found."));
+        return commandRepository.findByNameOptional(name).
+                orElseThrow(() -> new IllegalStateException("Command not found"));
     }
 }

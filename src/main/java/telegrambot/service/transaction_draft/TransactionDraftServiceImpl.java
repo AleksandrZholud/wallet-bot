@@ -11,6 +11,14 @@ import telegrambot.repository.draft.TransactionDraftRepository;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+/**
+ * Methods placed in CRUD order, then private methods
+ * Base return types:
+ * Create - <Entity>
+ * Read - <Entity>
+ * Update - <Entity>
+ * Delete - void
+ */
 @AllArgsConstructor
 @Component
 public class TransactionDraftServiceImpl implements TransactionDraftService {

@@ -8,6 +8,9 @@ import telegrambot.model.Card;
 
 import java.util.Optional;
 
+/**
+ * Methods placed in CRUD order, then private methods
+ */
 @Repository
 public interface CardRepository extends JpaRepository<Card, Long> {
 
