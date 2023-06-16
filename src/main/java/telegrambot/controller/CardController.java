@@ -1,28 +1,25 @@
 package telegrambot.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import telegrambot.model.Card;
 import telegrambot.service.card.CardService;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/card")
+@RequestMapping(value = "/card")
 public class CardController {
 
     private final CardService cardService;
 
-    @PostMapping("/{id}/{newName}")
-    public String changeCardName(@PathVariable Long id,
-                                 @PathVariable String newName) {
+    @PostMapping(value = "/{id}")
+    public ResponseEntity<String> changeCardName(@PathVariable Long id,
+                                                 @RequestBody Card userCard) {
 
-        Card card = cardService.getCardById(id);
-        card.setName(newName);
-        return cardService.updateNameById(card);
+        Card existingCard = cardService.getCardById(id);
+        existingCard.setName(userCard.getName());
+
+        return ResponseEntity.ok(cardService.updateNameById(existingCard));
     }
 }

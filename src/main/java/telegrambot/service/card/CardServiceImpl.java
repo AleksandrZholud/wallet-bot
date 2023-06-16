@@ -57,6 +57,9 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public String updateNameById(Card card) {
+        String newName = card.getName();
+        card.setName(newName);
+
         cardRepository.save(card);
         return "You have successfully renamed the card to " + card.getName() + ".";
     }
