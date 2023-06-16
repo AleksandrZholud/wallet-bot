@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "transaction_draft")
 @AllArgsConstructor
+@EqualsAndHashCode
 public class TransactionDraft {
 
     @Id

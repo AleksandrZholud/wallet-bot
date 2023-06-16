@@ -66,19 +66,49 @@ class TransactionDraftServiceImplTest {
 
     @Test
     void updateStatus() {
-
         //before
-        String status = "built...";
+        DraftStatus newStatus = DraftStatus.SAVED;
+        TransactionDraft existedDraft = TransactionDraft.builder()
+                .id(1L)
+                .type(TransactionTypeEnum.INCOME)
+                .card(new Card(1L, "name", BigDecimal.ZERO))
+                .amount(BigDecimal.TEN)
+                .status(DraftStatus.SAVING)
+                .build();
+        TransactionDraft changedDraft = TransactionDraft.builder()
+                .id(1L)
+                .type(TransactionTypeEnum.INCOME)
+                .card(new Card(1L, "name", BigDecimal.ZERO))
+                .amount(BigDecimal.TEN)
+                .status(newStatus)
+                .build();
 
-        when(transactionDraftRepository.updateStatus(status)).thenReturn(1);
+        when(transactionDraftRepository.getFirstDraft()).thenReturn(Optional.of(existedDraft));
+        when(transactionDraftRepository.save(any())).thenReturn(changedDraft);
 
         //when
-        var actualRes = transactionDraftService.updateStatus(status);
+        TransactionDraft actualRes = transactionDraftService.updateStatus(newStatus);
 
         //then
         assertThat(actualRes)
-                .isTrue();
-        verify(transactionDraftRepository).updateStatus(status);
+                .isNotNull()
+                .isEqualTo(changedDraft);
+        verify(transactionDraftRepository).getFirstDraft();
+        verify(transactionDraftRepository).save(any());
+    }
+
+    @Test
+    void updateStatus_Ex() {
+        //before
+        DraftStatus newStatus = DraftStatus.SAVED;
+        when(transactionDraftRepository.getFirstDraft()).thenReturn(Optional.empty());
+
+        //then
+        assertThatThrownBy(() -> transactionDraftService.updateStatus(newStatus))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("No draft in DataBase");
+        verify(transactionDraftRepository).getFirstDraft();
+        verify(transactionDraftRepository, never()).save(any());
     }
 
     @Test
@@ -95,62 +125,203 @@ class TransactionDraftServiceImplTest {
     }
 
     @Test
-    void createFirstDraft() {
+    void createFirstDraft_IfTableEmpty() {
 
         //before
-        when(transactionDraftRepository.createFirstDraft()).thenReturn(2);
+        TransactionDraft draftToSave = TransactionDraft.builder()
+                .id(1L)
+                .status(DraftStatus.BUILDING)
+                .build();
+        when(transactionDraftRepository.getFirstDraft()).thenReturn(Optional.empty());
+        when(transactionDraftRepository.save(draftToSave)).thenReturn(draftToSave);
 
         //when
-        transactionDraftService.createSingleDraft();
+        TransactionDraft actualRes = transactionDraftService.createSingleDraft();
 
         //then
-        verify(transactionDraftRepository).createFirstDraft();
+        assertThat(actualRes)
+                .isNotNull()
+                .isEqualTo(draftToSave);
+        verify(transactionDraftRepository).getFirstDraft();
+        verify(transactionDraftRepository, never()).deleteAll();
+        verify(transactionDraftRepository).save(any());
     }
 
     @Test
-    void updateCardId() {
+    void createFirstDraft_IfTableNotEmpty() {
 
         //before
-        Long id = 11L;
-
-        when(transactionDraftRepository.updateCardId(id)).thenReturn(11);
+        TransactionDraft draftToSave = TransactionDraft.builder()
+                .id(1L)
+                .status(DraftStatus.BUILDING)
+                .build();
+        when(transactionDraftRepository.getFirstDraft()).thenReturn(Optional.of(new TransactionDraft()));
+        when(transactionDraftRepository.save(draftToSave)).thenReturn(draftToSave);
 
         //when
-        transactionDraftService.updateCard(id);
+        TransactionDraft actualRes = transactionDraftService.createSingleDraft();
 
         //then
-        verify(transactionDraftRepository).updateCardId(id);
+        assertThat(actualRes)
+                .isNotNull()
+                .isEqualTo(draftToSave);
+        verify(transactionDraftRepository).getFirstDraft();
+        verify(transactionDraftRepository).deleteAll();
+        verify(transactionDraftRepository).save(any());
+    }
+
+    @Test
+    void updateCard() {
+        //before
+        Card newCard = Card.builder()
+                .id(1L)
+                .balance(BigDecimal.ZERO)
+                .name("newCard")
+                .build();
+        TransactionDraft existedDraft = TransactionDraft.builder()
+                .id(1L)
+                .type(TransactionTypeEnum.INCOME)
+                .card(new Card(2L, "name", BigDecimal.TEN))
+                .amount(BigDecimal.TEN)
+                .status(DraftStatus.SAVING)
+                .build();
+        TransactionDraft changedDraft = TransactionDraft.builder()
+                .id(1L)
+                .type(TransactionTypeEnum.INCOME)
+                .card(newCard)
+                .amount(BigDecimal.TEN)
+                .status(DraftStatus.SAVING)
+                .build();
+
+        when(transactionDraftRepository.getFirstDraft()).thenReturn(Optional.of(existedDraft));
+        when(transactionDraftRepository.save(any())).thenReturn(changedDraft);
+
+        //when
+        TransactionDraft actualRes = transactionDraftService.updateCard(newCard);
+
+        //then
+        assertThat(actualRes)
+                .isNotNull()
+                .isEqualTo(changedDraft);
+        verify(transactionDraftRepository).getFirstDraft();
+        verify(transactionDraftRepository).save(any());
+    }
+
+    @Test
+    void updateCard_Ex() {
+        //before
+        Card newCard = Card.builder()
+                .id(1L)
+                .balance(BigDecimal.ZERO)
+                .name("newCard")
+                .build();
+
+        when(transactionDraftRepository.getFirstDraft()).thenReturn(Optional.empty());
+
+        //then
+        assertThatThrownBy(() -> transactionDraftService.updateCard(newCard))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("No draft in DataBase");
+        verify(transactionDraftRepository).getFirstDraft();
+        verify(transactionDraftRepository, never()).save(any());
     }
 
     @Test
     void updateTransactionType() {
-
         //before
-        String type = "Income";
+        TransactionTypeEnum newTransactionType = TransactionTypeEnum.INCOME;
+        TransactionDraft existedDraft = TransactionDraft.builder()
+                .id(1L)
+                .type(TransactionTypeEnum.EXPENSE)
+                .card(new Card(2L, "name", BigDecimal.TEN))
+                .amount(BigDecimal.TEN)
+                .status(DraftStatus.SAVING)
+                .build();
+        TransactionDraft changedDraft = TransactionDraft.builder()
+                .id(1L)
+                .type(newTransactionType)
+                .card(new Card(2L, "name", BigDecimal.TEN))
+                .amount(BigDecimal.TEN)
+                .status(DraftStatus.SAVING)
+                .build();
 
-        when(transactionDraftRepository.updateTransactionType(type)).thenReturn(2);
+        when(transactionDraftRepository.getFirstDraft()).thenReturn(Optional.of(existedDraft));
+        when(transactionDraftRepository.save(any())).thenReturn(changedDraft);
 
         //when
-        transactionDraftService.updateTransactionType(type);
+        TransactionDraft actualRes = transactionDraftService.updateTransactionType(newTransactionType);
 
         //then
-        verify(transactionDraftRepository).updateTransactionType(type);
+        assertThat(actualRes)
+                .isNotNull()
+                .isEqualTo(changedDraft);
+        verify(transactionDraftRepository).getFirstDraft();
+        verify(transactionDraftRepository).save(any());
+    }
+
+    @Test
+    void updateTransactionType_Ex() {
+        //before
+        TransactionTypeEnum newTransactionType = TransactionTypeEnum.INCOME;
+
+        when(transactionDraftRepository.getFirstDraft()).thenReturn(Optional.empty());
+
+        //then
+        assertThatThrownBy(() -> transactionDraftService.updateTransactionType(newTransactionType))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("No draft in DataBase");
+        verify(transactionDraftRepository).getFirstDraft();
+        verify(transactionDraftRepository, never()).save(any());
     }
 
     @Test
     void updateAmountAndStatus() {
-
         //before
-        BigDecimal amount = BigDecimal.ONE;
-        String status = "built...";
+        BigDecimal newAmount = BigDecimal.TEN;
+        DraftStatus newStatus = DraftStatus.SAVED;
+        TransactionDraft existedDraft = TransactionDraft.builder()
+                .id(1L)
+                .type(TransactionTypeEnum.EXPENSE)
+                .card(new Card(2L, "name", BigDecimal.TEN))
+                .amount(BigDecimal.ZERO)
+                .status(DraftStatus.SAVING)
+                .build();
+        TransactionDraft changedDraft = TransactionDraft.builder()
+                .id(1L)
+                .type(TransactionTypeEnum.EXPENSE)
+                .card(new Card(2L, "name", BigDecimal.TEN))
+                .amount(newAmount)
+                .status(newStatus)
+                .build();
 
-        when(transactionDraftRepository.updateAmountAndStatus(amount, status)).thenReturn(2);
+        when(transactionDraftRepository.getFirstDraft()).thenReturn(Optional.of(existedDraft));
+        when(transactionDraftRepository.save(any())).thenReturn(changedDraft);
 
         //when
-        transactionDraftService.updateAmountAndStatus(amount, status);
+        TransactionDraft actualRes = transactionDraftService.updateAmountAndStatus(newAmount, newStatus);
 
         //then
-        verify(transactionDraftRepository).updateAmountAndStatus(amount, status);
+        assertThat(actualRes)
+                .isNotNull()
+                .isEqualTo(changedDraft);
+        verify(transactionDraftRepository).getFirstDraft();
+        verify(transactionDraftRepository).save(any());
+    }
+
+    @Test
+    void updateAmountAndStatus_Ex() {
+        //before
+        BigDecimal newAmount = BigDecimal.TEN;
+        DraftStatus newStatus = DraftStatus.SAVED;
+
+        when(transactionDraftRepository.getFirstDraft()).thenReturn(Optional.empty());
+
+        //then
+        assertThatThrownBy(() -> transactionDraftService.updateAmountAndStatus(newAmount, newStatus))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("No draft in DataBase");
+        verify(transactionDraftRepository).getFirstDraft();
+        verify(transactionDraftRepository, never()).save(any());
     }
 
     @Test

@@ -55,13 +55,13 @@ class CardServiceImplTest {
     void getByName_whenCardIsNotFound_throwEx() {
 
         //before
-        String name = "Not_exist_name";
+        String name = "Non_exist_name";
         when(cardRepository.getByName(name)).thenReturn(Optional.empty());
 
         //when
         assertThatThrownBy(() -> cardService.getByName(name))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("No Card with name '" + name + "' in database");
+                .hasMessage("No such Card in database");
 
         //then
         verify(cardRepository).getByName(name);
@@ -128,17 +128,18 @@ class CardServiceImplTest {
         Card changedCard = Card.builder()
                 .id(1L)
                 .name(name)
-                .balance(BigDecimal.ZERO.add(amount))
+                .balance(amount)
                 .build();
 
         when(cardRepository.getByName(name)).thenReturn(Optional.of(existingCard));
-        when(cardRepository.save(changedCard)).thenReturn(changedCard);
+        when(cardRepository.save(any())).thenReturn(changedCard);
 
         // when
         Card actualResult = cardService.updateBalanceByName(amount, name);
 
         // then
         assertThat(actualResult)
+                .isNotNull()
                 .isEqualTo(changedCard);
         verify(cardRepository).getByName(name);
         verify(cardRepository).save(changedCard);
@@ -168,7 +169,7 @@ class CardServiceImplTest {
         // then
         assertThatThrownBy(() -> cardService.updateBalanceByName(amount, name))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("No Card with name '" + name + "' in database");
+                .hasMessage("No such Card in database");
         verify(cardRepository).getByName(name);
         verify(cardRepository, never()).save(new Card());
     }

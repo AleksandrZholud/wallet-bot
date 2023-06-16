@@ -11,8 +11,6 @@ import telegrambot.repository.util.CommandRepository;
 import telegrambot.repository.util.CurrentConditionRepository;
 import telegrambot.repository.util.StateRepository;
 
-import java.util.Optional;
-
 /**
  * Methods placed in CRUD order, then private methods
  * Base return types:
@@ -73,8 +71,7 @@ public class CurrentConditionServiceImpl implements CurrentConditionService {
 
     @Override
     public State getPreviousState() {
-        Optional<State> stateOptional = currentConditionRepository.getPreviousStateOptional();
-        return stateOptional
+        return currentConditionRepository.getPreviousStateOptional()
                 .orElseThrow(() -> new IllegalStateException("No Previous State in DataBase"));
     }
 

@@ -55,8 +55,9 @@ public class CardServiceImpl implements CardService {
     public Card updateBalanceByName(BigDecimal amount, String name) {
         Card changedCard = getCardByNameOrElseThrowException(name);
 
-        changedCard.setName(name);
-        return cardRepository.save(changedCard);
+        changedCard.setBalance(amount);
+        var r = cardRepository.save(changedCard);
+        return r;
     }
 
 

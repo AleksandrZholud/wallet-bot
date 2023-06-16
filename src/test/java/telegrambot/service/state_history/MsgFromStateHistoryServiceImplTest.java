@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
@@ -76,16 +77,39 @@ class MsgFromStateHistoryServiceImplTest {
     void findPreLast() {
 
         //before
-        String expectedRes = "SetBalance";
+        MsgFromStateHistory msg = MsgFromStateHistory.builder()
+                .id(1L)
+                .message("MSG")
+                .timestamp(new Timestamp(5L))
+                .build();
 
-        when(msgFromStateHistoryRepository.getPreLast()).thenReturn(expectedRes);
+        when(msgFromStateHistoryRepository.getPreLast()).thenReturn(Optional.of(msg));
 
         //when
         var actualRes = msgFromStateHistoryService.getPreLast();
 
         //then
         assertThat(actualRes)
-                .isEqualTo(expectedRes);
+                .isNotNull()
+                .isEqualTo(msg);
+        verify(msgFromStateHistoryRepository).getPreLast();
+    }
+    @Test
+    void findPreLast_Ex() {
+
+        //before
+        MsgFromStateHistory msg = MsgFromStateHistory.builder()
+                .id(1L)
+                .message("MSG")
+                .timestamp(new Timestamp(5L))
+                .build();
+
+        when(msgFromStateHistoryRepository.getPreLast()).thenReturn(Optional.empty());
+
+        //then
+        assertThatThrownBy(()->msgFromStateHistoryService.getPreLast())
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("No PreLast message in Command-State message history");
         verify(msgFromStateHistoryRepository).getPreLast();
     }
 

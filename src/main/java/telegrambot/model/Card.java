@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "cards")
 @AllArgsConstructor
+@EqualsAndHashCode
 public class Card {
 
     @Id
