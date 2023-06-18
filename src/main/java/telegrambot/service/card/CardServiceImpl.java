@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import telegrambot.model.Card;
+import telegrambot.model.dto.UpdateCardReqDto;
+import telegrambot.model.dto.UpdateCardResDto;
 import telegrambot.repository.CardRepository;
 
 import java.math.BigDecimal;
@@ -50,17 +52,11 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public Card getCardById(Long id) {
-        return cardRepository.getCardById(id)
-                .orElseThrow(() -> new IllegalStateException("Card with id is not found."));
-    }
-
-    @Override
-    public String updateNameById(Card card) {
-        String newName = card.getName();
-        card.setName(newName);
-
+    public UpdateCardResDto updateCard(UpdateCardReqDto updateCardReqDto) {
+        Card card = cardRepository.getById(updateCardReqDto.getId());
+        card.setName(updateCardReqDto.getName());
+        card.setBalance(updateCardReqDto.getBalance());
         cardRepository.save(card);
-        return "You have successfully renamed the card to " + card.getName() + ".";
+        return new UpdateCardResDto(card.getId(), card.getName(), card.getBalance());
     }
 }

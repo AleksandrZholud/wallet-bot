@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 public class Card {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)//why thos class is here? -hz
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     private String name;
@@ -26,5 +26,9 @@ public class Card {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
     }
 }
