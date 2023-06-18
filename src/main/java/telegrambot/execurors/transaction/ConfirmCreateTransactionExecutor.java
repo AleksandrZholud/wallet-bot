@@ -54,7 +54,7 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
     }
 
     private void confirmTransaction() {
-        Command baseCommand = commandService.findByName(START_COMMAND.getCommand());
+        Command baseCommand = commandService.getByName(START_COMMAND.getCommand());
         State baseState = stateService.findByName(NO_STATE.getState());
         Optional<TransactionDraft> draft = Optional.ofNullable(transactionDraftService.getFirstDraft());
 
@@ -67,7 +67,7 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
 
         DraftStatus draftStatus = draft.get().getStatus();
         if (draftStatus.equals(DraftStatus.BUILT) || draftStatus.equals(DraftStatus.SAVING)) {
-            transactionDraftService.updateStatus(DraftStatus.SAVING.name());
+            transactionDraftService.updateStatus(DraftStatus.SAVING);
             transactionToSave = transactionService.save(Transaction.builder()
                     .card(draft.get().getCard())
                     .transactionType(draft.get().getType())
@@ -90,7 +90,7 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
         }
 
         cleanAllData();
-        currentConditionService.updateCommandAndState(baseCommand.getId(), baseState.getId());
+        currentConditionService.updateCommandAndState(baseCommand, baseState);
 
         processFinish(transactionToSave);
     }
@@ -109,7 +109,7 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
     }
 
     private void processStartCreateTransaction(Command command, State state) {
-        currentConditionService.updateCommandAndState(command.getId(), state.getId());
+        currentConditionService.updateCommandAndState(command, state);
         UserDataContextHolder.getFacade()
                 .setText("Seems you have not started creating transaction.")
                 .addButtons(getGlobalCommands());

@@ -10,6 +10,14 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Methods placed in CRUD order, then private methods
+ * Base return types:
+ * Create - <Entity>
+ * Read - <Entity>
+ * Update - <Entity>
+ * Delete - void
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -18,28 +26,22 @@ public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
 
     @Override
-    public Card getByName(String name) {
-        return cardRepository.getByName(name)
-                .orElseThrow(() -> new IllegalStateException("Card is not exist."));
-    }
+    public Card createCard(Card card) {
+        Optional<Card> cardToCheckOptional = cardRepository.getByName(card.getName());
 
-    @Override
-    public BigDecimal getBalance() {
-        return null;
-    }
-
-    @Override
-    public Card save(Card card) {
+        if (cardToCheckOptional.isPresent()) {
+            throw new IllegalStateException("Card with name '" + card.getName() + "' already exist in database");
+        }
         return cardRepository.save(card);
     }
 
     @Override
-    public void updateBalanceByName(BigDecimal amount, String name) {
-        cardRepository.updateBalanceByName(amount, name);
+    public Card getByName(String name) {
+        return getCardByNameOrElseThrowException(name);
     }
 
     @Override
-    public List<Card> findAll() {
+    public List<Card> getAll() {
         return cardRepository.findAll();
     }
 
@@ -47,5 +49,21 @@ public class CardServiceImpl implements CardService {
     public boolean checkIfExistByName(String name) {
         Optional<Card> optionalCard = cardRepository.getByName(name);
         return optionalCard.isPresent();
+    }
+
+    @Override
+    public Card updateBalanceByName(BigDecimal amount, String name) {
+        Card changedCard = getCardByNameOrElseThrowException(name);
+
+        changedCard.setBalance(amount);
+        var r = cardRepository.save(changedCard);
+        return r;
+    }
+
+
+
+    private Card getCardByNameOrElseThrowException(String name) {
+        return cardRepository.getByName(name)
+                .orElseThrow(() -> new IllegalStateException("No such Card in database"));
     }
 }

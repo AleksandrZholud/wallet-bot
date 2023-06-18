@@ -2,7 +2,15 @@ package telegrambot.service.state;
 
 import telegrambot.model.util.State;
 
+/**
+ * Methods placed in CRUD order, then private methods
+ * Base return types:
+ * Create - <Entity>
+ * Read - <Entity>
+ * Update - <Entity>
+ * Delete - void
+ */
 public interface StateService {
 
-    public State findByName(String name);
+    State findByName(String name);
 }

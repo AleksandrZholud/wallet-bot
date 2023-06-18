@@ -2,16 +2,24 @@ package telegrambot.service.state_history;
 
 import telegrambot.model.util.MsgFromStateHistory;
 
+/**
+ * Methods placed in CRUD order, then private methods
+ * Base return types:
+ * Create - <Entity>
+ * Read - <Entity>
+ * Update - <Entity>
+ * Delete - void
+ */
 public interface MsgFromStateHistoryService {
 
-    void deleteAll();
-
-    void save(MsgFromStateHistory msgFromStateHistory);
+    MsgFromStateHistory save(MsgFromStateHistory msgFromStateHistory);
 
     boolean isEmpty();
 
-    String findPreLast();
+    MsgFromStateHistory getPreLast();
 
     void removeLast();
 
+
+    void deleteAll();
 }

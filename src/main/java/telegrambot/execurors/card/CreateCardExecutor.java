@@ -41,7 +41,7 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
 
         if (UserDataContextHolder.getInputtedTextCommand().equals(THIS_CMD)) {
             cardDraftService.deleteAll();
-            currentConditionService.updateCommandAndState(3L, 1L);
+            currentConditionService.updateCommandAndState(CREATE_CARD_COMMAND, NO_STATE);
             msgFromStateHistoryService.deleteAll();
         }
 
@@ -59,12 +59,12 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
     }
 
     private void doCreateCard() {
-        var command = commandService.findByName(THIS_CMD);
+        var command = commandService.getByName(THIS_CMD);
         var state = stateService.findByName(SET_NAME.getState());
 
-        currentConditionService.updateCommandAndState(command.getId(), state.getId());
+        currentConditionService.updateCommandAndState(command, state);
 
-        cardDraftService.claenupAndCreateFirst();
+        cardDraftService.createSingleDraft();
 
         String enterCardNameMsg = "Enter Card name:";
 
@@ -88,10 +88,10 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
             return;
         }
 
-        var command = commandService.findByName(THIS_CMD);
+        var command = commandService.getByName(THIS_CMD);
         var state = stateService.findByName(SET_BALANCE.getState());
 
-        currentConditionService.updateCommandAndState(command.getId(), state.getId());
+        currentConditionService.updateCommandAndState(command, state);
 
         cardDraftService.updateName(draftName);
 
@@ -107,14 +107,14 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
     }
 
     private void doSetBalance() {
-        var command = commandService.findByName(THIS_CMD);
+        var command = commandService.getByName(THIS_CMD);
         var state = stateService.findByName(SET_BALANCE.getState());
         long longValueOfInput = tryGetLongValue();
         var draftBalance = BigDecimal.valueOf(longValueOfInput);
 
-        currentConditionService.updateCommandAndState(command.getId(), state.getId());
+        currentConditionService.updateCommandAndState(command, state);
 
-        CardDraft cd = cardDraftService.updateBalanceAndGetEntity(draftBalance);
+        CardDraft cd = cardDraftService.updateBalance(draftBalance);
 
         String text = "Confirm your Card:\n"
                 + "\nCard name   : '" + cd.getName() + "'"
