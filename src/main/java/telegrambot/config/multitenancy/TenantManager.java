@@ -12,6 +12,7 @@ import telegrambot.service.migration.DbMigrationService;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +34,12 @@ public class TenantManager {
     public static final String USER_DB_NAME_SUFFIX = "user_";
 
     private Map<String, DataSource> dataSourceMap = new HashMap<>();
+
+    public void switchDataSource(Long userId, String userName) {
+        log.info("Trying to switch db for user: {}", userName);
+
+        switchDataSource(userId.toString(), true);
+    }
 
     public void switchDataSource(String dbName, boolean isUserDb) {
         validateDbName(dbName);
@@ -88,15 +95,18 @@ public class TenantManager {
 
     private void createDb(String dbName) {
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
+             Statement statement = connection.createStatement()
+        ) {
             String createDatabaseQuery = "CREATE DATABASE " + dbName;
             statement.executeUpdate(createDatabaseQuery);
+
             log.info(YELLOW_BOLD + "DB successfully created." + RESET);
-        } catch (Exception e) {
-            if (!e.getMessage().toLowerCase().contains("already exists")) {
+        } catch (SQLException e) {
+            if (e.getMessage().toLowerCase().contains("already exists")) {
+                log.info(YELLOW_BOLD + "'{}' already exists" + RESET, dbName);
+            } else {
                 throw new DatabaseOperationException(ERROR_CREATING_DB);
             }
-            log.info(YELLOW_BOLD + "'{}' already exists" + RESET, dbName);
         }
     }
 }

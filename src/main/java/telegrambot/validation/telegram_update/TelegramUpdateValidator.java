@@ -13,9 +13,10 @@ public class TelegramUpdateValidator extends AbstractConstraintValidator {
     private final TelegramUpdateValidationMethods methods;
     @Override
     protected void checkSpecialConstraintViolations(Object target, Errors errors) {
-        Update updateEntity = (Update) target;
+        Update update = (Update) target;
 
-        methods.responseTimeTooLong(updateEntity.getMessage().getDate(), errors);
+        methods.responseTimeTooLong(update.getMessage().getDate(), errors);
+        methods.hasText(update.getMessage(), errors);
     }
 
     @Override
