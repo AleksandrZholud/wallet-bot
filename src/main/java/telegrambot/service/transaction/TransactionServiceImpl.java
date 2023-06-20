@@ -2,7 +2,7 @@ package telegrambot.service.transaction;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import telegrambot.model.Transaction;
+import telegrambot.model.entity.Transaction;
 import telegrambot.repository.TransactionRepository;
 
 @Service

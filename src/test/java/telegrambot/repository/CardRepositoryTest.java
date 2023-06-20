@@ -3,7 +3,7 @@ package telegrambot.repository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import telegrambot.model.Card;
+import telegrambot.model.entity.Card;
 
 import java.math.BigDecimal;
 

@@ -3,9 +3,9 @@ package telegrambot.service.card;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import telegrambot.model.Card;
 import telegrambot.model.dto.UpdateCardReqDto;
 import telegrambot.model.dto.UpdateCardResDto;
+import telegrambot.model.entity.Card;
 import telegrambot.repository.CardRepository;
 
 import java.math.BigDecimal;
