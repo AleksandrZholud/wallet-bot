@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import telegrambot.model.Card;
+import telegrambot.model.dto.UpdateCardReqDto;
+import telegrambot.model.dto.UpdateCardResDto;
 import telegrambot.repository.CardRepository;
 
 import java.math.BigDecimal;
@@ -54,5 +56,14 @@ public class CardServiceImpl implements CardService {
     private Card getCardByNameOrElseThrowException(String name) {
         return cardRepository.getByName(name)
                 .orElseThrow(() -> new IllegalStateException("No such Card in database"));
+    }
+
+    @Override
+    public UpdateCardResDto updateCard(UpdateCardReqDto updateCardReqDto) {
+        Card card = cardRepository.getById(updateCardReqDto.getId());
+        card.setName(updateCardReqDto.getName());
+        card.setBalance(updateCardReqDto.getBalance());
+        cardRepository.save(card);
+        return new UpdateCardResDto(card.getId(), card.getName(), card.getBalance());
     }
 }
