@@ -18,11 +18,11 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQL10Dialect
         show_sql: true
-        format_sql: true
+        format_sql: false
         temp:
           use_jdbc_metadata_defaults: false
   liquibase:
-    enabled: false
+    enabled: true
     change-log: db/changelog/db.changelog-master.yaml
 
 db-properties:
@@ -51,6 +51,5 @@ logging:
 
 telegram-update-validation-properties:
   enabled: true
-  annotation-based-validation-enabled: true
 
 user-response-delay-in-seconds: 43200
