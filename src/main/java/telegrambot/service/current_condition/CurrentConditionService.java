@@ -1,16 +1,22 @@
 package telegrambot.service.current_condition;
 
+import telegrambot.model.enums.CommandEnum;
+import telegrambot.model.enums.StateEnum;
+import telegrambot.model.util.Command;
 import telegrambot.model.util.CurrentCondition;
+import telegrambot.model.util.State;
 
 public interface CurrentConditionService {
 
+    void reset();
+
     CurrentCondition getCurrentCondition();
 
-    void updateCommandAndState(Long command, Long state);
+    State getPreviousState();
 
-    long getPreviousStateId();
+    CurrentCondition updateCommandAndState(CommandEnum commandEnum, StateEnum stateEnum);
 
-    void updateState(long previousStateId);
+    CurrentCondition updateCommandAndState(Command command, State state);
 
-    void reset();
+    CurrentCondition updateState(State newState);
 }

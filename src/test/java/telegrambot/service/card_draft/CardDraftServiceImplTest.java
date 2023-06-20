@@ -43,26 +43,48 @@ class CardDraftServiceImplTest {
     void createFirstDraft() {
 
         //before
-        when(cardDraftRepository.createFirstDraft()).thenReturn(1);
+        when(cardDraftRepository.getFirstDraft()).thenReturn(Optional.empty());
         //when
-        cardDraftService.createFirstDraft();
+        cardDraftService.createSingleDraft();
         //then
-        verify(cardDraftRepository).createFirstDraft();
+        verify(cardDraftRepository).getFirstDraft();
     }
 
     @Test
     void updateName() {
+        //before
+        Long id = 1L;
+        String name = "card draft";
+        BigDecimal balance = BigDecimal.TEN;
+        DraftStatus status = DraftStatus.BUILT;
 
-        // before
-        String name = "draft name";
+        CardDraft existingCard = CardDraft.builder()
+                .id(id)
+                .balance(balance)
+                .status(status)
+                .name("Goga")
+                .build();
+        CardDraft changedCard = CardDraft.builder()
+                .id(id)
+                .balance(balance)
+                .status(status)
+                .name(name)
+                .build();
 
-        when(cardDraftRepository.updateName(name)).thenReturn(1);
+        when(cardDraftRepository.getFirstDraft()).thenReturn(Optional.of(existingCard));
+        when(cardDraftRepository.save(any())).thenReturn(changedCard);
+
 
         //when
-        cardDraftService.updateName(name);
+        var updatedCard = cardDraftService.updateBalance(balance);
 
         //then
-        verify(cardDraftRepository).updateName(name);
+        assertThat(updatedCard)
+                .isNotNull()
+                .isEqualTo(changedCard);
+
+        verify(cardDraftRepository).getFirstDraft();
+        verify(cardDraftRepository).save(any());
     }
 
     @Test
@@ -71,44 +93,74 @@ class CardDraftServiceImplTest {
         //before
         Long id = 1L;
         String name = "card draft";
-        BigDecimal draftBalance = BigDecimal.ONE;
-        DraftStatus draftStatus = DraftStatus.BUILT;
+        BigDecimal balance = BigDecimal.TEN;
+        DraftStatus status = DraftStatus.BUILT;
 
-        CardDraft expectedRes = new CardDraft(id, name, draftBalance, draftStatus);
+        CardDraft existingCard = CardDraft.builder()
+                .id(id)
+                .balance(BigDecimal.ZERO)
+                .status(status)
+                .name(name)
+                .build();
+        CardDraft changedCard = CardDraft.builder()
+                .id(id)
+                .balance(balance)
+                .status(status)
+                .name(name)
+                .build();
 
-        when(cardDraftRepository.updateBalanceAndSetStatus(draftBalance, String.valueOf(draftStatus)))
-                .thenReturn(1);
+        when(cardDraftRepository.getFirstDraft()).thenReturn(Optional.of(existingCard));
+        when(cardDraftRepository.save(any())).thenReturn(changedCard);
 
-        var spyCardDraftService = spy(cardDraftService);
-        doReturn(expectedRes).when(spyCardDraftService).getFirstDraft();
 
         //when
-        var actualRes = spyCardDraftService.updateBalanceAndGetEntity(draftBalance);
+        var updatedCard = cardDraftService.updateBalance(balance);
 
         //then
-        assertThat(actualRes)
+        assertThat(updatedCard)
                 .isNotNull()
-                        .isEqualTo(expectedRes);
+                .isEqualTo(changedCard);
 
-        verify(cardDraftRepository).updateBalanceAndSetStatus(draftBalance, draftStatus.name());
-        verify(spyCardDraftService).getFirstDraft();
+        verify(cardDraftRepository).getFirstDraft();
+        verify(cardDraftRepository).save(any());
 
     }
 
     @Test
     void updateStatus() {
-
         //before
-        DraftStatus draftStatus = DraftStatus.BUILT;
-        String draftName = draftStatus.name();
+        Long id = 1L;
+        String name = "card draft";
+        BigDecimal balance = BigDecimal.TEN;
+        DraftStatus status = DraftStatus.BUILT;
 
-        when(cardDraftRepository.updateStatus(draftName)).thenReturn(1);
+        CardDraft existingCard = CardDraft.builder()
+                .id(id)
+                .balance(balance)
+                .status(DraftStatus.BUILDING)
+                .name(name)
+                .build();
+        CardDraft changedCard = CardDraft.builder()
+                .id(id)
+                .balance(balance)
+                .status(status)
+                .name(name)
+                .build();
+
+        when(cardDraftRepository.getFirstDraft()).thenReturn(Optional.of(existingCard));
+        when(cardDraftRepository.save(any())).thenReturn(changedCard);
+
 
         //when
-        cardDraftService.updateStatus(draftStatus);
+        var updatedCard = cardDraftService.updateBalance(balance);
 
         //then
-        verify(cardDraftRepository).updateStatus(draftName);
+        assertThat(updatedCard)
+                .isNotNull()
+                .isEqualTo(changedCard);
+
+        verify(cardDraftRepository).getFirstDraft();
+        verify(cardDraftRepository).save(any());
     }
 
     @Test
@@ -169,20 +221,5 @@ class CardDraftServiceImplTest {
                 .isNotNull();
         verify(cardDraftRepository).getFirstDraft();
 
-    }
-
-    @Test
-    void claenupAndCreateFirst() {
-
-        //before
-        doNothing().when(cardDraftRepository).deleteAll();
-        when(cardDraftRepository.createFirstDraft()).thenReturn(1);
-
-        //when
-        cardDraftService.claenupAndCreateFirst();
-
-        //then
-        verify(cardDraftRepository).deleteAll();
-        verify(cardDraftRepository).createFirstDraft();
     }
 }

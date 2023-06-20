@@ -7,19 +7,17 @@ import java.math.BigDecimal;
 
 public interface CardDraftService {
 
-    void deleteAll();
-
-    void createFirstDraft();
-
-    void updateName(String draftName);
-
-    CardDraft updateBalanceAndGetEntity(BigDecimal draftBalance);
-
-    void updateStatus(DraftStatus draftStatus);
+    CardDraft createSingleDraft();
 
     CardDraft getFirstDraft();
 
     boolean isEmpty();
 
-    void claenupAndCreateFirst();
+    CardDraft updateName(String draftName);
+
+    CardDraft updateBalance(BigDecimal draftBalance);
+
+    CardDraft updateStatus(DraftStatus draftStatus);
+
+    void deleteAll();
 }

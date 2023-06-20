@@ -4,5 +4,5 @@ import telegrambot.model.util.Command;
 
 public interface CommandService {
 
-    Command findByName(String name);
+    Command getByName(String name);
 }

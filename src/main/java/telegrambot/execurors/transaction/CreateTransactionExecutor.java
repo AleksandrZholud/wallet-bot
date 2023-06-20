@@ -55,7 +55,7 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
 
         if (UserDataContextHolder.getInputtedTextCommand().equals(THIS_CMD)) {
             transactionDraftService.deleteAll();
-            currentConditionService.updateCommandAndState(4L, 1L);
+            currentConditionService.updateCommandAndState(CREATE_TRANSACTION_COMMAND, NO_STATE);
             msgFromStateHistoryService.deleteAll();
         }
 
@@ -82,19 +82,19 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
     }
 
     private void doIfNoState() {
-        Command command = commandService.findByName(THIS_CMD);
+        Command command = commandService.getByName(THIS_CMD);
         State state = stateService.findByName(CHOOSE_CARD.getState());
-        currentConditionService.updateCommandAndState(command.getId(), state.getId());
+        currentConditionService.updateCommandAndState(command, state);
 
         transactionDraftService.deleteAll();
-        transactionDraftService.createFirstDraft();
+        transactionDraftService.createSingleDraft();
 
         String answerMsg = "Choose card:";
         msgFromStateHistoryService.save(MsgFromStateHistory.builder()
                 .message(answerMsg)
                 .build());
 
-        List<String> cardNameList = cardService.findAll()
+        List<String> cardNameList = cardService.getAll()
                 .stream()
                 .map(Card::getName)
                 .sorted()
@@ -130,15 +130,15 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
             return;
         }
 
-        Command command = commandService.findByName(THIS_CMD);
+        Command command = commandService.getByName(THIS_CMD);
         State state = stateService.findByName(SET_TYPE.getState());
 
         String inputtedText = UserDataContextHolder.getInputtedTextCommand();
         Card chosenCardEntity = cardService.getByName(inputtedText);
 
         if (chosenCardEntity != null) {
-            currentConditionService.updateCommandAndState(command.getId(), state.getId());
-            transactionDraftService.updateCardId(chosenCardEntity.getId());
+            currentConditionService.updateCommandAndState(command, state);
+            transactionDraftService.updateCard(chosenCardEntity);
             String answerMsg = "Want to add INCOME or EXPENSE?";
             msgFromStateHistoryService.save(MsgFromStateHistory.builder()
                     .message(answerMsg)
@@ -176,11 +176,11 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
             return;
         }
 
-        Command command = commandService.findByName(THIS_CMD);
+        Command command = commandService.getByName(THIS_CMD);
         State state = stateService.findByName(SET_AMOUNT.getState());
-        currentConditionService.updateCommandAndState(command.getId(), state.getId());
+        currentConditionService.updateCommandAndState(command, state);
 
-        transactionDraftService.updateTransactionType(chosenTrType.name());
+        transactionDraftService.updateTransactionType(chosenTrType);
 
         String answerMsg = "Input amount:";
         msgFromStateHistoryService.save(MsgFromStateHistory.builder()
@@ -215,11 +215,11 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
             return;
         }
 
-        Command command = commandService.findByName(THIS_CMD);
+        Command command = commandService.getByName(THIS_CMD);
         State state = stateService.findByName(CONFIRMATION.getState());
-        currentConditionService.updateCommandAndState(command.getId(), state.getId());
+        currentConditionService.updateCommandAndState(command, state);
 
-        transactionDraftService.updateAmountAndStatus(amount, DraftStatus.BUILT.name());
+        transactionDraftService.updateAmountAndStatus(amount, DraftStatus.BUILT);
 
         TransactionDraft transactionDraft = transactionDraftService.getFirstDraft();
         String answerMsg = "Confirm transaction:"
@@ -309,9 +309,9 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
     }
 
     private void doIfNoCards() {
-        Command command = commandService.findByName(START_COMMAND.getCommand());
+        Command command = commandService.getByName(START_COMMAND.getCommand());
         State state = stateService.findByName(NO_STATE.getState());
-        currentConditionService.updateCommandAndState(command.getId(), state.getId());
+        currentConditionService.updateCommandAndState(command, state);
         UserDataContextHolder.getFacade()
                 .setText("Seems you have no any card yet;(\nCreate your first card.")
                 .addButtons(CREATE_CARD_COMMAND)
@@ -319,9 +319,9 @@ public class CreateTransactionExecutor extends AbstractCommandExecutor {
     }
 
     private void doIfNothingExecuted() {
-        Command command = commandService.findByName(START_COMMAND.getCommand());
+        Command command = commandService.getByName(START_COMMAND.getCommand());
         State state = stateService.findByName(NO_STATE.getState());
-        currentConditionService.updateCommandAndState(command.getId(), state.getId());
+        currentConditionService.updateCommandAndState(command, state);
         cleanAllData();
         UserDataContextHolder.getFacade()
                 .setText("Something gone wrong:(\nTry to create Transaction again.")
