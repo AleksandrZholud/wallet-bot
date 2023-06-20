@@ -4,14 +4,14 @@ import telegrambot.model.util.MsgFromStateHistory;
 
 public interface MsgFromStateHistoryService {
 
-    void deleteAll();
-
-    void save(MsgFromStateHistory msgFromStateHistory);
+    MsgFromStateHistory save(MsgFromStateHistory msgFromStateHistory);
 
     boolean isEmpty();
 
-    String findPreLast();
+    MsgFromStateHistory getPreLast();
 
     void removeLast();
 
+
+    void deleteAll();
 }

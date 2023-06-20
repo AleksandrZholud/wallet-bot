@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import telegrambot.config.interceptor.UserDataContextHolder;
+import telegrambot.model.util.State;
 import telegrambot.service.current_condition.CurrentConditionService;
 import telegrambot.service.state_history.MsgFromStateHistoryService;
 
@@ -35,14 +36,14 @@ public class BackExecutor extends AbstractCommandExecutor {
 
     private void goBack() {
 
-        String previousMessage = msgFromStateHistoryService.findPreLast();
-        long previousStateId = currentConditionService.getPreviousStateId();
+        String previousMessage = msgFromStateHistoryService.getPreLast().getMessage();
+        State previousState = currentConditionService.getPreviousState();
 
-        if (previousMessage == null || previousStateId == 0) {
+        if (previousMessage == null || previousState == null) {
             AbstractCommandExecutor.getSpecificChild(StartExecutor.class).exec();
         } else {
             msgFromStateHistoryService.removeLast();
-            currentConditionService.updateState(previousStateId);
+            currentConditionService.updateState(previousState);
             UserDataContextHolder.getFacade()
                     .setText(previousMessage)
                     .addBackButton()

@@ -60,7 +60,7 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
     }
 
     private void confirmCard() {
-        Command baseCommand = commandService.findByName(START_COMMAND.getCommand());
+        Command baseCommand = commandService.getByName(START_COMMAND.getCommand());
         State baseState = stateService.findByName(NO_STATE.getState());
         Optional<CardDraft> draft = Optional.ofNullable(cardDraftService.getFirstDraft());
 
@@ -74,7 +74,7 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
         DraftStatus draftStatus = draft.get().getStatus();
         if (draftStatus.equals(DraftStatus.BUILT) || draftStatus.equals(DraftStatus.SAVING)) {
             cardDraftService.updateStatus(DraftStatus.SAVING);
-            cardToSave = cardService.save(Card.builder()
+            cardToSave = cardService.createCard(Card.builder()
                     .name(draft.get().getName())
                     .balance(draft.get().getBalance())
                     .build());
@@ -86,7 +86,7 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
         }
 
         cleanAllData();
-        currentConditionService.updateCommandAndState(baseCommand.getId(), baseState.getId());
+        currentConditionService.updateCommandAndState(baseCommand, baseState);
 
         processFinish(cardToSave);
     }
@@ -105,7 +105,7 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
     }
 
     private void processStartCreateCard(Command command, State state) {
-        currentConditionService.updateCommandAndState(command.getId(), state.getId());
+        currentConditionService.updateCommandAndState(command, state);
         UserDataContextHolder.getFacade()
                 .setText("Seems you have not started creating card.")
                 .addButtons(getGlobalCommands());

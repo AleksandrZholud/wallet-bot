@@ -15,7 +15,7 @@ public class UserDataContextHolder {
         CONTEXT_HOLDER.remove();
 
         if (update.getMessage() == null) {
-            throw new IllegalStateException("Cannot resolve message. Please, send message with text to prevent this error.");
+            throw new IllegalArgumentException("Cannot resolve message. Please, send message with text to prevent this error.");
         }
 
         var context = new UserDataContext(update);

@@ -8,15 +8,13 @@ import org.springframework.validation.ObjectError;
 import org.springframework.validation.Validator;
 import telegrambot.config.exception.TelegramUpdateValidationException;
 import telegrambot.config.properties.TelegramUpdateValidationProperties;
-import telegrambot.model.ErrorDto;
-import telegrambot.model.enums.ErrorCode;
 import telegrambot.service.message.MessageService;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.lang.Boolean.TRUE;
 import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +28,7 @@ public class ValidationServiceImpl implements ValidationService {
     @Override
     public void validate(Object obj) throws TelegramUpdateValidationException {
 
-        if (validationProperties.getEnabled()) {
+        if (TRUE.equals(validationProperties.getEnabled())) {
 
             Validator targetValidator = validators.stream()
                     .filter(validator -> validator.supports(obj.getClass()))
@@ -43,22 +41,13 @@ public class ValidationServiceImpl implements ValidationService {
             dataBinder.validate();
 
             if (dataBinder.getBindingResult().hasErrors()) {
-
-                List<ErrorDto> errors = dataBinder.getBindingResult().getAllErrors()
-                        .stream()
-                        .map(error -> ErrorDto.builder()
-                                .code(ErrorCode.TOO_LONG_RESPONSE_ERROR.getCode())
-                                .message(resolveErrorMessage(error))
-                                .build())
-                        .collect(toList());
-
-                String error = errors.stream()
-                        .map(ErrorDto::getMessage)
+                var errors = dataBinder.getBindingResult().getAllErrors().stream()
+                        .map(this::resolveErrorMessage)
                         .collect(Collectors.joining(","));
-                throw new TelegramUpdateValidationException(error);
+
+                throw new TelegramUpdateValidationException(errors);
             }
         }
-
     }
 
     private String resolveErrorMessage(ObjectError error) {

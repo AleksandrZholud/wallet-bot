@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import telegrambot.model.util.State;
 import telegrambot.repository.util.StateRepository;
+
 @Service
 @RequiredArgsConstructor
 public class StateServiceImpl implements StateService {
@@ -12,7 +13,7 @@ public class StateServiceImpl implements StateService {
 
     @Override
     public State findByName(String name) {
-        return stateRepository.findByName(name)
-                .orElseThrow(() -> new IllegalStateException("State is not found."));
+        return stateRepository.findByNameOptional(name)
+                .orElseThrow(() -> new IllegalStateException("State with name '" + name + "' not found."));
     }
 }

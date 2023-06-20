@@ -7,46 +7,34 @@ import telegrambot.model.enums.DraftStatus;
 import telegrambot.repository.draft.CardDraftRepository;
 
 import java.math.BigDecimal;
-
-import static telegrambot.model.enums.DraftStatus.BUILT;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CardDraftServiceImpl implements CardDraftService{
+public class CardDraftServiceImpl implements CardDraftService {
 
     private final CardDraftRepository cardDraftRepository;
 
     @Override
-    public void deleteAll() {
-        cardDraftRepository.deleteAll();
-    }
+    public CardDraft createSingleDraft() {
+        CardDraft draftToSave = CardDraft.builder()
+                .id(1L)
+                .status(DraftStatus.BUILDING)
+                .build();
 
-    @Override
-    public void createFirstDraft() {
-        cardDraftRepository.createFirstDraft();
-    }
+        Optional<CardDraft> draftOptional = cardDraftRepository.getFirstDraft();
 
-    @Override
-    public void updateName(String draftName) {
-        cardDraftRepository.updateName(draftName);
-    }
+        if (draftOptional.isPresent()) {
+            cardDraftRepository.deleteAll();
+        }
 
-    @Override
-    public CardDraft updateBalanceAndGetEntity(BigDecimal draftBalance) {
-        cardDraftRepository.updateBalanceAndSetStatus(draftBalance, BUILT.name());
-        return getFirstDraft();
-    }
-
-    @Override
-    public void updateStatus(DraftStatus draftStatus) {
-        String statusName = draftStatus.name();
-        cardDraftRepository.updateStatus(statusName);
+        return cardDraftRepository.save(draftToSave);
     }
 
     @Override
     public CardDraft getFirstDraft() {
         return cardDraftRepository.getFirstDraft()
-                .orElseThrow(() -> new IllegalStateException("CardDraft is not found."));
+                .orElseThrow(() -> new IllegalStateException("First CardDraft is not found."));
     }
 
     @Override
@@ -55,8 +43,38 @@ public class CardDraftServiceImpl implements CardDraftService{
     }
 
     @Override
-    public void claenupAndCreateFirst() {
+    public CardDraft updateName(String draftName) {
+        CardDraft draft = getDraftOrThrowEx();
+
+        draft.setName(draftName);
+        return cardDraftRepository.save(draft);
+    }
+
+    @Override
+    public CardDraft updateBalance(BigDecimal draftBalance) {
+        CardDraft draft = getDraftOrThrowEx();
+
+        draft.setBalance(draftBalance);
+        return cardDraftRepository.save(draft);
+    }
+
+    @Override
+    public CardDraft updateStatus(DraftStatus draftStatus) {
+        CardDraft draft = getDraftOrThrowEx();
+
+        draft.setStatus(draftStatus);
+        return cardDraftRepository.save(draft);
+    }
+
+    @Override
+    public void deleteAll() {
         cardDraftRepository.deleteAll();
-        cardDraftRepository.createFirstDraft();
+    }
+
+
+    private CardDraft getDraftOrThrowEx() {
+        Optional<CardDraft> draftOptional = cardDraftRepository.getFirstDraft();
+        return draftOptional
+                .orElseThrow(() -> new IllegalStateException("No draft in DataBase"));
     }
 }

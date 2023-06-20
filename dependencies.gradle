@@ -24,7 +24,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
 
     testImplementation("org.testcontainers:junit-jupiter:${testcontainersVersion}")
-    testImplementation("org.testcontainers:mssqlserver:${testcontainersVersion}")
+    testImplementation("org.testcontainers:postgresql:${testcontainersVersion}")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     testCompileOnly("org.projectlombok:lombok:${lombokVersion}")
