@@ -1,8 +1,8 @@
 package telegrambot.service.card;
 
-import telegrambot.model.Card;
 import telegrambot.model.dto.UpdateCardReqDto;
 import telegrambot.model.dto.UpdateCardResDto;
+import telegrambot.model.entity.Card;
 
 import java.math.BigDecimal;
 import java.util.List;

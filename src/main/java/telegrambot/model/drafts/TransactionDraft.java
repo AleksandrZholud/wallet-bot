@@ -1,7 +1,7 @@
 package telegrambot.model.drafts;
 
 import lombok.*;
-import telegrambot.model.Card;
+import telegrambot.model.entity.Card;
 import telegrambot.model.enums.DraftStatus;
 import telegrambot.model.enums.TransactionTypeEnum;
 
