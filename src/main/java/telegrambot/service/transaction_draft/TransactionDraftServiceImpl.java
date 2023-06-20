@@ -2,8 +2,8 @@ package telegrambot.service.transaction_draft;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
-import telegrambot.model.Card;
 import telegrambot.model.drafts.TransactionDraft;
+import telegrambot.model.entity.Card;
 import telegrambot.model.enums.DraftStatus;
 import telegrambot.model.enums.TransactionTypeEnum;
 import telegrambot.repository.draft.TransactionDraftRepository;
