@@ -12,5 +12,5 @@ import java.util.Optional;
 public interface StateRepository extends JpaRepository<State, Long> {
 
     @Query(value = " SELECT id, name FROM states WHERE name=:name ", nativeQuery = true)
-    Optional<State> findByName(@Param("name") String name);
+    Optional<State> findByNameOptional(@Param("name") String name);
 }

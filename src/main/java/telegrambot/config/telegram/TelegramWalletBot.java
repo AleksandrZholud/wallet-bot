@@ -14,7 +14,6 @@ import telegrambot.execurors.AbstractCommandExecutor;
 @RequiredArgsConstructor
 public class TelegramWalletBot extends TelegramWebhookBot {
     private final BotConfig botConfig;
-    private static final String ERROR_EMPTY_MESSAGE_FOUND = "Error: Cannot understand an empty command!";
     private static final String ERROR_UNDEFINED_COMMAND = "Error: Undefined command, try again.";
 
     @Override
@@ -29,37 +28,32 @@ public class TelegramWalletBot extends TelegramWebhookBot {
 
     @Override
     public SendMessage onWebhookUpdateReceived(Update update) {
-        if (update.getMessage().hasText()) {
-            //All logic of TelegramBot is here ↓
-            //////////////////////////////////////////////////////////////////////////
+        SendMessage systemMessage = runSystemExecutors();
+        if (systemMessage != null) return systemMessage;
 
-            for (AbstractCommandExecutor executor : AbstractCommandExecutor.getAllChildEntities()) {
-                if (executor.isSystemExecutor() && executor.canExec()) {
-                    executor.exec();
-                    return UserDataContextHolder.performMessage();
-                }
-            }
+        SendMessage commandMessage = runCommandExecutors();
+        if (commandMessage != null) return commandMessage;
 
-            for (AbstractCommandExecutor handler : AbstractCommandExecutor.getAllChildEntities()) {
-                if (!handler.isSystemExecutor() && handler.canExec()) {
-                    handler.exec();
-                    return UserDataContextHolder.performMessage();
-                }
-            }
-
-            throw new IllegalStateException(ERROR_UNDEFINED_COMMAND);
-
-            //////////////////////////////////////////////////////////////////////////
-            //All logic of TelegramBot is here ↑
-        }
-        return sendEmptyMessageError();
+        throw new IllegalStateException(ERROR_UNDEFINED_COMMAND);
     }
 
-    private SendMessage sendEmptyMessageError() {
-        UserDataContextHolder
-                .getFacade()
-                .addStartButton()
-                .setText(ERROR_EMPTY_MESSAGE_FOUND);
-        return UserDataContextHolder.performMessage();
+    private SendMessage runSystemExecutors() {
+        for (AbstractCommandExecutor executor : AbstractCommandExecutor.getAllChildEntities()) {
+            if (executor.isSystemExecutor() && executor.canExec()) {
+                executor.exec();
+                return UserDataContextHolder.performMessage();
+            }
+        }
+        return null;
+    }
+
+    private SendMessage runCommandExecutors() {
+        for (AbstractCommandExecutor handler : AbstractCommandExecutor.getAllChildEntities()) {
+            if (!handler.isSystemExecutor() && handler.canExec()) {
+                handler.exec();
+                return UserDataContextHolder.performMessage();
+            }
+        }
+        return null;
     }
 }

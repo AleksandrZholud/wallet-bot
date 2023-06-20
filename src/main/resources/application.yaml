@@ -6,16 +6,10 @@ server:
 
 spring:
   datasource:
-    hikari:
-      jdbc-url: jdbc:${db-properties.jdbc-provider}://${db-properties.host}:${db-properties.port}/${db-properties.db-name}
-      username: ${db-properties.username}
-      password: ${db-properties.password}
-      idleTimeout: 10000
-      maxLifetime: 30000
-      minimumIdle: 0
-      maximumPoolSize: 2
-      pool-name: ololoika
-      connectionTimeout: 3000
+    url: jdbc:${db-properties.jdbc-provider}://${db-properties.host}:${db-properties.port}/${db-properties.db-name}
+    username: ${db-properties.username}
+    password: ${db-properties.password}
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: validate
@@ -28,7 +22,7 @@ spring:
         temp:
           use_jdbc_metadata_defaults: false
   liquibase:
-    enabled: true
+    enabled: false
     change-log: db/changelog/db.changelog-master.yaml
 
 db-properties:
@@ -51,7 +45,7 @@ multi-tenancy:
 
 logging:
   level:
-    liquibase: info
+    liquibase: warn
     org.hibernate: info
     telegrambot.config.multitenancy.TenantManager: trace
 

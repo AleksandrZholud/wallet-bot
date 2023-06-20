@@ -15,7 +15,4 @@ public class TelegramUpdateValidationProperties {
 
     @NotBlank
     private Boolean enabled;
-
-    @NotBlank
-    private Boolean annotationBasedValidationEnabled;
 }

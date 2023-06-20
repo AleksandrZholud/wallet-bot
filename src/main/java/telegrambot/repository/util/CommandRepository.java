@@ -12,5 +12,5 @@ import java.util.Optional;
 public interface CommandRepository extends JpaRepository<Command, Long> {
 
     @Query(value = "SELECT c.id,c.name FROM commands AS c WHERE c.name =:name", nativeQuery = true)
-    Optional<Command> findByName(@Param("name") String name);
+    Optional<Command> findByNameOptional(@Param("name") String name);
 }
