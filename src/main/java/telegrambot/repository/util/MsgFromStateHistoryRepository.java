@@ -22,7 +22,7 @@ public interface MsgFromStateHistoryRepository extends JpaRepository<MsgFromStat
             nativeQuery = true)
     Optional<MsgFromStateHistory> getLastOptional();
 
-    @Query(value = "     SELECT message                                                                "
+    @Query(value = "     SELECT id, message, timestamp                                                                "
             + "          FROM command_state_message_history                                            "
             + "          ORDER BY timestamp DESC                                                       "
             + "          LIMIT 1 OFFSET 1                                                              ",

@@ -10,14 +10,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Methods placed in CRUD order, then private methods
- * Base return types:
- * Create - <Entity>
- * Read - <Entity>
- * Update - <Entity>
- * Delete - void
- */
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -56,11 +48,8 @@ public class CardServiceImpl implements CardService {
         Card changedCard = getCardByNameOrElseThrowException(name);
 
         changedCard.setBalance(amount);
-        var r = cardRepository.save(changedCard);
-        return r;
+        return  cardRepository.save(changedCard);
     }
-
-
 
     private Card getCardByNameOrElseThrowException(String name) {
         return cardRepository.getByName(name)

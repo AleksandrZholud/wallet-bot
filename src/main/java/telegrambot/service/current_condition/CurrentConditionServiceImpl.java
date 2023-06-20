@@ -11,14 +11,6 @@ import telegrambot.repository.util.CommandRepository;
 import telegrambot.repository.util.CurrentConditionRepository;
 import telegrambot.repository.util.StateRepository;
 
-/**
- * Methods placed in CRUD order, then private methods
- * Base return types:
- * Create - <Entity>
- * Read - <Entity>
- * Update - <Entity>
- * Delete - void
- */
 @AllArgsConstructor
 @Component
 

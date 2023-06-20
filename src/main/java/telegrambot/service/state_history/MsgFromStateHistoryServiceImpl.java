@@ -8,14 +8,6 @@ import telegrambot.repository.util.MsgFromStateHistoryRepository;
 
 import java.util.Optional;
 
-/**
- * Methods placed in CRUD order, then private methods
- * Base return types:
- * Create - <Entity>
- * Read - <Entity>
- * Update - <Entity>
- * Delete - void
- */
 @Slf4j
 @AllArgsConstructor
 @Component
