@@ -48,11 +48,8 @@ public class CardServiceImpl implements CardService {
         Card changedCard = getCardByNameOrElseThrowException(name);
 
         changedCard.setBalance(amount);
-        var r = cardRepository.save(changedCard);
-        return r;
+        return  cardRepository.save(changedCard);
     }
-
-
 
     private Card getCardByNameOrElseThrowException(String name) {
         return cardRepository.getByName(name)

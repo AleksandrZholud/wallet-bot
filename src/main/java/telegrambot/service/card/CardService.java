@@ -14,6 +14,5 @@ public interface CardService {
 
     List<Card> getAll();
 
-
     boolean checkIfExistByName(String name);
 }
