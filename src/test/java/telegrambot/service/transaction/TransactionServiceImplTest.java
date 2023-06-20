@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import telegrambot.model.Card;
-import telegrambot.model.Transaction;
+import telegrambot.model.entity.Card;
+import telegrambot.model.entity.Transaction;
 import telegrambot.model.enums.TransactionTypeEnum;
 import telegrambot.repository.TransactionRepository;
 

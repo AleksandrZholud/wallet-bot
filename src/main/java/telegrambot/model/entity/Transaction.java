@@ -1,4 +1,4 @@
-package telegrambot.model;
+package telegrambot.model.entity;
 
 
 import lombok.AllArgsConstructor;
