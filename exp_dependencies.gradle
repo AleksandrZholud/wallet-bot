@@ -1,0 +1,7 @@
+dependencies {
+    //    ***---***    multitenancy    ***---***    //
+    //implementation 'org.hibernate:hibernate-core'//:5.6.3.Final*'
+    implementation 'org.hibernate:hibernate-envers:5.6.3.Final'
+    implementation 'org.hibernate:hibernate-jpamodelgen:5.6.3.Final'
+    //implementation 'org.hibernate:hibernate-multitenancy'//:5.6.3.Final'
+}

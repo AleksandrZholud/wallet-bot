@@ -11,11 +11,11 @@ public class UserDataContextHolder {
 
     private static final ThreadLocal<UserDataContext> CONTEXT_HOLDER = new InheritableThreadLocal<>();
 
-    public static void initContext(Update update) throws IllegalAccessException {
+    public static void initContext(Update update) {
         CONTEXT_HOLDER.remove();
 
         if (update.getMessage() == null) {
-            throw new IllegalAccessException("Cannot resolve message. Please, send message with text to prevent this error.");
+            throw new IllegalArgumentException("Cannot resolve message. Please, send message with text to prevent this error.");
         }
 
         var context = new UserDataContext(update);
@@ -42,5 +42,9 @@ public class UserDataContextHolder {
 
     public static String getSenderName() {
         return CONTEXT_HOLDER.get().getUpdate().getMessage().getChat().getFirstName();
+    }
+
+    public static Long getChatId() {
+        return CONTEXT_HOLDER.get().getUpdate().getMessage().getChatId();
     }
 }
