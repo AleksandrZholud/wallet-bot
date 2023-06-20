@@ -1,10 +1,11 @@
-//if ("${useExperimentalFunctional}" == "true") {
-//    println("Use Experimental Functional -> include odd libs !!!")
-//    apply from: "exp_dependencies.gradle"
-//} else {
-//    println("Use local artifactory to get libs !!!")
-//}
-println("Welcome to MaZHo !!!")
+if ("${useExperimentalFunctional}" == "true") {
+    println("Using Experimental Functional !!!")
+    apply from: "exp_dependencies.gradle"
+}
+else {
+    println("Use standard libs.")
+}
+println("Welcome to MaZHo !!! VERSION 1.0")
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
@@ -23,7 +24,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
 
     testImplementation("org.testcontainers:junit-jupiter:${testcontainersVersion}")
-    testImplementation("org.testcontainers:mssqlserver:${testcontainersVersion}")
+    testImplementation("org.testcontainers:postgresql:${testcontainersVersion}")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     testCompileOnly("org.projectlombok:lombok:${lombokVersion}")

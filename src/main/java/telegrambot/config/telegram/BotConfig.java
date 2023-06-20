@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 @Validated
 @Getter
@@ -16,11 +15,12 @@ import javax.validation.constraints.NotNull;
 @ConfigurationProperties(prefix = "telegram-bot")
 public class BotConfig {
 
-    @NotNull
     @NotEmpty
-    String name;
+    private String name;
 
-    @NotNull
     @NotEmpty
-    String token;
+    private String token;
+
+    @NotEmpty
+    private String webhookPath;
 }

@@ -6,9 +6,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import telegrambot.model.util.State;
 
+import java.util.Optional;
+
 @Repository
 public interface StateRepository extends JpaRepository<State, Long> {
 
     @Query(value = " SELECT id, name FROM states WHERE name=:name ", nativeQuery = true)
-    State findByName(@Param("name") String name);
+    Optional<State> findByNameOptional(@Param("name") String name);
 }

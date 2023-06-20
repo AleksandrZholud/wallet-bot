@@ -1,11 +1,15 @@
 server:
-  port: 0
+  port: 228
+  locale: en
+  ssl:
+    enabled: false
 
 spring:
   datasource:
-    url: jdbc:postgresql://walletdb-postgresql-instance.cjlbkgvenvzw.eu-north-1.rds.amazonaws.com:5432/${main-db-name}
-    username: ば
-    password: 場
+    url: jdbc:${db-properties.jdbc-provider}://${db-properties.host}:${db-properties.port}/${db-properties.db-name}
+    username: ${db-properties.username}
+    password: ${db-properties.password}
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: validate
@@ -13,24 +17,39 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQL10Dialect
+        show_sql: true
+        format_sql: false
         temp:
           use_jdbc_metadata_defaults: false
   liquibase:
-    enabled: false
+    enabled: true
     change-log: db/changelog/db.changelog-master.yaml
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:db/changelog/util_tables_create_fill_sql/init_util_tables_schema_source.sql
-      data-locations: classpath:db/changelog/util_tables_create_fill_sql/init_util_tables_data_source.sql
 
-main-db-name: 所
+db-properties:
+  jdbc-provider: postgresql
+  host: walletdb-postgresql-instance.cjlbkgvenvzw.eu-north-1.rds.amazonaws.com
+  port: 5432
+  username: ば
+  password: 場
+  db-name: 所
 
 telegram-bot:
   name: 野
   token: 食
+  webhookPath: ば
+
+multi-tenancy:
+  master:
+    entityManager:
+      packages: "telegrambot"
 
 logging:
   level:
+    liquibase: warn
     org.hibernate: info
-    liquibase: info
+    telegrambot.config.multitenancy.TenantManager: trace
+
+telegram-update-validation-properties:
+  enabled: true
+
+user-response-delay-in-seconds: 43200
