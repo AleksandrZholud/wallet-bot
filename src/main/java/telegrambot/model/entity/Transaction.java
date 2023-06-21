@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 @Table(name = "transactions")
 @AllArgsConstructor
 public class Transaction {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
