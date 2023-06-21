@@ -29,7 +29,7 @@ public interface CurrentConditionRepository extends JpaRepository<CurrentConditi
 
     @Transactional
     @Modifying
-    @Query(value = "    DELETE FROM current_condition;                                                     "
+    @Query(value = "    DELETE FROM current_condition where id > 0;                                                     "
             + "         INSERT INTO current_condition (id, command_id, state_id)                           "
             + "         VALUES (1, (SELECT id FROM commands c WHERE c.name = '/start'),                    "
             + "                    (SELECT id FROM states s   WHERE s.name = 'NoState' ) )                 "
