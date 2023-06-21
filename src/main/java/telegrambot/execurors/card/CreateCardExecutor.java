@@ -109,7 +109,7 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
 
     private void doSetBalance() {
         var command = commandService.getByName(THIS_CMD);
-        var state = stateService.findByName(SET_BALANCE.getState());
+        var state = stateService.findByName(CONFIRMATION.getState());
         long longValueOfInput = tryGetLongValue();
         var draftBalance = BigDecimal.valueOf(longValueOfInput);
 
