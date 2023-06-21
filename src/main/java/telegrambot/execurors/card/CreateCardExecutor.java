@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import telegrambot.config.interceptor.UserDataContextHolder;
 import telegrambot.execurors.AbstractCommandExecutor;
 import telegrambot.model.drafts.CardDraft;
+import telegrambot.model.enums.DraftStatus;
 import telegrambot.model.util.CurrentCondition;
 import telegrambot.model.util.MsgFromStateHistory;
 import telegrambot.service.card.CardService;
@@ -108,7 +109,7 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
 
     private void doSetBalance() {
         var command = commandService.getByName(THIS_CMD);
-        var state = stateService.findByName(SET_BALANCE.getState());
+        var state = stateService.findByName(CONFIRMATION.getState());
         long longValueOfInput = tryGetLongValue();
         var draftBalance = BigDecimal.valueOf(longValueOfInput);
 
@@ -123,6 +124,7 @@ public class CreateCardExecutor extends AbstractCommandExecutor {
         msgFromStateHistoryService.save(MsgFromStateHistory.builder()
                 .message(text)
                 .build());
+        cardDraftService.updateStatus(DraftStatus.BUILT);
 
         UserDataContextHolder.getFacade()
                 .setText(text)
