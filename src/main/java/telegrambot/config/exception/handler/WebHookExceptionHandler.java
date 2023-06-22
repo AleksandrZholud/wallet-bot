@@ -1,5 +1,6 @@
 package telegrambot.config.exception.handler;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -9,9 +10,16 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import telegrambot.config.exception.DatabaseOperationException;
 import telegrambot.config.exception.TelegramUpdateValidationException;
 import telegrambot.config.interceptor.UserDataContextHolder;
+import telegrambot.config.multitenancy.TenantManager;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @ControllerAdvice
+@RequiredArgsConstructor
 public class WebHookExceptionHandler extends ResponseEntityExceptionHandler {
+
+    private final TenantManager tenantManager;
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<SendMessage> handleIllegalStateException(IllegalStateException ex, WebRequest request) {
@@ -19,6 +27,9 @@ public class WebHookExceptionHandler extends ResponseEntityExceptionHandler {
                 .getFacade()
                 .addStartButton()
                 .setText(ex.getMessage());
+        if (ex.getMessage().contains("Error during update DB")) {
+            tenantManager.dropConnection(extractUserDbName(ex.getMessage()));
+        }
         return ResponseEntity.ok(UserDataContextHolder.performMessage());
     }
 
@@ -47,5 +58,16 @@ public class WebHookExceptionHandler extends ResponseEntityExceptionHandler {
                 .addStartButton()
                 .setText("Server error.");
         return ResponseEntity.ok(UserDataContextHolder.performMessage());
+    }
+
+    private String extractUserDbName(String inputString) {
+        String pattern = "user_\\d+";
+        Pattern regex = Pattern.compile(pattern);
+        Matcher matcher = regex.matcher(inputString);
+        if (matcher.find()) {
+            return matcher.group();
+        } else {
+            return null;
+        }
     }
 }

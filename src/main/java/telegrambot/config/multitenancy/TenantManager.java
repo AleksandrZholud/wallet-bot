@@ -109,4 +109,11 @@ public class TenantManager {
             }
         }
     }
+
+    public void dropConnection(String dbName) {
+        if (dataSourceMap.containsKey(dbName)) {
+            log.warn("Removing connection to db: {}", dbName);
+            dataSourceMap.remove(dbName);
+        }
+    }
 }
