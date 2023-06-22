@@ -19,4 +19,5 @@ public interface CurrentConditionService {
     CurrentCondition updateCommandAndState(Command command, State state);
 
     CurrentCondition updateState(State newState);
+
 }
