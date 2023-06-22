@@ -60,10 +60,9 @@ public class CurrentConditionServiceImpl implements CurrentConditionService {
         changedCurrentCondition.setState(newState);
         return currentConditionRepository.save(changedCurrentCondition);
     }
-
     @Override
     public State getPreviousState() {
-        return currentConditionRepository.getPreviousStateOptional()
+        return stateRepository.getPreviousStateOptional()
                 .orElseThrow(() -> new IllegalStateException("No Previous State in DataBase"));
     }
 

@@ -141,7 +141,7 @@ class CurrentConditionServiceImplTest {
     void getPreviousState() {
         //before
         State state = new State(1L, "State");
-        when(currentConditionRepository.getPreviousStateOptional()).thenReturn(Optional.of(state));
+        when(stateRepository.getPreviousStateOptional()).thenReturn(Optional.of(state));
 
         //when
         var actualRes = currentConditionService.getPreviousState();
@@ -151,20 +151,20 @@ class CurrentConditionServiceImplTest {
         assertThat(actualRes)
                 .isNotNull()
                 .isEqualTo(state);
-        verify(currentConditionRepository).getPreviousStateOptional();
+        verify(stateRepository).getPreviousStateOptional();
     }
 
     @Test
     void getPreviousState_Ex() {
         //before
         State state = new State(1L, "State");
-        when(currentConditionRepository.getPreviousStateOptional()).thenReturn(Optional.empty());
+        when(stateRepository.getPreviousStateOptional()).thenReturn(Optional.empty());
 
         //then
         assertThatThrownBy(() -> currentConditionService.getPreviousState())
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("No Previous State in DataBase");
-        verify(currentConditionRepository).getPreviousStateOptional();
+        verify(stateRepository).getPreviousStateOptional();
     }
 
     @Test

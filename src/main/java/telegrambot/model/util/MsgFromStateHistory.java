@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @Table(name = "command_state_message_history")
 public class MsgFromStateHistory {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "hibernate_sequence")
     @Column(name = "id", nullable = false)
     private Long id;
 
