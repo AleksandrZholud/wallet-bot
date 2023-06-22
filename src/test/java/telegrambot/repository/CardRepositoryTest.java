@@ -15,6 +15,7 @@ public class CardRepositoryTest extends PostgresAbstractContainer {
     public void getByName() {
         // Before
         var expected = cardRepository.save(Card.builder()
+                .id(1L)
                 .name("John Doe")
                 .balance(BigDecimal.valueOf(1000))
                 .build());

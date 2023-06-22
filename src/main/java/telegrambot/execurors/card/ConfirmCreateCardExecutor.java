@@ -21,6 +21,7 @@ import telegrambot.service.state_history.MsgFromStateHistoryService;
 import java.util.Optional;
 
 import static telegrambot.model.enums.CommandEnum.*;
+import static telegrambot.model.enums.StateEnum.CONFIRMATION;
 import static telegrambot.model.enums.StateEnum.NO_STATE;
 
 @AllArgsConstructor
@@ -42,7 +43,10 @@ public class ConfirmCreateCardExecutor extends AbstractCommandExecutor {
 
     @Override
     public boolean canExec() {
-        return UserDataContextHolder.getInputtedTextCommand().equals(THIS_CMD);
+        var currentCondition = currentConditionService.getCurrentCondition();
+        return UserDataContextHolder.getInputtedTextCommand().equals(THIS_CMD)
+                && (currentCondition.getCommand().getName().equals(CREATE_CARD_COMMAND.getCommand())
+                && currentCondition.getState().getName().equals(CONFIRMATION.getState()));
     }
 
     @Transactional
