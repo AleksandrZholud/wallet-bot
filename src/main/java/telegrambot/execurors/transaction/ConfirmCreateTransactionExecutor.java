@@ -24,6 +24,7 @@ import telegrambot.service.transaction_draft.TransactionDraftService;
 import java.util.Optional;
 
 import static telegrambot.model.enums.CommandEnum.*;
+import static telegrambot.model.enums.StateEnum.CONFIRMATION;
 import static telegrambot.model.enums.StateEnum.NO_STATE;
 
 @AllArgsConstructor
@@ -38,6 +39,19 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
     private final MsgFromStateHistoryService msgFromStateHistoryService;
     private final CardService cardService;
     private static final String THIS_CMD = CREATE_TRANSACTION_CONFIRM_COMMAND.getCommand();
+
+    @Override
+    public boolean isSystemExecutor() {
+        return false;
+    }
+
+    @Override
+    public boolean canExec() {
+        var currentCondition = currentConditionService.getCurrentCondition();
+        return UserDataContextHolder.getInputtedTextCommand().equals(THIS_CMD)
+                && (currentCondition.getCommand().getName().equals(CREATE_TRANSACTION_COMMAND.getCommand())
+                && currentCondition.getState().getName().equals(CONFIRMATION.getState()));
+    }
 
     @Transactional
     @Override
@@ -113,16 +127,6 @@ public class ConfirmCreateTransactionExecutor extends AbstractCommandExecutor {
         UserDataContextHolder.getFacade()
                 .setText("Seems you have not started creating transaction.")
                 .addButtons(getGlobalCommands());
-    }
-
-    @Override
-    public boolean isSystemExecutor() {
-        return false;
-    }
-
-    @Override
-    public boolean canExec() {
-        return UserDataContextHolder.getInputtedTextCommand().equals(THIS_CMD);
     }
 
     @Override
