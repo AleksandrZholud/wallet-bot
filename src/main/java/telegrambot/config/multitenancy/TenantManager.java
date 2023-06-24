@@ -33,7 +33,7 @@ public class TenantManager {
     public static final String ERROR_CREATING_DB = "Creating a new db error.";
     public static final String USER_DB_NAME_SUFFIX = "user_";
 
-    private Map<String, DataSource> dataSourceMap = new HashMap<>();
+    private Map<String, DataSource> dataSourceMap = new HashMap<>(); // почему мы тут не храним наши базы данных?
 
     public void switchDataSource(Long userId, String userName) {
         log.info("Trying to switch db for user: {}", userName);

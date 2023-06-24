@@ -1,7 +1,7 @@
 package telegrambot.service.card;
 
-import telegrambot.model.dto.UpdateCardReqDto;
-import telegrambot.model.dto.UpdateCardResDto;
+import telegrambot.model.dto.CardReqDto;
+import telegrambot.model.dto.CardResDto;
 import telegrambot.model.entity.Card;
 
 import java.math.BigDecimal;
@@ -19,5 +19,9 @@ public interface CardService {
 
     boolean checkIfExistByName(String name);
 
-    UpdateCardResDto updateCard(UpdateCardReqDto idCodeNameDTO);
+    CardResDto updateCard(CardReqDto idCodeNameDTO);
+
+    CardResDto createCard(String dbName, CardReqDto cardReqDto);
+
+    CardResDto getCardById(Long id);
 }
