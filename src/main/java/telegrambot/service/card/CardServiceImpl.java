@@ -80,7 +80,7 @@ public class CardServiceImpl implements CardService {
         Optional<Card> optionalCard = cardRepository.getByName(cardReqDto.getName());
         if (optionalCard.isPresent()) {
             throw new IllegalStateException("Card with name '" + cardReqDto.getName() + "' already exist in database");
-        } // validator
+        }
 
         Card card = Card.builder()
                 .name(cardReqDto.getName())
