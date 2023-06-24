@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UpdateCardResDto {
+public class CardReqDto {
     private Long id;
     private String name;
     private BigDecimal balance;
