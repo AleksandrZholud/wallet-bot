@@ -3,8 +3,8 @@ package telegrambot.service.card;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import telegrambot.model.dto.UpdateCardReqDto;
-import telegrambot.model.dto.UpdateCardResDto;
+import telegrambot.model.dto.CardReqDto;
+import telegrambot.model.dto.CardResDto;
 import telegrambot.model.entity.Card;
 import telegrambot.repository.CardRepository;
 
@@ -50,7 +50,7 @@ public class CardServiceImpl implements CardService {
         Card changedCard = getCardByNameOrElseThrowException(name);
 
         changedCard.setBalance(amount);
-        return  cardRepository.save(changedCard);
+        return cardRepository.save(changedCard);
     }
 
     private Card getCardByNameOrElseThrowException(String name) {
@@ -59,11 +59,53 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public UpdateCardResDto updateCard(UpdateCardReqDto updateCardReqDto) {
-        Card card = cardRepository.getById(updateCardReqDto.getId());
-        card.setName(updateCardReqDto.getName());
-        card.setBalance(updateCardReqDto.getBalance());
+    public CardResDto updateCard(CardReqDto CardReqDto) {
+        Card card = cardRepository.getById(CardReqDto.getId());
+        if (card == null) {
+            throw new IllegalStateException("Card with id " + CardReqDto.getId() + " is not found,");
+        }
+        card.setName(CardReqDto.getName());
+        card.setBalance(CardReqDto.getBalance());
         cardRepository.save(card);
-        return new UpdateCardResDto(card.getId(), card.getName(), card.getBalance());
+        return CardResDto.builder()
+                .id(card.getId())
+                .name(card.getName())
+                .balance(card.getBalance())
+                .build();
+    }
+
+    @Override
+    public CardResDto createCard(String dbName, CardReqDto cardReqDto) {
+
+        Optional<Card> optionalCard = cardRepository.getByName(cardReqDto.getName());
+        if (optionalCard.isPresent()) {
+            throw new IllegalStateException("Card with name '" + cardReqDto.getName() + "' already exist in database");
+        }
+
+        Card card = Card.builder()
+                .name(cardReqDto.getName())
+                .balance(cardReqDto.getBalance())
+                .build();
+        Card savedCard = cardRepository.save(card);
+        return CardResDto.builder()
+                .id(savedCard.getId())
+                .name(savedCard.getName())
+                .balance(savedCard.getBalance())
+                .build();
+    }
+
+    @Override
+    public CardResDto getCardById(Long id) {
+        Card cardById = cardRepository.getById(id);
+
+        if (cardById == null) {
+            throw new IllegalStateException("Card is not found");
+        }
+
+        return CardResDto.builder()
+                .id(cardById.getId())
+                .name(cardById.getName())
+                .balance(cardById.getBalance())
+                .build();
     }
 }
